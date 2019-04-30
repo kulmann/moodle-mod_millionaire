@@ -1,13 +1,16 @@
 import Vue from 'vue';
+import Vuetify from 'vuetify';
 import VueRouter from 'vue-router';
 import { store } from './store';
 import notFound from './components/not-found';
-import gameScreen from './components/game-screen'
+import 'vuetify/dist/vuetify.min.css';
+import gameScreen from './components/game-screen';
 
 function init(coursemoduleid, contextid) {
     // We need to overwrite the variable for lazy loading.
     __webpack_public_path__ = M.cfg.wwwroot + '/mod/vuejsdemo/amd/build/';
 
+    Vue.use(Vuetify);
     Vue.use(VueRouter);
 
     store.commit('setCourseModuleID', coursemoduleid);

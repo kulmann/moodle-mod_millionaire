@@ -1,29 +1,30 @@
-<template>
-    <div class="game-screen">
-        <h3>{{strings.game_screen_title}}</h3>
-        <p>
-            todo: create levels + joker side nav, create question are, create top bar with score etc
-        </p>
-    </div>
+<template lang="pug">
+    #millionaire-game_screen
+        v-container(fluid, grid-list-sm)
+            v-layout(row, wrap)
+                v-flex(d-flex, xs12)
+                    h3 {{strings.game_screen_title}}
+            v-layout(row, wrap)
+                v-flex(d-flex, xs8)
+                    p questions go here
+                v-flex(d-flex, xs4)
+                    v-layout(row, wrap)
+                        v-flex(d-flex, xs12)
+                            p jokers
+                        v-flex(d-flex, xs12)
+                            levels
 </template>
 
 <script>
-    import { mapState } from 'vuex';
+    import {mapState} from 'vuex';
+    import levels from './levels';
 
     export default {
         name: "game-screen",
-        data () {
-            return {
-
-            };
-        },
-        computed: mapState(['strings', 'levels']),
-        methods: {
-
-        },
-        created () {
-            this.$store.dispatch('fetchLevels');
-        },
+        computed: mapState(['strings']),
+        components: {
+            levels
+        }
     }
 </script>
 

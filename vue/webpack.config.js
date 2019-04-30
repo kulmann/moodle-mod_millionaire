@@ -17,28 +17,27 @@ module.exports = (env, options) => {
             libraryTarget: 'amd',
         },
         module: {
-            rules: [
-                {
-                    test: /\.css$/,
-                    use: [
-                        'vue-style-loader',
-                        'css-loader'
-                    ],
-                },
-                {
-                    test: /\.vue$/,
-                    loader: 'vue-loader',
-                    options: {
-                        loaders: {}
-                        // Other vue-loader options go here
-                    }
-                },
-                {
-                    test: /\.js$/,
-                    loader: 'babel-loader',
-                    exclude: /node_modules/
-                }
-            ]
+            rules: [{
+                test: /\.js$/,
+                loader: 'babel-loader',
+                exclude: /node_modules/
+            }, {
+                test: /\.(sa|sc|c)ss$/,
+                use: [
+                    'vue-style-loader',
+                    'css-loader',
+                    'sass-loader'
+                ]
+            }, {
+                test: /\.pug$/,
+                loader: 'pug-plain-loader'
+            }, {
+                test: /\.vue$/,
+                loader: 'vue-loader'
+            }, {
+                test: /\.(eot|svg|ttf|woff|woff2)$/,
+                loader: 'url-loader'
+            }]
         },
         resolve: {
             alias: {

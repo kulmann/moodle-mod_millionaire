@@ -17,29 +17,34 @@
 namespace mod_millionaire\external\exporter;
 
 use core\external\exporter;
+use mod_millionaire\model\gamesession;
 
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * Class level
+ * Class gamesession
  *
  * @package    mod_millionaire\external\exporter
  * @copyright  2019 Benedikt Kulmann <b@kulmann.biz>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class level extends exporter {
-    protected $level;
+class gamesession_dto extends exporter {
 
     /**
-     * level constructor.
+     * @var gamesession
+     */
+    protected $gamesession;
+
+    /**
+     * gamesession constructor.
      *
-     * @param $gamesession
+     * @param gamesession $gamesession
      * @param \context $context
      *
      * @throws \coding_exception
      */
-    public function __construct($gamesession, \context $context) {
-        $this->level = $gamesession;
+    public function __construct(gamesession $gamesession, \context $context) {
+        $this->gamesession = $gamesession;
         parent::__construct([], ['context' => $context]);
     }
 
@@ -47,31 +52,43 @@ class level extends exporter {
         return [
             'id' => [
                 'type' => PARAM_INT,
-                'description' => 'level id',
+                'description' => 'gamesession id',
+            ],
+            'timecreated' => [
+                'type' => PARAM_INT,
+                'description' => 'timestamp of the creation of the gamesession'
+            ],
+            'timemodified' => [
+                'type' => PARAM_INT,
+                'description' => 'timestamp of the last modification of the gamesession'
             ],
             'game' => [
                 'type' => PARAM_INT,
                 'description' => 'millionaire instance id',
             ],
-            'state' => [
-                'type' => PARAM_TEXT,
-                'description' => 'private, active, deleted',
-            ],
-            'name' => [
-                'type' => PARAM_TEXT,
-                'description' => 'name of the level',
-            ],
-            'position' => [
+            'mdl_user' => [
                 'type' => PARAM_INT,
-                'description' => 'order of the levels within a game session is defined by their indices.'
+                'description' => 'id of the moodle user who owns this gamesession',
+            ],
+            'continue_on_failure' => [
+                'type' => PARAM_BOOL,
+                'description' => 'whether or not the gamesession should continue when the user gives an incorrect answer',
             ],
             'score' => [
                 'type' => PARAM_INT,
-                'description' => 'the score a user will reach when answering the question of this level correctly.'
+                'description' => 'the current score of the user in this gamesession'
             ],
-            'safe_spot' => [
-                'type' => PARAM_BOOL,
-                'description' => 'when answering a question wrong, the user will fall back to the most recent safe spot.',
+            'answers_total' => [
+                'type' => PARAM_INT,
+                'description' => 'the total number of answers the user has already given in this gamesession'
+            ],
+            'answers_correct' => [
+                'type' => PARAM_INT,
+                'description' => 'the number of correct answers the user has already given in this gamesession'
+            ],
+            'state' => [
+                'type' => PARAM_TEXT,
+                'description' => 'progress, finished or dumped',
             ],
         ];
     }
@@ -83,14 +100,6 @@ class level extends exporter {
     }
 
     protected function get_other_values(\renderer_base $output) {
-        return [
-            'id' => $this->level->id,
-            'game' => $this->level->game,
-            'state' => $this->level->state,
-            'name' => $this->level->name,
-            'position' => $this->level->position,
-            'score' => $this->level->score,
-            'safe_spot' => $this->level->safe_spot,
-        ];
+        return $this->gamesession->toArray();
     }
 }

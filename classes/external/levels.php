@@ -19,7 +19,8 @@ namespace mod_millionaire\external;
 use external_function_parameters;
 use external_multiple_structure;
 use external_value;
-use mod_millionaire\external\exporter\level;
+use mod_millionaire\external\exporter\level_dto;
+use mod_millionaire\model\level;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -39,7 +40,7 @@ class levels extends \external_api {
 
     public static function get_levels_returns() {
         return new external_multiple_structure(
-            level::get_read_structure()
+            level_dto::get_read_structure()
         );
     }
 
@@ -66,13 +67,16 @@ class levels extends \external_api {
         global $PAGE, $DB;
         $renderer = $PAGE->get_renderer('core');
         $ctx = $coursemodule->context;
+        $game = $DB->get_record('millionaire', ['id' => $coursemodule->instance]);
 
         $result = [];
         $sql_params = ['game' => $coursemodule->instance];
         if ($only_active) $sql_params['state'] = 'active';
         $levels = $DB->get_records('millionaire_levels', $sql_params);
-        foreach ($levels as $level) {
-            $exporter = new level($level, $ctx);
+        foreach ($levels as $level_data) {
+            $level = new level();
+            $level->apply($level_data);
+            $exporter = new level_dto($level, $game, $ctx);
             $result[] = $exporter->export($renderer);
         }
         return $result;

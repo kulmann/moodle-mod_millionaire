@@ -19,7 +19,8 @@ namespace mod_millionaire\external;
 use external_function_parameters;
 use external_multiple_structure;
 use external_value;
-use mod_millionaire\external\exporter\gamesession;
+use mod_millionaire\external\exporter\gamesession_dto;
+use mod_millionaire\model\gamesession;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -31,15 +32,15 @@ defined('MOODLE_INTERNAL') || die();
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class gamesessions extends \external_api {
-    public static function get_gamesessions_parameters() {
+    public static function get_current_gamesession_parameters() {
         return new external_function_parameters([
             'coursemoduleid' => new external_value(PARAM_INT, 'course module id'),
         ]);
     }
 
-    public static function get_gamesessions_returns() {
+    public static function get_current_gamesession_returns() {
         return new external_multiple_structure(
-            gamesession::get_read_structure()
+            gamesession_dto::get_read_structure()
         );
     }
 
@@ -73,7 +74,7 @@ class gamesessions extends \external_api {
             'state' => 'progress'
         ]);
         // doesn't exist. create one
-        $gamesession = new \mod_millionaire\model\gamesession();
+        $gamesession = new gamesession();
         if ($record === false) {
             $gamesession->set_game($coursemodule->instance);
             $gamesession->set_mdl_user($USER->id);
@@ -81,7 +82,7 @@ class gamesessions extends \external_api {
         } else {
             $gamesession->apply($record);
         }
-        $exporter = new gamesession($gamesession, $ctx);
+        $exporter = new gamesession_dto($gamesession, $ctx);
         return [$exporter->export($renderer)];
     }
 }

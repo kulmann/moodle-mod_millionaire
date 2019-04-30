@@ -17,33 +17,41 @@
 namespace mod_millionaire\external\exporter;
 
 use core\external\exporter;
+use mod_millionaire\model\game;
+use mod_millionaire\model\level;
 
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * Class gamesession
+ * Class level
  *
  * @package    mod_millionaire\external\exporter
  * @copyright  2019 Benedikt Kulmann <b@kulmann.biz>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class gamesession extends exporter {
+class level_dto extends exporter {
 
     /**
-     * @var \mod_millionaire\model\gamesession
+     * @var level
      */
-    protected $gamesession;
+    protected $level;
+    /**
+     * @var game
+     */
+    protected $game;
 
     /**
-     * gamesession constructor.
+     * level constructor.
      *
-     * @param \mod_millionaire\model\gamesession $gamesession
+     * @param level $level
+     * @param game $game
      * @param \context $context
      *
      * @throws \coding_exception
      */
-    public function __construct(\mod_millionaire\model\gamesession $gamesession, \context $context) {
-        $this->gamesession = $gamesession;
+    public function __construct(level $level, game $game, \context $context) {
+        $this->level = $level;
+        $this->game = $game;
         parent::__construct([], ['context' => $context]);
     }
 
@@ -51,44 +59,36 @@ class gamesession extends exporter {
         return [
             'id' => [
                 'type' => PARAM_INT,
-                'description' => 'gamesession id',
-            ],
-            'timecreated' => [
-                'type' => PARAM_INT,
-                'description' => 'timestamp of the creation of the gamesession'
-            ],
-            'timemodified' => [
-                'type' => PARAM_INT,
-                'description' => 'timestamp of the last modification of the gamesession'
+                'description' => 'level id',
             ],
             'game' => [
                 'type' => PARAM_INT,
                 'description' => 'millionaire instance id',
             ],
-            'mdl_user' => [
-                'type' => PARAM_INT,
-                'description' => 'id of the moodle user who owns this gamesession',
+            'state' => [
+                'type' => PARAM_TEXT,
+                'description' => 'private, active, deleted',
             ],
-            'continue_on_failure' => [
-                'type' => PARAM_BOOL,
-                'description' => 'whether or not the gamesession should continue when the user gives an incorrect answer',
+            'name' => [
+                'type' => PARAM_TEXT,
+                'description' => 'name of the level',
+            ],
+            'position' => [
+                'type' => PARAM_INT,
+                'description' => 'order of the levels within a game session is defined by their indices.'
             ],
             'score' => [
                 'type' => PARAM_INT,
-                'description' => 'the current score of the user in this gamesession'
+                'description' => 'the score a user will reach when answering the question of this level correctly.'
             ],
-            'answers_total' => [
-                'type' => PARAM_INT,
-                'description' => 'the total number of answers the user has already given in this gamesession'
+            'safe_spot' => [
+                'type' => PARAM_BOOL,
+                'description' => 'when answering a question wrong, the user will fall back to the most recent safe spot.',
             ],
-            'answers_correct' => [
-                'type' => PARAM_INT,
-                'description' => 'the number of correct answers the user has already given in this gamesession'
-            ],
-            'state' => [
+            'currency' => [
                 'type' => PARAM_TEXT,
-                'description' => 'progress, finished or dumped',
-            ],
+                'description' => 'the currency of the level, inherited from the game config',
+            ]
         ];
     }
 
@@ -99,6 +99,15 @@ class gamesession extends exporter {
     }
 
     protected function get_other_values(\renderer_base $output) {
-        return $this->gamesession->toArray();
+        return [
+            'id' => $this->level->get_id(),
+            'game' => $this->level->get_game(),
+            'state' => $this->level->get_state(),
+            'name' => $this->level->get_name() ?: $this->level->get_score(),
+            'position' => $this->level->get_position(),
+            'score' => $this->level->get_score(),
+            'safe_spot' => $this->level->is_safe_spot(),
+            'currency' => $this->game->get_currency_for_levels()
+        ];
     }
 }
