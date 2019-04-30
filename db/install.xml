@@ -35,7 +35,7 @@
             <FIELDS>
                 <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true"/>
                 <FIELD NAME="game" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false"/>
-                <FIELD NAME="state" TYPE="int" LENGTH="2" NOTNULL="false" SEQUENCE="false" DEFAULT="0" COMMENT="The state of the level. (0) for private, (1) for active, (2) for deleted."/>
+                <FIELD NAME="state" TYPE="char" LENGTH="50" NOTNULL="false" SEQUENCE="false" DEFAULT="private" COMMENT="The state of the level out of [private, active, deleted]."/>
                 <FIELD NAME="name" TYPE="char" LENGTH="50" NOTNULL="false" SEQUENCE="false" DEFAULT=""/>
                 <FIELD NAME="position" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" DEFAULT="0"/>
                 <FIELD NAME="score" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" DEFAULT="0"/>
@@ -67,8 +67,8 @@
                 <FIELD NAME="score" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false"/>
                 <FIELD NAME="answers_total" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false"/>
                 <FIELD NAME="answers_correct" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false"/>
-                <FIELD NAME="finished" TYPE="int" LENGTH="2" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" DEFAULT="0"
-                       COMMENT="Whether (1) or not (0) the user has finished the game session. If (2) the game session has been dumped and should be ignored."/>
+                <FIELD NAME="state" TYPE="char" LENGTH="50" NOTNULL="true" SEQUENCE="false" DEFAULT="progress"
+                       COMMENT="The state of the gamesession, out of [progress, finished, dumped]."/>
             </FIELDS>
             <KEYS>
                 <KEY NAME="primary" TYPE="primary" FIELDS="id"/>

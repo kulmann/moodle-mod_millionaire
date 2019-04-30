@@ -19,35 +19,34 @@ namespace mod_millionaire\external;
 use external_function_parameters;
 use external_multiple_structure;
 use external_value;
-use mod_millionaire\external\exporter\level;
+use mod_millionaire\external\exporter\gamesession;
 
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * Class levels
+ * Class gamesessions
  *
  * @package    mod_millionaire\external
  * @copyright  2019 Benedikt Kulmann <b@kulmann.biz>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class levels extends \external_api {
-    public static function get_levels_parameters() {
+class gamesessions extends \external_api {
+    public static function get_gamesessions_parameters() {
         return new external_function_parameters([
             'coursemoduleid' => new external_value(PARAM_INT, 'course module id'),
         ]);
     }
 
-    public static function get_levels_returns() {
+    public static function get_gamesessions_returns() {
         return new external_multiple_structure(
-            level::get_read_structure()
+            gamesession::get_read_structure()
         );
     }
 
     /**
-     * Get all levels.
+     * Get current gamesession.
      *
      * @param $coursemoduleid
-     * @param bool $only_active When true (default), only active levels will be fetched.
      *
      * @return array
      * @throws \coding_exception
@@ -56,25 +55,33 @@ class levels extends \external_api {
      * @throws \moodle_exception
      * @throws \restricted_context_exception
      */
-    public static function get_levels($coursemoduleid, $only_active = true) {
+    public static function get_current_gamesession($coursemoduleid) {
         $params = ['coursemoduleid' => $coursemoduleid];
-        $params = self::validate_parameters(self::get_levels_parameters(), $params);
+        $params = self::validate_parameters(self::get_gamesessions_parameters(), $params);
 
         list($course, $coursemodule) = get_course_and_cm_from_cmid($params['coursemoduleid'], 'millionaire');
         self::validate_context($coursemodule->context);
 
-        global $PAGE, $DB;
+        global $PAGE, $DB, $USER;
         $renderer = $PAGE->get_renderer('core');
         $ctx = $coursemodule->context;
 
-        $result = [];
-        $sql_params = ['game' => $coursemodule->instance];
-        if ($only_active) $sql_params['state'] = 'active';
-        $levels = $DB->get_records('millionaire_levels', $sql_params);
-        foreach ($levels as $level) {
-            $exporter = new level($level, $ctx);
-            $result[] = $exporter->export($renderer);
+        // try to find existing in-progress gamesession
+        $record = $DB->get_record('millionaire_gamesessions', [
+            'game' => $coursemodule->instance,
+            'mdl_user' => $USER->id,
+            'state' => 'progress'
+        ]);
+        // doesn't exist. create one
+        $gamesession = new \mod_millionaire\model\gamesession();
+        if ($record === false) {
+            $gamesession->set_game($coursemodule->instance);
+            $gamesession->set_mdl_user($USER->id);
+            // TODO: $gamesession->set_continue_on_failure() from game instance. available in $coursemodule?
+        } else {
+            $gamesession->apply($record);
         }
-        return $result;
+        $exporter = new gamesession($gamesession, $ctx);
+        return [$exporter->export($renderer)];
     }
 }

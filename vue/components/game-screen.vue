@@ -23,11 +23,6 @@
         },
         created () {
             this.$store.dispatch('fetchLevels');
-            this.checkRoute(this.$route);
-        },
-        beforeRouteUpdate(to, from, next) {
-            this.checkRoute(to);
-            next();
         },
     }
 </script>
