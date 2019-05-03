@@ -20,7 +20,9 @@ use external_function_parameters;
 use external_multiple_structure;
 use external_value;
 use mod_millionaire\external\exporter\level_dto;
+use mod_millionaire\model\game;
 use mod_millionaire\model\level;
+use external_api;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -31,10 +33,11 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright  2019 Benedikt Kulmann <b@kulmann.biz>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class levels extends \external_api {
+class levels extends external_api {
     public static function get_levels_parameters() {
         return new external_function_parameters([
             'coursemoduleid' => new external_value(PARAM_INT, 'course module id'),
+            'only_active' => new external_value(PARAM_BOOL, 'whether all or just active levels should be fetched', false)
         ]);
     }
 
@@ -58,7 +61,7 @@ class levels extends \external_api {
      * @throws \restricted_context_exception
      */
     public static function get_levels($coursemoduleid, $only_active = true) {
-        $params = ['coursemoduleid' => $coursemoduleid];
+        $params = ['coursemoduleid' => $coursemoduleid, 'only_active' => $only_active];
         $params = self::validate_parameters(self::get_levels_parameters(), $params);
 
         list($course, $coursemodule) = get_course_and_cm_from_cmid($params['coursemoduleid'], 'millionaire');
@@ -67,7 +70,9 @@ class levels extends \external_api {
         global $PAGE, $DB;
         $renderer = $PAGE->get_renderer('core');
         $ctx = $coursemodule->context;
-        $game = $DB->get_record('millionaire', ['id' => $coursemodule->instance]);
+        $game_data = $DB->get_record('millionaire', ['id' => $coursemodule->instance]);
+        $game = new game();
+        $game->apply($game_data);
 
         $result = [];
         $sql_params = ['game' => $coursemodule->instance];

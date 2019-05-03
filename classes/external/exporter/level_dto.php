@@ -16,9 +16,11 @@
 
 namespace mod_millionaire\external\exporter;
 
+use context;
 use core\external\exporter;
 use mod_millionaire\model\game;
 use mod_millionaire\model\level;
+use renderer_base;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -45,11 +47,11 @@ class level_dto extends exporter {
      *
      * @param level $level
      * @param game $game
-     * @param \context $context
+     * @param context $context
      *
      * @throws \coding_exception
      */
-    public function __construct(level $level, game $game, \context $context) {
+    public function __construct(level $level, game $game, context $context) {
         $this->level = $level;
         $this->game = $game;
         parent::__construct([], ['context' => $context]);
@@ -98,7 +100,7 @@ class level_dto extends exporter {
         ];
     }
 
-    protected function get_other_values(\renderer_base $output) {
+    protected function get_other_values(renderer_base $output) {
         return [
             'id' => $this->level->get_id(),
             'game' => $this->level->get_game(),

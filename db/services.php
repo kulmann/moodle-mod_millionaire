@@ -22,12 +22,19 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$functions = array(
-    'mod_millionaire_get_levels' => array(
+$functions = [
+    'mod_millionaire_get_levels' => [
         'classname' => 'mod_millionaire\external\levels',
         'methodname' => 'get_levels',
         'description' => 'Get levels for the game overview.',
         'type' => 'read',
         'ajax' => true,
-    ),
-);
+    ],
+    'mod_millionaire_get_current_gamesession' => [
+        'classname' => 'mod_millionaire\external\gamesessions',
+        'methodname' => 'get_current_gamesession',
+        'description' => 'Get the current gamesession for the logged in user, or create a new gamesession.',
+        'type' => 'read',
+        'ajax' => true,
+    ]
+];

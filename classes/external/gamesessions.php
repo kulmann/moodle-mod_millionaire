@@ -16,6 +16,7 @@
 
 namespace mod_millionaire\external;
 
+use external_api;
 use external_function_parameters;
 use external_multiple_structure;
 use external_value;
@@ -31,7 +32,7 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright  2019 Benedikt Kulmann <b@kulmann.biz>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class gamesessions extends \external_api {
+class gamesessions extends external_api {
     public static function get_current_gamesession_parameters() {
         return new external_function_parameters([
             'coursemoduleid' => new external_value(PARAM_INT, 'course module id'),
