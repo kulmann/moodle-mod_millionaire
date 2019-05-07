@@ -25,56 +25,56 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright  2019 Benedikt Kulmann <b@kulmann.biz>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class game {
+class game extends abstract_model {
 
     /**
      * @var int Id of this game.
      */
-    private $id;
+    protected $id;
     /**
      * @var int Timestamp of creation of this game.
      */
-    private $timecreated;
+    protected $timecreated;
     /**
      * @var int Timestamp of last update of this game.
      */
-    private $timemodified;
+    protected $timemodified;
     /**
      * @var int Id of course.
      */
-    private $course;
+    protected $course;
     /**
      * @var string Name of this game activity.
      */
-    private $name;
+    protected $name;
     /**
      * @var string Currency for levels.
      */
-    private $currency_for_levels;
+    protected $currency_for_levels;
     /**
      * @var bool Whether or not the user is allowed to continue after answering a question wrong.
      */
-    private $continue_on_failure;
+    protected $continue_on_failure;
     /**
      * @var bool Whether or not questions can be presented more than once per user.
      */
-    private $question_repeatable;
+    protected $question_repeatable;
     /**
      * @var bool Whether or not answers should be shuffled when displaying a question.
      */
-    private $question_shuffle_answers;
+    protected $question_shuffle_answers;
     /**
      * @var int Number of highscore entries shown in highscore list.
      */
-    private $highscore_count;
+    protected $highscore_count;
     /**
      * @var string The way we calculate highscores.
      */
-    private $highscore_mode;
+    protected $highscore_mode;
     /**
      * @var bool Whether or not teachers will be shown in the highscore list.
      */
-    private $highscore_teachers;
+    protected $highscore_teachers;
 
     /**
      * game constructor.
@@ -117,15 +117,6 @@ class game {
         $this->highscore_count = isset($data['highscore_count']) ? $data['highscore_count'] : 5;
         $this->highscore_mode = isset($data['highscore_mode']) ? $data['highscore_mode'] : MOD_MILLIONAIRE_HIGHSCORE_MODE_BEST;
         $this->highscore_teachers = isset($data['highscore_teachers']) ? ($data['highscore_teachers'] == 1) : false;
-    }
-
-    /**
-     * Transforms this object into an array.
-     *
-     * @return array
-     */
-    public function to_array() {
-        return get_object_vars($this);
     }
 
     /**

@@ -25,48 +25,48 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright  2019 Benedikt Kulmann <b@kulmann.biz>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class gamesession {
+class gamesession extends abstract_model {
 
     /**
      * @var int Id of this gamesession
      */
-    private $id;
+    protected $id;
     /**
      * @var int Timestamp of the creation of this gamesession
      */
-    private $timecreated;
+    protected $timecreated;
     /**
      * @var int Timestamp of the last db update of this gamesession
      */
-    private $timemodified;
+    protected $timemodified;
     /**
      * @var int The id of the millionaire instance this gamesession belongs to
      */
-    private $game;
+    protected $game;
     /**
      * @var int The id of the moodle user this gamesession belongs to
      */
-    private $mdl_user;
+    protected $mdl_user;
     /**
      * @var bool Whether or not this gamesession is configured to still the the user play next levels when he answers incorrect
      */
-    private $continue_on_failure;
+    protected $continue_on_failure;
     /**
      * @var int Score the user reached so far
      */
-    private $score;
+    protected $score;
     /**
      * @var int Total number of answers in this gamesession
      */
-    private $answers_total;
+    protected $answers_total;
     /**
      * @var int Number of correct answers in this gamesession
      */
-    private $answers_correct;
+    protected $answers_correct;
     /**
      * @var string The state of the gamesession, out of [progress, finished, dumped].
      */
-    private $state;
+    protected $state;
 
     /**
      * gamesession constructor.
@@ -105,15 +105,6 @@ class gamesession {
         $this->answers_total = isset($data['answers_total']) ? $data['answers_total'] : 0;
         $this->answers_correct = isset($data['answers_correct']) ? $data['answers_correct'] : 0;
         $this->state = isset($data['finished']) ? $data['finished'] : 'progress';
-    }
-
-    /**
-     * Transforms this object into an array.
-     *
-     * @return array
-     */
-    public function to_array() {
-        return get_object_vars($this);
     }
 
     /**

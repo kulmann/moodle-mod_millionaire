@@ -21,6 +21,7 @@ use external_function_parameters;
 use external_multiple_structure;
 use external_value;
 use mod_millionaire\external\exporter\gamesession_dto;
+use mod_millionaire\model\game;
 use mod_millionaire\model\gamesession;
 
 defined('MOODLE_INTERNAL') || die();
@@ -59,7 +60,7 @@ class gamesessions extends external_api {
      */
     public static function get_current_gamesession($coursemoduleid) {
         $params = ['coursemoduleid' => $coursemoduleid];
-        $params = self::validate_parameters(self::get_gamesessions_parameters(), $params);
+        $params = self::validate_parameters(self::get_current_gamesession_parameters(), $params);
 
         list($course, $coursemodule) = get_course_and_cm_from_cmid($params['coursemoduleid'], 'millionaire');
         self::validate_context($coursemodule->context);
@@ -67,6 +68,9 @@ class gamesessions extends external_api {
         global $PAGE, $DB, $USER;
         $renderer = $PAGE->get_renderer('core');
         $ctx = $coursemodule->context;
+        $game_data = $DB->get_record('millionaire', ['id' => $coursemodule->instance]);
+        $game = new game();
+        $game->apply($game_data);
 
         // try to find existing in-progress gamesession
         $record = $DB->get_record('millionaire_gamesessions', [
@@ -74,12 +78,13 @@ class gamesessions extends external_api {
             'mdl_user' => $USER->id,
             'state' => 'progress'
         ]);
-        // doesn't exist. create one
+        // set up gamesession (create a new one if there is no record)
         $gamesession = new gamesession();
         if ($record === false) {
             $gamesession->set_game($coursemodule->instance);
             $gamesession->set_mdl_user($USER->id);
-            // TODO: $gamesession->set_continue_on_failure() from game instance. available in $coursemodule?
+            $gamesession->set_continue_on_failure($game->is_continue_on_failure());
+            $DB->insert_record('millionaire_gamesessions', $gamesession->to_data_object());
         } else {
             $gamesession->apply($record);
         }

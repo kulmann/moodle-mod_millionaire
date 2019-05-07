@@ -25,36 +25,36 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright  2019 Benedikt Kulmann <b@kulmann.biz>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class level {
+class level extends abstract_model {
 
     /**
      * @var int Id of this level.
      */
-    private $id;
+    protected $id;
     /**
      * @var int The id of the millionaire instance this level belongs to.
      */
-    private $game;
+    protected $game;
     /**
      * @var string The state of the level, out of [private, active, deleted].
      */
-    private $state;
+    protected $state;
     /**
      * @var string The name of the level.
      */
-    private $name;
+    protected $name;
     /**
      * @var int Position for ordering levels.
      */
-    private $position;
+    protected $position;
     /**
      * @var int The score the user reaches when answering the question of this level correctly.
      */
-    private $score;
+    protected $score;
     /**
      * @var bool Whether or not this level is a safe spot.
      */
-    private $safe_spot;
+    protected $safe_spot;
 
     /**
      * level constructor.
@@ -87,15 +87,6 @@ class level {
         $this->position = isset($data['position']) ? $data['position'] : 0;
         $this->score = isset($data['score']) ? $data['score'] : 0;
         $this->safe_spot = isset($data['safe_spot']) ? ($data['safe_spot'] == 1) : false;
-    }
-
-    /**
-     * Transforms this object into an array.
-     *
-     * @return array
-     */
-    public function to_array() {
-        return get_object_vars($this);
     }
 
     /**

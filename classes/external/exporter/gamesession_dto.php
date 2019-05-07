@@ -102,6 +102,6 @@ class gamesession_dto extends exporter {
     }
 
     protected function get_other_values(renderer_base $output) {
-        return $this->gamesession->toArray();
+        return $this->gamesession->to_array();
     }
 }

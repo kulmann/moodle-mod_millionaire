@@ -16,7 +16,7 @@
 </template>
 
 <script>
-    import {mapState} from 'vuex';
+    import {mapState, mapActions} from 'vuex';
     import levels from './levels';
 
     export default {
@@ -24,6 +24,16 @@
         computed: mapState(['strings']),
         components: {
             levels
+        },
+        methods: {
+            ...mapActions([
+                'fetchGameSession',
+                'fetchLevels'
+            ])
+        },
+        created () {
+            this.fetchGameSession();
+            this.fetchLevels();
         }
     }
 </script>

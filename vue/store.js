@@ -13,6 +13,7 @@ export const store = new Vuex.Store({
         contextID: 0,
         strings: {},
         levels: null,
+        gameSession: null,
     },
     //strict: process.env.NODE_ENV !== 'production',
     mutations: {
@@ -22,12 +23,15 @@ export const store = new Vuex.Store({
         setContextID(state, id) {
             state.contextID = id;
         },
-        setLevels(state, ajaxdata) {
-            state.levels = ajaxdata;
-        },
         setStrings(state, strings) {
             state.strings = strings;
         },
+        setLevels(state, ajaxdata) {
+            state.levels = ajaxdata;
+        },
+        setGameSession(state, gameSession) {
+            state.gameSession = gameSession;
+        }
     },
     actions: {
         async loadComponentStrings(context) {
@@ -56,6 +60,10 @@ export const store = new Vuex.Store({
         async fetchLevels(context) {
             const levels = await ajax('mod_millionaire_get_levels');
             context.commit('setLevels', levels);
+        },
+        async fetchGameSession(context) {
+            const gameSession = await ajax('mod_millionaire_get_current_gamesession');
+            context.commit('setGameSession', gameSession);
         },
     }
 });

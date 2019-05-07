@@ -101,15 +101,11 @@ class level_dto extends exporter {
     }
 
     protected function get_other_values(renderer_base $output) {
-        return [
-            'id' => $this->level->get_id(),
-            'game' => $this->level->get_game(),
-            'state' => $this->level->get_state(),
-            'name' => $this->level->get_name(),
-            'position' => $this->level->get_position(),
-            'score' => $this->level->get_score(),
-            'safe_spot' => $this->level->is_safe_spot(),
-            'currency' => $this->game->get_currency_for_levels()
-        ];
+        return \array_merge(
+            $this->level->to_array(),
+            [
+                'currency' => $this->game->get_currency_for_levels()
+            ]
+        );
     }
 }
