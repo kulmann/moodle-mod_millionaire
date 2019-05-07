@@ -92,6 +92,10 @@ class gamesession_dto extends exporter {
                 'type' => PARAM_TEXT,
                 'description' => 'progress, finished or dumped',
             ],
+            'current_level' => [
+                'type' => PARAM_INT,
+                'description' => 'the index of the current level'
+            ]
         ];
     }
 
@@ -102,6 +106,11 @@ class gamesession_dto extends exporter {
     }
 
     protected function get_other_values(renderer_base $output) {
-        return $this->gamesession->to_array();
+        return \array_merge(
+            $this->gamesession->to_array(),
+            [
+                'current_level' => $this->gamesession->get_answers_total()
+            ]
+        );
     }
 }

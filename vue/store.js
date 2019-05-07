@@ -26,8 +26,8 @@ export const store = new Vuex.Store({
         setStrings(state, strings) {
             state.strings = strings;
         },
-        setLevels(state, ajaxdata) {
-            state.levels = ajaxdata;
+        setLevels(state, levels) {
+            state.levels = levels;
         },
         setGameSession(state, gameSession) {
             state.gameSession = gameSession;

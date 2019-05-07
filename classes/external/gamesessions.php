@@ -18,7 +18,6 @@ namespace mod_millionaire\external;
 
 use external_api;
 use external_function_parameters;
-use external_multiple_structure;
 use external_value;
 use mod_millionaire\external\exporter\gamesession_dto;
 use mod_millionaire\model\game;
@@ -41,9 +40,7 @@ class gamesessions extends external_api {
     }
 
     public static function get_current_gamesession_returns() {
-        return new external_multiple_structure(
-            gamesession_dto::get_read_structure()
-        );
+        return gamesession_dto::get_read_structure();
     }
 
     /**
@@ -51,7 +48,7 @@ class gamesessions extends external_api {
      *
      * @param $coursemoduleid
      *
-     * @return array
+     * @return \stdClass
      * @throws \coding_exception
      * @throws \dml_exception
      * @throws \invalid_parameter_exception
@@ -89,6 +86,6 @@ class gamesessions extends external_api {
             $gamesession->apply($record);
         }
         $exporter = new gamesession_dto($gamesession, $ctx);
-        return [$exporter->export($renderer)];
+        return $exporter->export($renderer);
     }
 }
