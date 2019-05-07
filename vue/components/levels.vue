@@ -2,13 +2,14 @@
     #millionaire-levels
         table.uk-table.uk-table-small.uk-table-striped
             tbody
-                tr.uk-text-nowrap(v-for="level in sortedLevels" :key="level.position")
-                    td.uk-padding-small.uk-table-shrink.uk-text-center
+                tr.level.uk-text-nowrap(v-for="level in sortedLevels" :key="level.position", @click="setCurrentLevel(level)"
+                    :class="{'current-level': isCurrent(level)}")
+                    td.uk-table-shrink.uk-text-center
                         span {{ level.position + 1 }}
-                    td.uk-padding-small.uk-table-shrink.uk-preserve-width.uk-text-center
+                    td.uk-table-shrink.uk-preserve-width.uk-text-center
                         v-icon(v-if="level.safe_spot", :name="getStarIconName(level)", scale="0.7")
                         v-icon(v-else-if="isDoneOrCurrent(level)", name="circle", scale="0.4")
-                    td.uk-padding-small.uk-table-shrink.uk-text-right
+                    td.uk-table-shrink.uk-text-right
                         span(v-if="level.name") {{ level.name }}
                         span(v-else) {{ level.score | formatCurrency(level.currency) }}
 </template>
@@ -43,10 +44,31 @@
             },
             getStarIconName(level) {
                 return this.isDone(level) ? 'star' : 'regular/star';
+            },
+            setCurrentLevel(level) {
+                if (this.isCurrent(level)) {
+                    this.$emit('setCurrentLevel', level);
+                }
             }
         }
     }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+    .level {
+        & > td {
+            padding-top: 0;
+            padding-bottom: 0;
+        }
+    }
+
+    .current-level {
+        cursor: pointer;
+        font-weight: bold;
+
+        & > td {
+            padding-top: 3px !important;
+            padding-bottom: 3px !important;
+        }
+    }
 </style>
