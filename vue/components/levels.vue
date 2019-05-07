@@ -1,19 +1,26 @@
 <template lang="pug">
     #millionaire-levels
-        ul
-            li(v-for="level in levels")
-                span {{ level.position + 1 }}
-                span &bull;
-                span {{ level.currency }}
-                span {{ level.name }}
+        v-list
+            v-subheader Levels
+            v-list-tile(v-for="level in sortedLevels" :key="level.position")
+                v-list-tile-content {{ level.position + 1 }}
+                v-list-tile-content &bull;
+                v-list-tile-content(v-if="level.name") {{ level.name }}
+                v-list-tile-content(v-else) {{ level.score | formatCurrency(level.currency) }}
 </template>
 
 <script>
     import {mapState, mapActions} from 'vuex';
+    import _ from 'lodash';
 
     export default {
         name: "levels",
-        computed: mapState(['strings', 'levels']),
+        computed: {
+            ...mapState(['strings', 'levels']),
+            sortedLevels () {
+                return _.reverse(this.levels);
+            }
+        },
         methods: {
             ...mapActions([
                 'fetchLevels'

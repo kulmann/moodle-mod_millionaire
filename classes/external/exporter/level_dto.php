@@ -105,7 +105,7 @@ class level_dto extends exporter {
             'id' => $this->level->get_id(),
             'game' => $this->level->get_game(),
             'state' => $this->level->get_state(),
-            'name' => $this->level->get_name() ?: $this->level->get_score(),
+            'name' => $this->level->get_name(),
             'position' => $this->level->get_position(),
             'score' => $this->level->get_score(),
             'safe_spot' => $this->level->is_safe_spot(),
