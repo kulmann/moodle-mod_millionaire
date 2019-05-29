@@ -132,6 +132,7 @@ $string['course_reset_include_topics'] = 'Eingestellte Themen etc. zurücksetzen
 /* game gui */
 $string['game_screen_title'] = 'Spiele »Wer wird Millionär«';
 $string['game_qtype_not_supported'] = 'Der Fragentyp »{$a}« wird nicht unterstützt.';
+$string['game_loading_question'] = 'Frage wird geladen';
 
 
 
