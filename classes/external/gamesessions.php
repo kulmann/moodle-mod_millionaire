@@ -23,10 +23,12 @@ use mod_millionaire\external\exporter\gamesession_dto;
 use mod_millionaire\external\exporter\question_dto;
 use mod_millionaire\model\game;
 use mod_millionaire\model\gamesession;
-use mod_millionaire\model\level;
 use mod_millionaire\model\question;
 
 defined('MOODLE_INTERNAL') || die();
+
+global $CFG;
+require_once($CFG->dirroot . '/question/engine/bank.php');
 
 /**
  * Class gamesessions
@@ -76,7 +78,7 @@ class gamesessions extends external_api {
         list($course, $coursemodule) = get_course_and_cm_from_cmid($coursemoduleid, 'millionaire');
         self::validate_context($coursemodule->context);
 
-        global $PAGE, $DB, $USER;
+        global $PAGE, $DB;
         $renderer = $PAGE->get_renderer('core');
         $ctx = $coursemodule->context;
         $game_data = $DB->get_record('millionaire', ['id' => $coursemodule->instance]);

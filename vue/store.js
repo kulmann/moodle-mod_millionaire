@@ -3,6 +3,7 @@ import Vuex from 'vuex';
 import moodleAjax from 'core/ajax';
 import moodleStorage from 'core/localstorage';
 import Notification from 'core/notification';
+import _ from 'lodash';
 import $ from 'jquery';
 
 Vue.use(Vuex);
@@ -16,6 +17,8 @@ export const store = new Vuex.Store({
         levels: null,
         gameSession: null,
         question: null,
+        mdl_question: null,
+        mdl_answers: []
     },
     //strict: process.env.NODE_ENV !== 'production',
     mutations: {
@@ -39,7 +42,13 @@ export const store = new Vuex.Store({
         },
         setQuestion(state, question) {
             state.question = question;
-        }
+        },
+        setMdlQuestion(state, mdl_question) {
+            state.mdl_question = mdl_question;
+        },
+        setMdlAnswers(state, mdl_answers) {
+            state.mdl_answers = mdl_answers;
+        },
     },
     actions: {
         async loadLang(context) {
@@ -83,6 +92,28 @@ export const store = new Vuex.Store({
             };
             const question = await ajax('mod_millionaire_get_current_question', args);
             context.commit('setQuestion', question);
+        },
+        async fetchMdlQuestion(context) {
+            if (this.state.question) {
+                let args = {
+                    mdlquestionid: this.state.question.mdl_question_id
+                };
+                const question = await ajax('mod_millionaire_get_mdl_question', args);
+                context.commit('setMdlQuestion', question);
+            } else {
+                context.commit('setMdlQuestion', null);
+            }
+        },
+        async fetchMdlAnswers(context) {
+            if (this.state.question) {
+                let args = {
+                    mdlquestionid: this.state.question.mdl_question_id
+                };
+                const answers = await ajax('mod_millionaire_get_mdl_answers', args);
+                context.commit('setMdlAnswers', _.shuffle(answers));
+            } else {
+                context.commit('setMdlAnswers', []);
+            }
         }
     }
 });

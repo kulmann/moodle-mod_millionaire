@@ -44,4 +44,18 @@ $functions = [
         'type' => 'read',
         'ajax' => true,
     ],
+    'mod_millionaire_get_mdl_question' => [
+        'classname' => 'mod_millionaire\external\questionbank',
+        'methodname' => 'get_mdl_question',
+        'description'  => 'Retrieves the data of the given moodle question.',
+        'type' => 'read',
+        'ajax' => true,
+    ],
+    'mod_millionaire_get_mdl_answers' => [
+        'classname' => 'mod_millionaire\external\questionbank',
+        'methodname' => 'get_mdl_answers',
+        'description'  => 'Retrieves the moodle answers for a given moodle question.',
+        'type' => 'read',
+        'ajax' => true,
+    ]
 ];

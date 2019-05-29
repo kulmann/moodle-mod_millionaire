@@ -26,10 +26,15 @@
             ...mapActions([
                 'fetchGameSession',
                 'fetchLevels',
-                'fetchQuestion'
+                'fetchQuestion',
+                'fetchMdlQuestion',
+                'fetchMdlAnswers',
             ]),
             setCurrentLevel () {
-                this.fetchQuestion();
+                this.fetchQuestion().then(() => {
+                    this.fetchMdlQuestion();
+                    this.fetchMdlAnswers();
+                });
             }
         },
         created () {

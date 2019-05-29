@@ -96,10 +96,6 @@ class question_dto extends exporter {
                 'type' => PARAM_INT,
                 'description' => 'id of the associated moodle question',
             ],
-            'mdl_question_content' => [
-                'type' => PARAM_TEXT,
-                'description' => 'content of the associated moodle question',
-            ],
             'mdl_question_type' => [
                 'type' => PARAM_TEXT,
                 'description' => 'type of the associated moodle question',
@@ -119,7 +115,6 @@ class question_dto extends exporter {
             $this->question->to_array(),
             [
                 'mdl_question_id' => $mdl_question->id,
-                'mdl_question_content' => $mdl_question->questiontext,
                 'mdl_question_type' => \get_class($mdl_question),
             ]
         );
