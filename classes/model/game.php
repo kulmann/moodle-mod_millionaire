@@ -28,10 +28,6 @@ defined('MOODLE_INTERNAL') || die();
 class game extends abstract_model {
 
     /**
-     * @var int Id of this game.
-     */
-    protected $id;
-    /**
      * @var int Timestamp of creation of this game.
      */
     protected $timecreated;
@@ -80,7 +76,7 @@ class game extends abstract_model {
      * game constructor.
      */
     function __construct() {
-        $this->id = 0;
+        parent::__construct('millionaire', 0);
         $this->timecreated = \time();
         $this->timemodified = \time();
         $this->course = 0;
@@ -101,7 +97,7 @@ class game extends abstract_model {
      *
      * @return void
      */
-    public function apply($data) {
+    public function apply($data): void {
         if (\is_object($data)) {
             $data = get_object_vars($data);
         }
@@ -117,20 +113,6 @@ class game extends abstract_model {
         $this->highscore_count = isset($data['highscore_count']) ? $data['highscore_count'] : 5;
         $this->highscore_mode = isset($data['highscore_mode']) ? $data['highscore_mode'] : MOD_MILLIONAIRE_HIGHSCORE_MODE_BEST;
         $this->highscore_teachers = isset($data['highscore_teachers']) ? ($data['highscore_teachers'] == 1) : false;
-    }
-
-    /**
-     * @return int
-     */
-    public function get_id(): int {
-        return $this->id;
-    }
-
-    /**
-     * @param int $id
-     */
-    public function set_id(int $id): void {
-        $this->id = $id;
     }
 
     /**

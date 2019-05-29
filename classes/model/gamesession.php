@@ -27,10 +27,10 @@ defined('MOODLE_INTERNAL') || die();
  */
 class gamesession extends abstract_model {
 
-    /**
-     * @var int Id of this gamesession
-     */
-    protected $id;
+    const STATE_FINISHED = 'finished';
+    const STATE_DUMPED = 'dumped';
+    const STATE_PROGRESS = 'progress';
+
     /**
      * @var int Timestamp of the creation of this gamesession
      */
@@ -72,7 +72,7 @@ class gamesession extends abstract_model {
      * gamesession constructor.
      */
     function __construct() {
-        $this->id = 0;
+        parent::__construct('millionaire_gamesessions', 0);
         $this->timecreated = \time();
         $this->timemodified = \time();
         $this->game = 0;
@@ -91,7 +91,7 @@ class gamesession extends abstract_model {
      *
      * @return void
      */
-    public function apply($data) {
+    public function apply($data): void {
         if (\is_object($data)) {
             $data = get_object_vars($data);
         }
@@ -100,7 +100,7 @@ class gamesession extends abstract_model {
         $this->timemodified = isset($data['timemodified']) ? $data['timemodified'] : \time();
         $this->game = $data['game'];
         $this->mdl_user = $data['mdl_user'];
-        $this->continue_on_failure =  isset($data['continue_on_failure']) ? ($data['continue_on_failure'] == 1) : false;
+        $this->continue_on_failure = isset($data['continue_on_failure']) ? ($data['continue_on_failure'] == 1) : false;
         $this->score = isset($data['score']) ? $data['score'] : 0;
         $this->answers_total = isset($data['answers_total']) ? $data['answers_total'] : 0;
         $this->answers_correct = isset($data['answers_correct']) ? $data['answers_correct'] : 0;
@@ -108,17 +108,80 @@ class gamesession extends abstract_model {
     }
 
     /**
-     * @return int
+     * If this gamesession is finished, this function returns the highest finished level (doesn't matter if successful or not).
+     * If this gamesession is not finished, this function returns the smallest unfinished level.
+     *
+     * @return level
+     * @throws \dml_exception
      */
-    public function get_id(): int {
-        return $this->id;
+    public function get_current_level(): level {
+        global $DB;
+        $sql = "
+            SELECT l.id, l.position, q.finished
+              FROM {millionaire_levels} AS l
+         LEFT JOIN {millionaire_questions} AS q on l.id=q.level 
+             WHERE l.game = ? AND (q.gamesession IS NULL OR q.gamesession = ?)
+          ORDER BY l.position DESC
+        ";
+        $levels = $DB->get_records_sql($sql, [$this->get_game(), $this->get_id()]);
+        if ($levels === false || empty($levels)) {
+            throw new \dml_exception('A game without levels cannot be played. Please configure levels first.');
+        }
+        $level = new level();
+        $last_unfinished_level_id = null;
+        if ($this->get_state() === self::STATE_PROGRESS) {
+            foreach ($levels as $record) {
+                if ($record->finished === 1) {
+                    break;
+                }
+                $last_unfinished_level_id = $record->id;
+            }
+        } else {
+            foreach ($levels as $record) {
+                $last_unfinished_level_id = $record->id;
+                if ($record->finished === 1) {
+                    break;
+                }
+            }
+        }
+        $level->load_data_by_id($last_unfinished_level_id);
+        return $level;
     }
 
     /**
-     * @param int $id
+     * Looks up in the db, whether the given level is already finished.
+     *
+     * @param int $id_level
+     *
+     * @return bool
+     * @throws \dml_exception
      */
-    public function set_id(int $id): void {
-        $this->id = $id;
+    public function is_level_finished($id_level) {
+        $question = $this->get_question_by_level($id_level);
+        return ($question !== null && $question->is_finished());
+    }
+
+    /**
+     * Tries to find a question for the given $id_level. Returns null if none found.
+     *
+     * @param int $id_level
+     * @return question|null
+     * @throws \dml_exception
+     */
+    public function get_question_by_level($id_level) {
+        global $DB;
+        $question = new question();
+        $record = $DB->get_record_select(
+            $question->get_table_name(),
+            'gamesession = ? AND level = ?',
+            [$this->get_id(), $id_level]
+        );
+        if ($record) {
+            $question->apply($record);
+            return $question;
+        } else {
+            return null;
+        }
     }
 
     /**

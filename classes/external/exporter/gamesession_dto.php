@@ -24,7 +24,7 @@ use renderer_base;
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * Class gamesession
+ * Class gamesession_dto
  *
  * @package    mod_millionaire\external\exporter
  * @copyright  2019 Benedikt Kulmann <b@kulmann.biz>
@@ -38,7 +38,7 @@ class gamesession_dto extends exporter {
     protected $gamesession;
 
     /**
-     * gamesession constructor.
+     * gamesession_dto constructor.
      *
      * @param gamesession $gamesession
      * @param context $context

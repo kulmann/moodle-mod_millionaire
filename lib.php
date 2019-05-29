@@ -51,6 +51,12 @@ define('MOD_MILLIONAIRE_JOKERS', [
     MOD_MILLIONAIRE_JOKER_HINT
 ]);
 
+// implemented question types
+define('MOD_MILLIONAIRE_QTYPE_SINGLE_CHOICE_DB', 'multichoice');
+define('MOD_MILLIONAIRE_VALID_QTYPES_DB', [
+    MOD_MILLIONAIRE_QTYPE_SINGLE_CHOICE_DB,
+]);
+
 /**
  * Returns the information on whether the module supports a feature
  *

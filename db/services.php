@@ -36,5 +36,12 @@ $functions = [
         'description' => 'Get the current gamesession for the logged in user, or create a new gamesession.',
         'type' => 'read',
         'ajax' => true,
-    ]
+    ],
+    'mod_millionaire_get_current_question' => [
+        'classname' => 'mod_millionaire\external\gamesessions',
+        'methodname' => 'get_current_question',
+        'description' => 'Gets or creates the current question from the current gamesession for the logged in user.',
+        'type' => 'read',
+        'ajax' => true,
+    ],
 ];

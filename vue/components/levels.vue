@@ -20,7 +20,6 @@
     import mixins from '../mixins';
 
     export default {
-        name: "levels",
         mixins: [mixins],
         computed: {
             ...mapState([
@@ -47,7 +46,7 @@
             },
             setCurrentLevel(level) {
                 if (this.isCurrent(level)) {
-                    this.$emit('setCurrentLevel', level);
+                    this.$emit('setCurrentLevel');
                 }
             }
         }

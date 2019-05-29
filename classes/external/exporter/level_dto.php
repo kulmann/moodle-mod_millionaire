@@ -25,7 +25,7 @@ use renderer_base;
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * Class level
+ * Class level_dto
  *
  * @package    mod_millionaire\external\exporter
  * @copyright  2019 Benedikt Kulmann <b@kulmann.biz>
@@ -43,7 +43,7 @@ class level_dto extends exporter {
     protected $game;
 
     /**
-     * level constructor.
+     * level_dto constructor.
      *
      * @param level $level
      * @param game $game

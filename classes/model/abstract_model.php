@@ -28,11 +28,86 @@ defined('MOODLE_INTERNAL') || die();
 abstract class abstract_model {
 
     /**
+     * @var string
+     */
+    protected $table_name;
+    /**
+     * @var int
+     */
+    protected $id;
+
+    /**
+     * abstract_model constructor.
+     *
+     * @param $table_name
+     * @param $id
+     */
+    function __construct($table_name, $id) {
+        $this->table_name = $table_name;
+        $this->id = $id ?: 0;
+    }
+
+    /**
+     * Returns the id of this record.
+     *
+     * @return int
+     */
+    public function get_id(): int {
+        return $this->id;
+    }
+
+    /**
+     * Sets the id on this record.
+     *
+     * @param int $id
+     */
+    public function set_id(int $id) {
+        $this->id = $id;
+    }
+
+    /**
+     * Loads the data of this model instance by its id.
+     *
+     * @param int $id
+     *
+     * @return void The loaded data will be set inside this object.
+     * @throws \dml_exception
+     */
+    public function load_data_by_id(int $id): void {
+        global $DB;
+        $record = $DB->get_record(
+            $this->table_name,
+            ['id' => $id]
+        );
+        if ($record) {
+            $this->apply($record);
+        } else {
+            throw new \dml_exception("item not found by id $id in table " . $this->table_name);
+        }
+    }
+
+    /**
+     * Updates or inserts this record.
+     *
+     * @return void
+     * @throws \dml_exception
+     */
+    public function save(): void {
+        global $DB;
+        if ($this->get_id() === null || $this->get_id() === 0) {
+            $insertedid = $DB->insert_record($this->get_table_name(), $this->to_data_object());
+            $this->set_id($insertedid);
+        } else {
+            $DB->update_record($this->get_table_name(), $this->to_data_object());
+        }
+    }
+
+    /**
      * Transforms this object into an array.
      *
      * @return array
      */
-    public function to_array() {
+    public function to_array(): array {
         return get_object_vars($this);
     }
 
@@ -41,12 +116,30 @@ abstract class abstract_model {
      *
      * @return \stdClass
      */
-    public function to_data_object() {
+    public function to_data_object(): \stdClass {
         $result = new \stdClass();
         $array = $this->to_array();
         foreach ($array as $key => $value) {
             $result->$key = $value;
         }
         return $result;
+    }
+
+    /**
+     * Applies the data from $data to this object.
+     *
+     * @param array | \stdClass $data
+     *
+     * @return void
+     */
+    public abstract function apply($data): void;
+
+    /**
+     * Returns the name of the sql table this model object is built on.
+     *
+     * @return string
+     */
+    public function get_table_name(): string {
+        return $this->table_name;
     }
 }

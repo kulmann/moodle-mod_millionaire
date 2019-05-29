@@ -9,14 +9,19 @@ Vue.use(Vuex);
 
 export const store = new Vuex.Store({
     state: {
+        lang: null,
         courseModuleID: 0,
         contextID: 0,
         strings: {},
         levels: null,
         gameSession: null,
+        question: null,
     },
     //strict: process.env.NODE_ENV !== 'production',
     mutations: {
+        setLang(state, lang) {
+            state.lang = lang;
+        },
         setCourseModuleID(state, id) {
             state.courseModuleID = id;
         },
@@ -31,9 +36,16 @@ export const store = new Vuex.Store({
         },
         setGameSession(state, gameSession) {
             state.gameSession = gameSession;
+        },
+        setQuestion(state, question) {
+            state.question = question;
         }
     },
     actions: {
+        async loadLang(context) {
+            const lang = $('html').attr('lang').replace(/-/g, '_');
+            context.commit('setLang', lang);
+        },
         async loadComponentStrings(context) {
             const lang = $('html').attr('lang').replace(/-/g, '_');
             const cacheKey = 'mod_millionaire/strings/' + lang;
@@ -65,6 +77,13 @@ export const store = new Vuex.Store({
             const gameSession = await ajax('mod_millionaire_get_current_gamesession');
             context.commit('setGameSession', gameSession);
         },
+        async fetchQuestion(context) {
+            let args = {
+                gamesessionid: this.state.gameSession.id
+            };
+            const question = await ajax('mod_millionaire_get_current_question', args);
+            context.commit('setQuestion', question);
+        }
     }
 });
 

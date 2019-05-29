@@ -8,7 +8,6 @@
     import { mapState } from 'vuex';
 
     export default {
-        name: "not-found",
         computed: mapState(['strings']),
         created: function() {
         }

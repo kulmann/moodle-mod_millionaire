@@ -28,10 +28,6 @@ defined('MOODLE_INTERNAL') || die();
 class level extends abstract_model {
 
     /**
-     * @var int Id of this level.
-     */
-    protected $id;
-    /**
      * @var int The id of the millionaire instance this level belongs to.
      */
     protected $game;
@@ -60,7 +56,7 @@ class level extends abstract_model {
      * level constructor.
      */
     function __construct() {
-        $this->id = 0;
+        parent::__construct('millionaire_levels', 0);
         $this->game = 0;
         $this->state = 'private';
         $this->name = '';
@@ -76,7 +72,7 @@ class level extends abstract_model {
      *
      * @return void
      */
-    public function apply($data) {
+    public function apply($data): void {
         if (\is_object($data)) {
             $data = get_object_vars($data);
         }
@@ -90,17 +86,41 @@ class level extends abstract_model {
     }
 
     /**
-     * @return int
+     * Returns one random question out of the categories that are assigned to this level.
+     *
+     * @return \question_definition
+     * @throws \dml_exception
+     * @throws \coding_exception
      */
-    public function get_id(): int {
-        return $this->id;
+    public function get_random_question(): \question_definition {
+        $category = $this->get_random_category();
+        return $category->get_random_question();
     }
 
     /**
-     * @param int $id
+     * Returns one random of those categories that are assigned to this level. Throws an exception
+     * if this level has no categories.
+     *
+     * @return category
+     * @throws \dml_exception
      */
-    public function set_id(int $id): void {
-        $this->id = $id;
+    private function get_random_category(): category {
+        global $DB;
+        $sql = "
+            SELECT *
+              FROM {millionaire_categories}
+             WHERE level = ? 
+          ORDER BY RAND()
+             LIMIT 0,1
+        ";
+        $result = $DB->get_record_sql($sql, [$this->get_id()]);
+        if ($result) {
+            $category = new category();
+            $category->apply($result);
+            return $category;
+        } else {
+            throw new \dml_exception('not found');
+        }
     }
 
     /**
@@ -186,6 +206,4 @@ class level extends abstract_model {
     public function set_safe_spot(bool $safe_spot): void {
         $this->safe_spot = $safe_spot;
     }
-
-
 }
