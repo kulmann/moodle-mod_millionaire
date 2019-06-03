@@ -1,17 +1,15 @@
 <template lang="pug">
     #millionaire-question
-        .uk-card.uk-card-default
-            .uk-card-body
-                template(v-if="question")
-                    .uk-alert.uk-alert-primary(uk-alert, v-if="mdl_question === null")
-                        p {{ strings.game_loading_question }}
-                            span._loader
-                                span
-                                span
-                                span
-                    div(v-else, :is="componentByType")
-                .uk-alert.uk-alert-primary(uk-alert, v-else)
-                    p Show info about level selection if not dead. If dead, show stats?!
+            template(v-if="question")
+                .uk-alert.uk-alert-primary(uk-alert, v-if="mdl_question === null")
+                    p {{ strings.game_loading_question }}
+                        span._loader
+                            span
+                            span
+                            span
+                div(v-else, :is="componentByType")
+            .uk-alert.uk-alert-primary(uk-alert, v-else)
+                p Show info about level selection if not dead. If dead, show stats?!
 </template>
 
 <script>
