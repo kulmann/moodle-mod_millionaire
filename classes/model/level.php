@@ -27,6 +27,10 @@ defined('MOODLE_INTERNAL') || die();
  */
 class level extends abstract_model {
 
+    const STATE_PRIVATE = 'private';
+    const STATE_ACTIVE = 'active';
+    const STATE_DELETED = 'deleted';
+
     /**
      * @var int The id of the millionaire instance this level belongs to.
      */
@@ -78,7 +82,7 @@ class level extends abstract_model {
         }
         $this->id = isset($data['id']) ? $data['id'] : 0;
         $this->game = $data['game'];
-        $this->state = isset($data['state']) ? $data['state'] : 'private';
+        $this->state = isset($data['state']) ? $data['state'] : self::STATE_PRIVATE;
         $this->name =  isset($data['name']) ? $data['name'] : '';
         $this->position = isset($data['position']) ? $data['position'] : 0;
         $this->score = isset($data['score']) ? $data['score'] : 0;

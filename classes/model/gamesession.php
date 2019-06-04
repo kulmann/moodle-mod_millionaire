@@ -108,43 +108,82 @@ class gamesession extends abstract_model {
     }
 
     /**
-     * If this gamesession is finished, this function returns the highest finished level (doesn't matter if successful or not).
      * If this gamesession is not finished, this function returns the smallest unfinished level.
+     *
+     * @return level|null
+     * @throws \dml_exception
+     */
+    public function get_current_level() {
+        if ($this->is_finished()) {
+            return null;
+        }
+        global $DB;
+        $sql_questions = "
+            SELECT q.*, l.position
+              FROM {millionaire_questions} AS q
+        INNER JOIN {millionaire_levels} AS l on q.level = l.id 
+             WHERE q.gamesession = ?
+          ORDER BY l.position DESC
+        ";
+        $questions = $DB->get_records_sql($sql_questions, [$this->get_id()]);
+        if ($questions === false || empty($questions)) {
+            return $this->get_level_by_index(0);
+        }
+        $most_recent_question = \array_shift($questions);
+        $most_recent_position = $most_recent_question->position;
+        if ($most_recent_question->finished) {
+            // return next level
+            return $this->get_level_by_index($most_recent_position + 1);
+        } else {
+            // return this level, as it isn't finished yet
+            return $this->get_level_by_index($most_recent_position);
+        }
+    }
+
+    /**
+     * Gets the level for this game, which matches the given $index.
+     *
+     * @param int $index
      *
      * @return level
      * @throws \dml_exception
      */
-    public function get_current_level(): level {
+    public function get_level_by_index($index): level {
+        global $DB;
+        $level = new level();
+        $record = $DB->get_record_select($level->get_table_name(), 'game = ? AND position = ?', [$this->get_game(), $index]);
+        if ($record === false) {
+            throw new \dml_exception('There is no level with position=' . $index . ' for the game with id ' . $this->get_game());
+        }
+        $level->apply($record);
+        return $level;
+    }
+
+    /**
+     * Returns the highest reached safe spot level. Returns null if no safe spot was reached.
+     *
+     * @return level
+     * @throws \dml_exception
+     */
+    public function find_reached_safe_spot_level(): level {
         global $DB;
         $sql = "
-            SELECT l.id, l.position, q.finished
+            SELECT l.id
               FROM {millionaire_levels} AS l
-         LEFT JOIN {millionaire_questions} AS q on l.id=q.level 
-             WHERE l.game = ? AND (q.gamesession IS NULL OR q.gamesession = ?)
+        INNER JOIN {millionaire_questions} AS q on l.id=q.level
+             WHERE l.game = ? AND q.gamesession = ? AND l.safe_spot = ?
           ORDER BY l.position DESC
         ";
-        $levels = $DB->get_records_sql($sql, [$this->get_game(), $this->get_id()]);
-        if ($levels === false || empty($levels)) {
-            throw new \dml_exception('A game without levels cannot be played. Please configure levels first.');
-        }
+        $levels = $DB->get_records_sql($sql, [$this->get_game(), $this->get_id(), 1]);
         $level = new level();
-        $last_unfinished_level_id = null;
-        if ($this->get_state() === self::STATE_PROGRESS) {
-            foreach ($levels as $record) {
-                if ($record->finished === 1) {
-                    break;
-                }
-                $last_unfinished_level_id = $record->id;
-            }
-        } else {
-            foreach ($levels as $record) {
-                $last_unfinished_level_id = $record->id;
-                if ($record->finished === 1) {
-                    break;
-                }
-            }
+        if ($levels === false || empty($levels)) {
+            $level->set_game($this->get_game());
+            $level->set_safe_spot(true);
+            $level->set_score(0);
+            return $level;
         }
-        $level->load_data_by_id($last_unfinished_level_id);
+        $highest = \array_shift($levels);
+        $level->apply($highest);
         return $level;
     }
 
@@ -283,6 +322,13 @@ class gamesession extends abstract_model {
     }
 
     /**
+     * @return void
+     */
+    public function increment_answers_total(): void {
+        $this->answers_total++;
+    }
+
+    /**
      * @return int
      */
     public function get_answers_correct(): int {
@@ -297,10 +343,38 @@ class gamesession extends abstract_model {
     }
 
     /**
+     * @return void
+     */
+    public function increment_answers_correct(): void {
+        $this->answers_correct++;
+    }
+
+    /**
      * @return string
      */
     public function get_state(): string {
         return $this->state;
+    }
+
+    /**
+     * @return bool
+     */
+    public function is_finished(): bool {
+        return $this->state === self::STATE_FINISHED;
+    }
+
+    /**
+     * @return bool
+     */
+    public function is_dumped(): bool {
+        return $this->state === self::STATE_DUMPED;
+    }
+
+    /**
+     * @return bool
+     */
+    public function is_in_progress(): bool {
+        return $this->state === self::STATE_PROGRESS;
     }
 
     /**

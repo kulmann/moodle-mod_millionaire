@@ -4,14 +4,14 @@
             p._question {{ mdl_question.questiontext }}
         vk-grid.uk-margin-top(matched)
             div(v-for="(answer, index) in mdl_answers", :key="answer.id", class="uk-width-1-1@s uk-width-1-2@m uk-width-1-4@l")
-                .uk-alert.uk-alert-default._answer(uk-alert, @click="submitAnswer(answer)", :class="getAnswerClasses(answer)")
+                .uk-alert.uk-alert-default._answer(uk-alert, @click="selectAnswer(answer)", :class="getAnswerClasses(answer)")
                     vk-grid.uk-grid-small
                         span.uk-width-auto.uk-text-bold {{ getAnswerLetter(index) }}
                         span.uk-width-expand.uk-text-center {{ answer.answer }}
 </template>
 
 <script>
-    import {mapState} from 'vuex';
+    import {mapState, mapActions} from 'vuex';
     import mixins from '../mixins';
     import VkGrid from "vuikit/src/library/grid/components/grid";
     import _ from 'lodash';
@@ -26,6 +26,7 @@
         computed: {
             ...mapState([
                 'strings',
+                'question',
                 'mdl_question',
                 'mdl_answers'
             ]),
@@ -40,12 +41,21 @@
             }
         },
         methods: {
-            submitAnswer (answer) {
+            ...mapActions([
+                'submitAnswer'
+            ]),
+            selectAnswer (answer) {
                 if (this.clickedAnswerId !== null) {
                     // don't allow another submission
                     return;
                 }
                 this.clickedAnswerId = answer.id;
+                this.submitAnswer({
+                    'gamesessionid': this.question.gamesession,
+                    'levelid': this.question.level,
+                    'questionid': this.question.id,
+                    'mdlanswerid': answer.id
+                });
             },
             getAnswerLetter (index) {
                 let alphabet = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];

@@ -116,6 +116,23 @@ class game extends abstract_model {
     }
 
     /**
+     * Counts the active levels of this game.
+     *
+     * @return int
+     * @throws \dml_exception
+     */
+    public function count_active_levels(): int {
+        global $DB;
+        $sql = "
+            SELECT COUNT(id)
+              FROM {millionaire_levels}
+             WHERE game = ? AND state = ?
+        ";
+        $count = $DB->get_field_sql($sql, [$this->get_id(), level::STATE_ACTIVE]);
+        return $count === false ? 0 : $count;
+    }
+
+    /**
      * @return int
      */
     public function get_timecreated(): int {

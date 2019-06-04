@@ -143,18 +143,156 @@ class gamesessions extends external_api {
 
         // grab the most recent level in that gamesession
         $level = $gamesession->get_current_level();
-
-        // get question or create a new one if necessary.
-        $question = $gamesession->get_question_by_level($level->get_id());
-        if (!$gamesession->is_level_finished($level->get_id()) && $question === null) {
+        if ($level === null) {
             $question = new question();
-            $question->set_gamesession($gamesessionid);
-            $question->set_level($level->get_id());
-            $question->set_mdl_question($level->get_random_question()->id);
-            $question->save();
+        } else {
+            // get question or create a new one if necessary.
+            $question = $gamesession->get_question_by_level($level->get_id());
+            if (!$gamesession->is_level_finished($level->get_id()) && $question === null) {
+                $question = new question();
+                $question->set_gamesession($gamesessionid);
+                $question->set_level($level->get_id());
+                $question->set_mdl_question($level->get_random_question()->id);
+                $question->save();
+            }
         }
 
         // return
+        $exporter = new question_dto($question, $ctx);
+        return $exporter->export($renderer);
+    }
+
+    /**
+     * Definition of parameters for {@see submit_answer}.
+     *
+     * @return external_function_parameters
+     */
+    public static function submit_answer_parameters() {
+        return new external_function_parameters([
+            'coursemoduleid' => new external_value(PARAM_INT, 'course module id'),
+            'gamesessionid' => new external_value(PARAM_INT, 'game session id'),
+            'levelid' => new external_value(PARAM_INT, 'level id'),
+            'questionid' => new external_value(PARAM_INT, 'question id'),
+            'mdlanswerid' => new external_value(PARAM_INT, 'id of the selected moodle answer'),
+        ]);
+    }
+
+    /**
+     * Definition of return type for {@see submit_answer}.
+     *
+     * @return \external_single_structure
+     */
+    public static function submit_answer_returns() {
+        return question_dto::get_read_structure();
+    }
+
+    /**
+     * Applies the submitted answer to the question record in our DB.
+     *
+     * @param int $coursemoduleid
+     * @param int $gamesessionid
+     * @param int $levelid
+     * @param int $questionid
+     * @param int $mdlanswerid
+     *
+     * @return \stdClass
+     * @throws \dml_exception
+     * @throws \invalid_parameter_exception
+     * @throws \moodle_exception
+     * @throws \restricted_context_exception
+     */
+    public static function submit_answer($coursemoduleid, $gamesessionid, $levelid, $questionid, $mdlanswerid) {
+        $params = [
+            'coursemoduleid' => $coursemoduleid,
+            'gamesessionid' => $gamesessionid,
+            'levelid' => $levelid,
+            'questionid' => $questionid,
+            'mdlanswerid' => $mdlanswerid,
+        ];
+        self::validate_parameters(self::submit_answer_parameters(), $params);
+
+        list($course, $coursemodule) = get_course_and_cm_from_cmid($coursemoduleid, 'millionaire');
+        self::validate_context($coursemodule->context);
+
+        global $PAGE, $DB;
+        $renderer = $PAGE->get_renderer('core');
+        $ctx = $coursemodule->context;
+        $game_data = $DB->get_record('millionaire', ['id' => $coursemodule->instance]);
+        $game = new game();
+        $game->apply($game_data);
+
+        // try to find existing in-progress gamesession or create a new one
+        $gamesession = self::get_or_create_gamesession($coursemodule, $game);
+        if (!$gamesession->is_in_progress()) {
+            throw new \moodle_exception('gamesession is not available anymore.');
+        }
+
+        // try to find level and validate against input data
+        $level = $gamesession->get_current_level();
+        if ($level->get_id() !== $levelid) {
+            throw new \invalid_parameter_exception('inconsistent input data. given level is not the current level of this gamesession.');
+        }
+
+        // try to find question and validate against input data
+        $question = $gamesession->get_question_by_level($levelid);
+        if ($question === null || $question->get_id() !== $questionid) {
+            throw new \invalid_parameter_exception('inconsistent input data. question doesn\'t belong to this gamesession.');
+        }
+        if ($question->is_finished()) {
+            throw new \moodle_exception('question has already been answered.');
+        }
+        $mdl_question = $question->get_mdl_question_ref();
+        if (!property_exists($mdl_question, 'answers')) {
+            throw new \coding_exception('property »answers« doesn\'t exist on the moodle question with id ' . $question->get_mdl_question() . '.');
+        }
+
+        // submit the answer
+        $correct_mdl_answers = \array_filter(
+            $mdl_question->answers,
+            function (\question_answer $mdlanswer) {
+                return $mdlanswer->fraction == 1;
+            }
+        );
+        if (count($correct_mdl_answers) !== 1) {
+            throw new \moodle_exception('The moodle question with id ' . $question->get_mdl_question() . ' seems to be unapplicable for this activity.');
+        }
+        $correct_mdl_answer = \array_pop($correct_mdl_answers);
+        \assert($correct_mdl_answer instanceof \question_answer);
+        $question->set_mdl_answer($mdlanswerid);
+        $question->set_finished(true);
+        $question->set_correct($correct_mdl_answer->id == $mdlanswerid);
+        if ($question->is_correct()) {
+            $question->set_score($level->get_score());
+        } else {
+            if ($gamesession->is_continue_on_failure()) {
+                // find the level that represents the reached score and set those points
+                if ($gamesession->get_answers_correct() === 0) {
+                    $question->set_score(0);
+                } else {
+                    $level = $gamesession->get_level_by_index($gamesession->get_answers_correct());
+                    $question->set_score($level->get_score());
+                }
+            } else {
+                // game over! find last reached safe spot and set those points
+                $safe_spot_level = $gamesession->find_reached_safe_spot_level();
+                $question->set_score($safe_spot_level->get_score());
+                $gamesession->set_state(gamesession::STATE_FINISHED);
+            }
+        }
+        $question->save();
+
+        // update stats in the gamesession
+        $gamesession->set_score($question->get_score());
+        $gamesession->increment_answers_total();
+        if ($question->is_correct()) {
+            $gamesession->increment_answers_correct();
+        }
+        if ($gamesession->get_answers_total() === $game->count_active_levels()) {
+            $gamesession->set_state(gamesession::STATE_FINISHED);
+        }
+        $gamesession->save();
+
+        // return result object
         $exporter = new question_dto($question, $ctx);
         return $exporter->export($renderer);
     }
@@ -174,7 +312,7 @@ class gamesessions extends external_api {
         $record = $DB->get_record('millionaire_gamesessions', [
             'game' => $coursemodule->instance,
             'mdl_user' => $USER->id,
-            'state' => 'progress'
+            'state' => gamesession::STATE_PROGRESS,
         ]);
         // get or create gamesession
         $gamesession = new gamesession();

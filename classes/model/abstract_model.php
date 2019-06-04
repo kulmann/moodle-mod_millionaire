@@ -25,7 +25,7 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright  2019 Benedikt Kulmann <b@kulmann.biz>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-abstract class abstract_model {
+abstract class abstract_model extends \stdClass {
 
     /**
      * @var string
@@ -98,6 +98,9 @@ abstract class abstract_model {
             $insertedid = $DB->insert_record($this->get_table_name(), $this->to_data_object());
             $this->set_id($insertedid);
         } else {
+            if (property_exists($this, 'timemodified')) {
+                $this->timemodified = \time();
+            }
             $DB->update_record($this->get_table_name(), $this->to_data_object());
         }
     }

@@ -91,7 +91,7 @@ export const store = new Vuex.Store({
                 gamesessionid: this.state.gameSession.id
             };
             const question = await ajax('mod_millionaire_get_current_question', args);
-            context.commit('setQuestion', question);
+            context.commit('setQuestion', question.id === 0 ? null : question);
         },
         async fetchMdlQuestion(context) {
             if (this.state.question) {
@@ -114,6 +114,12 @@ export const store = new Vuex.Store({
             } else {
                 context.commit('setMdlAnswers', []);
             }
+        },
+        async submitAnswer(context, payload) {
+            const result = await ajax('mod_millionaire_submit_answer', payload);
+            context.commit('setQuestion', result);
+            context.dispatch('fetchLevels');
+            context.dispatch('fetchGameSession');
         }
     }
 });
