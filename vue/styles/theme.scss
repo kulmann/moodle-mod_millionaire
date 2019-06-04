@@ -42,3 +42,9 @@
         transform: translateY(0);
     }
 }
+._pointer {
+    & * {
+        cursor: pointer;
+    }
+    cursor: pointer;
+}
