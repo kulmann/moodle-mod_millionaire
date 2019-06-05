@@ -20,6 +20,7 @@
         mixins: [mixins],
         data () {
             return {
+                mostRecentQuestionId: null,
                 clickedAnswerId: null,
             }
         },
@@ -45,16 +46,17 @@
                 'submitAnswer'
             ]),
             selectAnswer (answer) {
-                if (this.clickedAnswerId !== null) {
+                if (this.isAnyAnswerGiven) {
                     // don't allow another submission
                     return;
                 }
+                this.mostRecentQuestionId = this.question.id;
                 this.clickedAnswerId = answer.id;
                 this.submitAnswer({
                     'gamesessionid': this.question.gamesession,
                     'levelid': this.question.level,
                     'questionid': this.question.id,
-                    'mdlanswerid': answer.id
+                    'mdlanswerid': this.clickedAnswerId,
                 });
             },
             getAnswerLetter (index) {
@@ -86,6 +88,19 @@
             },
             isCorrectAnswer (answer) {
                 return this.correctAnswerId === answer.id;
+            }
+        },
+        mounted () {
+            if  (this.question) {
+                this.mostRecentQuestionId = this.question.id;
+            }
+        },
+        watch: {
+            question (question) {
+                if (this.mostRecentQuestionId !== question.id) {
+                    this.mostRecentQuestionId = question.id;
+                    this.clickedAnswerId = null;
+                }
             }
         },
         components: {

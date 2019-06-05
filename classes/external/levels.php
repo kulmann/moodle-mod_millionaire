@@ -21,6 +21,7 @@ use external_multiple_structure;
 use external_value;
 use mod_millionaire\external\exporter\level_dto;
 use mod_millionaire\model\game;
+use mod_millionaire\model\gamesession;
 use mod_millionaire\model\level;
 use external_api;
 
@@ -37,7 +38,8 @@ class levels extends external_api {
     public static function get_levels_parameters() {
         return new external_function_parameters([
             'coursemoduleid' => new external_value(PARAM_INT, 'course module id'),
-            'only_active' => new external_value(PARAM_BOOL, 'whether all or just active levels should be fetched', false)
+            'only_active' => new external_value(PARAM_BOOL, 'whether all or just active levels should be fetched', false),
+            'gamesessionid' => new external_value(PARAM_INT, 'the id of the current game session, if question information should be added', false)
         ]);
     }
 
@@ -50,8 +52,9 @@ class levels extends external_api {
     /**
      * Get all levels.
      *
-     * @param $coursemoduleid
+     * @param int $coursemoduleid
      * @param bool $only_active When true (default), only active levels will be fetched.
+     * @param int $gamesessionid The id of the current game session, if question information should be added.
      *
      * @return array
      * @throws \coding_exception
@@ -60,8 +63,8 @@ class levels extends external_api {
      * @throws \moodle_exception
      * @throws \restricted_context_exception
      */
-    public static function get_levels($coursemoduleid, $only_active = true) {
-        $params = ['coursemoduleid' => $coursemoduleid, 'only_active' => $only_active];
+    public static function get_levels($coursemoduleid, $only_active = true, $gamesessionid = 0) {
+        $params = ['coursemoduleid' => $coursemoduleid, 'only_active' => $only_active, 'gamesessionid' => $gamesessionid];
         $params = self::validate_parameters(self::get_levels_parameters(), $params);
 
         list($course, $coursemodule) = get_course_and_cm_from_cmid($params['coursemoduleid'], 'millionaire');
@@ -74,6 +77,14 @@ class levels extends external_api {
         $game = new game();
         $game->apply($game_data);
 
+        // try to get gamesession - only if it exists! don't create one here!
+        if ($gamesessionid > 0) {
+            $gamesession = new gamesession();
+            $gamesession->load_data_by_id($gamesessionid);
+        } else {
+            $gamesession = null;
+        }
+
         $result = [];
         $sql_params = ['game' => $coursemodule->instance];
         if ($only_active) $sql_params['state'] = 'active';
@@ -81,7 +92,11 @@ class levels extends external_api {
         foreach ($levels as $level_data) {
             $level = new level();
             $level->apply($level_data);
-            $exporter = new level_dto($level, $game, $ctx);
+            $question = null;
+            if ($gamesession !== null) {
+                $question = $gamesession->get_question_by_level($level->get_id());
+            }
+            $exporter = new level_dto($level, $question, $game, $ctx);
             $result[] = $exporter->export($renderer);
         }
         return $result;

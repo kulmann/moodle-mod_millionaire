@@ -78,20 +78,33 @@ export const store = new Vuex.Store({
                 moodleStorage.set(cacheKey, JSON.stringify(strings));
             }
         },
-        async fetchLevels(context) {
-            const levels = await ajax('mod_millionaire_get_levels');
-            context.commit('setLevels', levels);
-        },
         async fetchGameSession(context) {
             const gameSession = await ajax('mod_millionaire_get_current_gamesession');
             context.commit('setGameSession', gameSession);
+            context.dispatch('fetchLevels');
+        },
+        async fetchLevels(context) {
+            let args = {};
+            if (this.state.gameSession) {
+                args['gamesessionid'] = this.state.gameSession.id;
+            }
+            const levels = await ajax('mod_millionaire_get_levels', args);
+            context.commit('setLevels', levels);
         },
         async fetchQuestion(context) {
             let args = {
                 gamesessionid: this.state.gameSession.id
             };
             const question = await ajax('mod_millionaire_get_current_question', args);
-            context.commit('setQuestion', question.id === 0 ? null : question);
+            if (question.id === 0) {
+                context.commit('setQuestion', null);
+                context.commit('setMdlQuestion', null);
+                context.commit('setMdlAnswers', []);
+            } else {
+                context.commit('setQuestion', question);
+                context.dispatch('fetchMdlQuestion');
+                context.dispatch('fetchMdlAnswers');
+            }
         },
         async fetchMdlQuestion(context) {
             if (this.state.question) {
@@ -118,7 +131,6 @@ export const store = new Vuex.Store({
         async submitAnswer(context, payload) {
             const result = await ajax('mod_millionaire_submit_answer', payload);
             context.commit('setQuestion', result);
-            context.dispatch('fetchLevels');
             context.dispatch('fetchGameSession');
         }
     }

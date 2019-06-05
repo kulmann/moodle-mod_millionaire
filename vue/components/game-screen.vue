@@ -6,7 +6,7 @@
                 question
             div.uk-flex-right
                 p jokers go here
-                levels(@setCurrentLevel="setCurrentLevel")
+                levels(@startLevel="startLevel")
 </template>
 
 <script>
@@ -25,21 +25,14 @@
         methods: {
             ...mapActions([
                 'fetchGameSession',
-                'fetchLevels',
                 'fetchQuestion',
-                'fetchMdlQuestion',
-                'fetchMdlAnswers',
             ]),
-            setCurrentLevel () {
-                this.fetchQuestion().then(() => {
-                    this.fetchMdlQuestion();
-                    this.fetchMdlAnswers();
-                });
+            startLevel () {
+                this.fetchQuestion();
             }
         },
         created () {
             this.fetchGameSession();
-            this.fetchLevels();
         }
     }
 </script>

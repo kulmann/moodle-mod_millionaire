@@ -20,6 +20,7 @@ use context;
 use core\external\exporter;
 use mod_millionaire\model\game;
 use mod_millionaire\model\level;
+use mod_millionaire\model\question;
 use renderer_base;
 
 defined('MOODLE_INTERNAL') || die();
@@ -38,6 +39,10 @@ class level_dto extends exporter {
      */
     protected $level;
     /**
+     * @var question
+     */
+    protected $question;
+    /**
      * @var game
      */
     protected $game;
@@ -46,13 +51,15 @@ class level_dto extends exporter {
      * level_dto constructor.
      *
      * @param level $level
+     * @param question|null $question
      * @param game $game
      * @param context $context
      *
      * @throws \coding_exception
      */
-    public function __construct(level $level, game $game, context $context) {
+    public function __construct(level $level, $question, game $game, context $context) {
         $this->level = $level;
+        $this->question = $question;
         $this->game = $game;
         parent::__construct([], ['context' => $context]);
     }
@@ -90,6 +97,18 @@ class level_dto extends exporter {
             'currency' => [
                 'type' => PARAM_TEXT,
                 'description' => 'the currency of the level, inherited from the game config',
+            ],
+            'finished' => [
+                'type' => PARAM_BOOL,
+                'description' => 'whether or not the level is already finished',
+            ],
+            'correct' => [
+                'type' => PARAM_BOOL,
+                'description' => 'whether or not the question for this level was answered correctly',
+            ],
+            'reached_score' => [
+                'type' => PARAM_INT,
+                'description' => 'the score that was reached by answering this question',
             ]
         ];
     }
@@ -104,7 +123,10 @@ class level_dto extends exporter {
         return \array_merge(
             $this->level->to_array(),
             [
-                'currency' => $this->game->get_currency_for_levels()
+                'currency' => $this->game->get_currency_for_levels(),
+                'finished' => $this->question ? $this->question->is_finished() : false,
+                'correct' => $this->question ? $this->question->is_correct() : false,
+                'reached_score' => $this->question ? $this->question->get_score() : -1
             ]
         );
     }
