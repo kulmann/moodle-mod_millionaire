@@ -14,7 +14,7 @@
 </template>
 
 <script>
-    import {mapState} from 'vuex';
+    import {mapState, mapActions} from 'vuex';
     import _ from 'lodash';
     import mixins from '../mixins';
 
@@ -31,6 +31,9 @@
             }
         },
         methods: {
+            ...mapActions([
+                'startNextLevel',
+            ]),
             isDoneOrUpcoming(level) {
                 return this.isDone(level) || this.isUpcoming(level);
             },
@@ -77,7 +80,7 @@
             },
             startLevel(level) {
                 if (this.isUpcoming(level)) {
-                    this.$emit('startLevel');
+                    this.startNextLevel();
                 }
             }
         }

@@ -18,7 +18,11 @@ export const store = new Vuex.Store({
         gameSession: null,
         question: null,
         mdl_question: null,
-        mdl_answers: []
+        mdl_answers: [],
+        state: {
+            view: 'intro',
+
+        }
     },
     //strict: process.env.NODE_ENV !== 'production',
     mutations: {
@@ -128,11 +132,14 @@ export const store = new Vuex.Store({
                 context.commit('setMdlAnswers', []);
             }
         },
+        startNextLevel(context) {
+            context.dispatch('fetchQuestion');
+        },
         async submitAnswer(context, payload) {
             const result = await ajax('mod_millionaire_submit_answer', payload);
             context.commit('setQuestion', result);
             context.dispatch('fetchGameSession');
-        }
+        },
     }
 });
 

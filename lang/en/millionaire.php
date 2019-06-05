@@ -133,7 +133,10 @@ $string['course_reset_include_topics'] = 'Reset topics etc. (Everything will be 
 $string['game_screen_title'] = 'Play »Who wants to be a millionaire«';
 $string['game_qtype_not_supported'] = 'The question type »{$a}« is not supported.';
 $string['game_loading_question'] = 'Loading question details';
-
+$string['game_btn_restart'] = 'New Game';
+$string['game_btn_continue'] = 'Next Question';
+$string['game_btn_stats'] = 'Leader Board';
+$string['game_btn_quit'] = 'Quit';
 
 
 $string['topic'] = 'Topic';

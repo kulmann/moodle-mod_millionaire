@@ -7,7 +7,9 @@
                             span
                             span
                             span
-                div(v-else, :is="componentByType")
+                template(v-else)
+                    div(:is="componentByType")
+                    actions.uk-margin-small-top
             .uk-alert.uk-alert-primary(uk-alert, v-else)
                 p Show info about level selection if not dead. If dead, show stats?!
 </template>
@@ -15,6 +17,7 @@
 <script>
     import {mapState} from 'vuex';
     import mixins from '../mixins';
+    import questionActions from './question-actions';
     import questionError from './question-error';
     import questionSingleChoice from './question-singlechoice';
 
@@ -37,6 +40,7 @@
             }
         },
         components: {
+            'actions': questionActions,
             'error': questionError,
             'singlechoice': questionSingleChoice,
         }
