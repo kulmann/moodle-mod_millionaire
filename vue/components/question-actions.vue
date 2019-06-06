@@ -26,25 +26,27 @@
                 'gameMode'
             ]),
             quitGameVisible() {
-                return true;
+                let allowedModes = [MODE_QUESTION_SHOWN, MODE_QUESTION_ANSWERED];
+                return _.includes(allowedModes, this.gameMode);
             },
             quitGameDisabled() {
-                return false;
+                return this.gameMode !== MODE_QUESTION_ANSWERED;
             },
             nextLevelVisible() {
                 let allowedModes = [MODE_QUESTION_SHOWN, MODE_QUESTION_ANSWERED];
                 return _.includes(allowedModes, this.gameMode);
             },
             nextLevelDisabled() {
-                return this.gameMode === MODE_QUESTION_ANSWERED;
+                return this.gameMode !== MODE_QUESTION_ANSWERED;
             },
         },
         methods: {
             ...mapActions([
+                'closeGameSession',
                 'startNextLevel',
             ]),
             quitGame() {
-
+                this.closeGameSession();
             },
             startLevel() {
                 this.startNextLevel();

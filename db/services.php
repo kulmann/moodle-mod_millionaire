@@ -30,6 +30,20 @@ $functions = [
         'type' => 'read',
         'ajax' => true,
     ],
+    'mod_millionaire_create_gamesession' => [
+        'classname' => 'mod_millionaire\external\gamesessions',
+        'methodname' => 'create_gamesession',
+        'description' => 'Dumps all running game sessions of the current user and creates a new one.',
+        'type' => 'write',
+        'ajax' => true,
+    ],
+    'mod_millionaire_close_gamesession' => [
+        'classname' => 'mod_millionaire\external\gamesessions',
+        'methodname' => 'close_gamesession',
+        'description' => 'Sets the state of the given game session to FINISHED.',
+        'type' => 'write',
+        'ajax' => true,
+    ],
     'mod_millionaire_get_current_gamesession' => [
         'classname' => 'mod_millionaire\external\gamesessions',
         'methodname' => 'get_current_gamesession',

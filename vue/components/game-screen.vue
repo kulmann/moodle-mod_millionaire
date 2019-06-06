@@ -8,18 +8,26 @@
                 question(v-if="questionVisible")
                 stats(v-if="statsVisible")
             div.uk-flex-right
+                jokers(v-if="questionVisible").uk-margin-small-bottom
                 levels
 </template>
 
 <script>
     import {mapState, mapActions} from 'vuex';
     import intro from './intro';
+    import jokers from './jokers';
     import levels from './levels';
     import question from './question';
     import stats from './stats';
     import topbar from './topbar';
     import VkGrid from "vuikit/src/library/grid/components/grid";
-    import {MODE_INTRO, MODE_QUESTION_ANSWERED, MODE_QUESTION_SHOWN, MODE_STATS} from "../constants";
+    import {
+        MODE_GAME_FINISHED,
+        MODE_INTRO,
+        MODE_QUESTION_ANSWERED,
+        MODE_QUESTION_SHOWN,
+        MODE_STATS
+    } from "../constants";
 
     export default {
         computed: {
@@ -31,7 +39,7 @@
                 return this.gameMode === MODE_INTRO;
             },
             questionVisible() {
-                let allowedModes = [MODE_QUESTION_SHOWN, MODE_QUESTION_ANSWERED];
+                let allowedModes = [MODE_QUESTION_SHOWN, MODE_QUESTION_ANSWERED, MODE_GAME_FINISHED];
                 return _.includes(allowedModes, this.gameMode);
             },
             statsVisible() {
@@ -48,6 +56,7 @@
         },
         components: {
             intro,
+            jokers,
             levels,
             question,
             stats,

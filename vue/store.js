@@ -5,7 +5,7 @@ import moodleStorage from 'core/localstorage';
 import Notification from 'core/notification';
 import _ from 'lodash';
 import $ from 'jquery';
-import {MODE_INTRO, MODE_QUESTION_SHOWN, VALID_MODES} from './constants';
+import {MODE_GAME_FINISHED, MODE_INTRO, MODE_QUESTION_ANSWERED, MODE_QUESTION_SHOWN, VALID_MODES} from './constants';
 
 Vue.use(Vuex);
 
@@ -87,11 +87,58 @@ export const store = new Vuex.Store({
                 moodleStorage.set(cacheKey, JSON.stringify(strings));
             }
         },
+        /**
+         * Fetches the current game session from the server. If none exists, a new one will be created, so this
+         * always returns a valid game session.
+         *
+         * @param context
+         *
+         * @returns {Promise<void>}
+         */
         async fetchGameSession(context) {
             const gameSession = await ajax('mod_millionaire_get_current_gamesession');
             context.commit('setGameSession', gameSession);
             context.dispatch('fetchLevels');
         },
+        /**
+         * Forces that a new game session gets created. Dumps all old in progress game sessions.
+         *
+         * @param context
+         *
+         * @returns {Promise<void>}
+         */
+        async createGameSession(context) {
+            const gameSession = await ajax('mod_millionaire_create_gamesession');
+            context.commit('setGameSession', gameSession);
+            context.dispatch('fetchLevels').then(() => {
+                context.commit('setGameMode', MODE_QUESTION_SHOWN);
+            });
+        },
+        /**
+         * Closes the current game session (i.e. sets state to FINISHED).
+         *
+         * @param context
+         *
+         * @returns {Promise<void>}
+         */
+        async closeGameSession(context) {
+            let args = {
+                'gamesessionid': this.state.gameSession.id
+            };
+            const gameSession = await ajax('mod_millionaire_close_gamesession', args);
+            context.commit('setGameSession', gameSession);
+            context.dispatch('fetchLevels').then(() => {
+                context.commit('setGameMode', MODE_GAME_FINISHED);
+            });
+        },
+        /**
+         * Fetches levels, including information on whether or not a level is finished.
+         * Should not be called directly. Will be called automatically in fetchGameSession.
+         *
+         * @param context
+         *
+         * @returns {Promise<void>}
+         */
         async fetchLevels(context) {
             let args = {};
             if (this.state.gameSession) {
@@ -143,9 +190,14 @@ export const store = new Vuex.Store({
             });
         },
         async submitAnswer(context, payload) {
+            context.commit('setGameMode', MODE_QUESTION_ANSWERED);
             const result = await ajax('mod_millionaire_submit_answer', payload);
             context.commit('setQuestion', result);
-            context.dispatch('fetchGameSession');
+            context.dispatch('fetchGameSession').then(() => {
+                if (this.state.gameSession.finished) {
+                    context.commit('setGameMode', MODE_GAME_FINISHED);
+                }
+            });
         },
     }
 });
