@@ -5,6 +5,7 @@ import moodleStorage from 'core/localstorage';
 import Notification from 'core/notification';
 import _ from 'lodash';
 import $ from 'jquery';
+import {MODE_INTRO, MODE_QUESTION_SHOWN, VALID_MODES} from './constants';
 
 Vue.use(Vuex);
 
@@ -19,10 +20,7 @@ export const store = new Vuex.Store({
         question: null,
         mdl_question: null,
         mdl_answers: [],
-        state: {
-            view: 'intro',
-
-        }
+        gameMode: MODE_INTRO,
     },
     //strict: process.env.NODE_ENV !== 'production',
     mutations: {
@@ -53,6 +51,13 @@ export const store = new Vuex.Store({
         setMdlAnswers(state, mdl_answers) {
             state.mdl_answers = mdl_answers;
         },
+        setGameMode(state, gameMode) {
+            if (_.includes(VALID_MODES, gameMode)) {
+                state.gameMode = gameMode;
+            } else {
+                console.error("omitted invalid game mode " + gameMode + ".");
+            }
+        }
     },
     actions: {
         async loadLang(context) {
@@ -132,8 +137,10 @@ export const store = new Vuex.Store({
                 context.commit('setMdlAnswers', []);
             }
         },
-        startNextLevel(context) {
-            context.dispatch('fetchQuestion');
+        async startNextLevel(context) {
+            context.dispatch('fetchQuestion').then(() => {
+                context.commit('setGameMode', MODE_QUESTION_SHOWN);
+            });
         },
         async submitAnswer(context, payload) {
             const result = await ajax('mod_millionaire_submit_answer', payload);

@@ -4,20 +4,40 @@
         topbar
         vk-grid.uk-margin-small-top
             div.uk-flex-left.uk-width-expand
-                question
+                intro(v-if="introVisible")
+                question(v-if="questionVisible")
+                stats(v-if="statsVisible")
             div.uk-flex-right
                 levels
 </template>
 
 <script>
     import {mapState, mapActions} from 'vuex';
+    import intro from './intro';
     import levels from './levels';
     import question from './question';
-    import gameTopbar from './game-topbar';
+    import stats from './stats';
+    import topbar from './topbar';
     import VkGrid from "vuikit/src/library/grid/components/grid";
+    import {MODE_INTRO, MODE_QUESTION_ANSWERED, MODE_QUESTION_SHOWN, MODE_STATS} from "../constants";
 
     export default {
-        computed: mapState(['strings']),
+        computed: {
+            ...mapState([
+                'strings',
+                'gameMode',
+            ]),
+            introVisible() {
+                return this.gameMode === MODE_INTRO;
+            },
+            questionVisible() {
+                let allowedModes = [MODE_QUESTION_SHOWN, MODE_QUESTION_ANSWERED];
+                return _.includes(allowedModes, this.gameMode);
+            },
+            statsVisible() {
+                return this.gameMode === MODE_STATS;
+            }
+        },
         methods: {
             ...mapActions([
                 'fetchGameSession'
@@ -27,10 +47,12 @@
             this.fetchGameSession();
         },
         components: {
-            VkGrid,
+            intro,
             levels,
             question,
-            'topbar': gameTopbar
+            stats,
+            topbar,
+            VkGrid
         }
     }
 </script>

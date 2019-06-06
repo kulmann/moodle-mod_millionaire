@@ -1,17 +1,17 @@
 <template lang="pug">
     #millionaire-question
-            template(v-if="question")
-                .uk-alert.uk-alert-primary(uk-alert, v-if="mdl_question === null")
-                    p {{ strings.game_loading_question }}
-                        span._loader
-                            span
-                            span
-                            span
-                template(v-else)
-                    div(:is="componentByType")
-                    actions.uk-margin-small-top
-            .uk-alert.uk-alert-primary(uk-alert, v-else)
-                p Show info about level selection if not dead. If dead, show stats?!
+        template(v-if="question")
+            .uk-alert.uk-alert-primary(uk-alert, v-if="mdl_question === null")
+                p {{ strings.game_loading_question }}
+                    span._loader
+                        span
+                        span
+                        span
+            template(v-else)
+                div(:is="componentByType")
+                actions.uk-margin-small-top
+        .uk-alert.uk-alert-primary(uk-alert, v-else)
+            p Show info about level selection if not dead. If dead, show stats?!
 </template>
 
 <script>

@@ -14,13 +14,16 @@
 
 <script>
     import {mapState, mapActions} from 'vuex';
+    import {MODE_QUESTION_ANSWERED, MODE_QUESTION_SHOWN} from "../constants";
+    import _ from 'lodash';
 
     export default {
         computed: {
             ...mapState([
                 'strings',
                 'gameSession',
-                'question'
+                'question',
+                'gameMode'
             ]),
             quitGameVisible() {
                 return true;
@@ -29,10 +32,11 @@
                 return false;
             },
             nextLevelVisible() {
-                return true;
+                let allowedModes = [MODE_QUESTION_SHOWN, MODE_QUESTION_ANSWERED];
+                return _.includes(allowedModes, this.gameMode);
             },
             nextLevelDisabled() {
-                return false;
+                return this.gameMode === MODE_QUESTION_ANSWERED;
             },
         },
         methods: {
