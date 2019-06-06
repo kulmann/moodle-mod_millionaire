@@ -18,6 +18,7 @@ namespace mod_millionaire\external\exporter;
 
 use context;
 use core\external\exporter;
+use mod_millionaire\model\level;
 use mod_millionaire\model\question;
 use renderer_base;
 
@@ -36,6 +37,10 @@ class question_dto extends exporter {
      * @var question
      */
     protected $question;
+    /**
+     * @var level
+     */
+    protected $level;
 
     /**
      * question_dto constructor.
@@ -45,8 +50,9 @@ class question_dto extends exporter {
      *
      * @throws \coding_exception
      */
-    public function __construct(question $question, context $context) {
+    public function __construct(question $question, level $level, context $context) {
         $this->question = $question;
+        $this->level = $level;
         parent::__construct([], ['context' => $context]);
     }
 
@@ -55,6 +61,10 @@ class question_dto extends exporter {
             'id' => [
                 'type' => PARAM_INT,
                 'description' => 'question id',
+            ],
+            'index' => [
+                'type' => PARAM_INT,
+                'description' => 'index of the level',
             ],
             'timecreated' => [
                 'type' => PARAM_INT,
@@ -114,6 +124,7 @@ class question_dto extends exporter {
         return \array_merge(
             $this->question->to_array(),
             [
+                'index' => $this->level->get_position(),
                 'mdl_question_id' => $mdl_question->id,
                 'mdl_question_type' => \get_class($mdl_question),
             ]

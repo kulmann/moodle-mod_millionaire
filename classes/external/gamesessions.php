@@ -210,19 +210,20 @@ class gamesessions extends external_api {
      *
      * @return external_function_parameters
      */
-    public static function get_current_question_parameters() {
+    public static function get_question_parameters() {
         return new external_function_parameters([
             'coursemoduleid' => new external_value(PARAM_INT, 'course module id'),
-            'gamesessionid' => new external_value(PARAM_INT, 'game session id')
+            'gamesessionid' => new external_value(PARAM_INT, 'game session id'),
+            'levelindex' => new external_value(PARAM_INT, 'index of the level'),
         ]);
     }
 
     /**
-     * Definition of return type for {@see get_current_question}.
+     * Definition of return type for {@see get_question}.
      *
      * @return \external_single_structure
      */
-    public static function get_current_question_returns() {
+    public static function get_question_returns() {
         return question_dto::get_read_structure();
     }
 
@@ -231,6 +232,7 @@ class gamesessions extends external_api {
      *
      * @param int $coursemoduleid
      * @param int $gamesessionid
+     * @param int $levelindex
      *
      * @return \stdClass
      * @throws \dml_exception
@@ -238,9 +240,13 @@ class gamesessions extends external_api {
      * @throws \moodle_exception
      * @throws \restricted_context_exception
      */
-    public static function get_current_question($coursemoduleid, $gamesessionid) {
-        $params = ['coursemoduleid' => $coursemoduleid, 'gamesessionid' => $gamesessionid];
-        self::validate_parameters(self::get_current_question_parameters(), $params);
+    public static function get_question($coursemoduleid, $gamesessionid, $levelindex) {
+        $params = [
+            'coursemoduleid' => $coursemoduleid,
+            'gamesessionid' => $gamesessionid,
+            'levelindex' => $levelindex,
+        ];
+        self::validate_parameters(self::get_question_parameters(), $params);
 
         list($course, $coursemodule) = get_course_and_cm_from_cmid($coursemoduleid, 'millionaire');
         self::validate_context($coursemodule->context);
@@ -253,24 +259,21 @@ class gamesessions extends external_api {
         // try to find existing in-progress gamesession or create a new one
         $gamesession = self::get_or_create_gamesession($game);
 
-        // grab the most recent level in that gamesession
-        $level = $gamesession->get_current_level();
-        if ($level === null) {
+        // grab the requested level
+        $level = $gamesession->get_level_by_index($levelindex);
+
+        // get question or create a new one if necessary.
+        $question = $gamesession->get_question_by_level($level->get_id());
+        if (!$gamesession->is_level_finished($level->get_id()) && $question === null) {
             $question = new question();
-        } else {
-            // get question or create a new one if necessary.
-            $question = $gamesession->get_question_by_level($level->get_id());
-            if (!$gamesession->is_level_finished($level->get_id()) && $question === null) {
-                $question = new question();
-                $question->set_gamesession($gamesessionid);
-                $question->set_level($level->get_id());
-                $question->set_mdl_question($level->get_random_question()->id);
-                $question->save();
-            }
+            $question->set_gamesession($gamesessionid);
+            $question->set_level($level->get_id());
+            $question->set_mdl_question($level->get_random_question()->id);
+            $question->save();
         }
 
         // return
-        $exporter = new question_dto($question, $ctx);
+        $exporter = new question_dto($question, $level, $ctx);
         return $exporter->export($renderer);
     }
 
@@ -403,7 +406,7 @@ class gamesessions extends external_api {
         $gamesession->save();
 
         // return result object
-        $exporter = new question_dto($question, $ctx);
+        $exporter = new question_dto($question, $level, $ctx);
         return $exporter->export($renderer);
     }
 

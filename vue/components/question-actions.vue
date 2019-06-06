@@ -3,11 +3,11 @@
         .uk-heading-divider.uk-margin-small-bottom
         .uk-grid.uk-grid-small(uk-grid)
             .uk-width-expand
-                button.uk-button.uk-button-default.uk-button-small(v-if="quitGameVisible", @click="quitGame", :disabled="quitGameDisabled")
+                button.uk-button.uk-button-default.uk-button-small(v-if="isQuitGameVisible", @click="quitGame", :disabled="isQuitGameDisabled")
                     v-icon(name="hand-holding-usd").uk-margin-small-right
                     span {{ strings.game_btn_quit }}
             .uk-width-auto
-                button.uk-button.uk-button-default.uk-button-small(v-if="nextLevelVisible", @click="startLevel", :disabled="nextLevelDisabled")
+                button.uk-button.uk-button-default.uk-button-small(v-if="isNextLevelVisible", @click="showNextLevel", :disabled="isNextLevelDisabled")
                     v-icon(name="arrow-circle-right").uk-margin-small-right
                     span {{ strings.game_btn_continue }}
 </template>
@@ -23,33 +23,37 @@
                 'strings',
                 'gameSession',
                 'question',
-                'gameMode'
+                'gameMode',
+                'levels'
             ]),
-            quitGameVisible() {
+            isQuitGameVisible() {
                 let allowedModes = [MODE_QUESTION_SHOWN, MODE_QUESTION_ANSWERED];
                 return _.includes(allowedModes, this.gameMode);
             },
-            quitGameDisabled() {
+            isQuitGameDisabled() {
                 return this.gameMode !== MODE_QUESTION_ANSWERED;
             },
-            nextLevelVisible() {
+            isNextLevelVisible() {
                 let allowedModes = [MODE_QUESTION_SHOWN, MODE_QUESTION_ANSWERED];
                 return _.includes(allowedModes, this.gameMode);
             },
-            nextLevelDisabled() {
+            isNextLevelDisabled() {
                 return this.gameMode !== MODE_QUESTION_ANSWERED;
             },
         },
         methods: {
             ...mapActions([
                 'closeGameSession',
-                'startNextLevel',
+                'showQuestionForLevel',
             ]),
             quitGame() {
                 this.closeGameSession();
             },
-            startLevel() {
-                this.startNextLevel();
+            showNextLevel() {
+                let nextIndex = this.question.index + 1;
+                if(this.levels.length > nextIndex) {
+                    this.showQuestionForLevel(nextIndex);
+                }
             }
         },
     }

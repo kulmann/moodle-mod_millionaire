@@ -51,9 +51,9 @@ $functions = [
         'type' => 'write',
         'ajax' => true,
     ],
-    'mod_millionaire_get_current_question' => [
+    'mod_millionaire_get_question' => [
         'classname' => 'mod_millionaire\external\gamesessions',
-        'methodname' => 'get_current_question',
+        'methodname' => 'get_question',
         'description' => 'Gets or creates the current question from the current gamesession for the logged in user.',
         'type' => 'write',
         'ajax' => true,

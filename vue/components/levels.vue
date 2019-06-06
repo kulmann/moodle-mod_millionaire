@@ -2,8 +2,8 @@
     #millionaire-levels
         table.uk-table.uk-table-small.uk-table-striped
             tbody
-                tr.level.uk-text-nowrap(v-for="level in sortedLevels" :key="level.position", @click="startLevel(level)"
-                    :class="{'upcoming-level': isUpcoming(level), 'won-level': isWon(level), 'lost-level': isLost(level)}")
+                tr.level.uk-text-nowrap(v-for="level in sortedLevels" :key="level.position", @click="showLevel(level)"
+                    :class="{'_pointer': isDoneOrUpcoming(level), 'upcoming-level': isUpcoming(level), 'won-level': isWon(level), 'lost-level': isLost(level)}")
                     td.uk-table-shrink.uk-text-center
                         span {{ level.position + 1 }}
                     td.uk-table-shrink.uk-preserve-width.uk-text-center
@@ -32,7 +32,7 @@
         },
         methods: {
             ...mapActions([
-                'startNextLevel',
+                'showQuestionForLevel',
             ]),
             isDoneOrUpcoming(level) {
                 return this.isDone(level) || this.isUpcoming(level);
@@ -54,12 +54,12 @@
             },
             getIconName(level) {
                 if (this.isDone(level)) {
-                    if (this.isWon(level)) {
+                    if (level.safe_spot) {
+                        return 'star';
+                    } else if (this.isWon(level)) {
                         return 'check';
                     } else if(this.isLost(level)) {
                         return 'cross';
-                    } else if (level.safe_spot) {
-                        return 'star';
                     } else {
                         return 'circle';
                     }
@@ -78,9 +78,9 @@
                     return 0.7;
                 }
             },
-            startLevel(level) {
-                if (this.isUpcoming(level)) {
-                    this.startNextLevel();
+            showLevel(level) {
+                if (this.isDoneOrUpcoming(level)) {
+                    this.showQuestionForLevel(level.position);
                 }
             }
         }
@@ -96,9 +96,7 @@
     }
 
     .upcoming-level {
-        cursor: pointer;
         font-weight: bold;
-
         & > td {
             padding-top: 3px !important;
             padding-bottom: 3px !important;

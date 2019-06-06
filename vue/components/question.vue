@@ -9,7 +9,7 @@
                         span
             template(v-else)
                 div(:is="componentByType")
-                actions.uk-margin-small-top
+                actions(v-if="isCurrentQuestion").uk-margin-small-top
         .uk-alert.uk-alert-primary(uk-alert, v-else)
             p Show info about level selection if not dead. If dead, show stats?!
 </template>
@@ -20,6 +20,7 @@
     import questionActions from './question-actions';
     import questionError from './question-error';
     import questionSingleChoice from './question-singlechoice';
+    import _ from 'lodash';
 
     export default {
         mixins: [mixins],
@@ -27,6 +28,7 @@
             ...mapState([
                 'strings',
                 'gameSession',
+                'levels',
                 'question',
                 'mdl_question'
             ]),
@@ -37,6 +39,20 @@
                     default:
                         return 'error';
                 }
+            },
+            highestSeenLevel() {
+                let seenLevels = _.filter(this.levels, function(level) {
+                    return level.seen;
+                });
+                if (seenLevels.length === 0) {
+                    return _.first(this.levels);
+                } else {
+                    let sortedSeenLevels = _.sortBy(seenLevels, ['position']);
+                    return _.last(sortedSeenLevels);
+                }
+            },
+            isCurrentQuestion() {
+                return this.highestSeenLevel.position === this.question.index;
             }
         },
         components: {

@@ -88,18 +88,21 @@
             },
             isCorrectAnswer (answer) {
                 return this.correctAnswerId === answer.id;
+            },
+            initQuestion() {
+                this.mostRecentQuestionId = this.question.id;
+                this.clickedAnswerId = (this.question.mdl_answer > 0) ? this.question.mdl_answer : null;
             }
         },
         mounted () {
             if  (this.question) {
-                this.mostRecentQuestionId = this.question.id;
+                this.initQuestion();
             }
         },
         watch: {
             question (question) {
                 if (this.mostRecentQuestionId !== question.id) {
-                    this.mostRecentQuestionId = question.id;
-                    this.clickedAnswerId = null;
+                    this.initQuestion();
                 }
             }
         },

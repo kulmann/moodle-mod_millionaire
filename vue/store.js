@@ -21,6 +21,7 @@ export const store = new Vuex.Store({
         mdl_question: null,
         mdl_answers: [],
         gameMode: MODE_INTRO,
+        gameCurrentLevel: null,
     },
     //strict: process.env.NODE_ENV !== 'production',
     mutations: {
@@ -57,15 +58,34 @@ export const store = new Vuex.Store({
             } else {
                 console.error("omitted invalid game mode " + gameMode + ".");
             }
+        },
+        markLevelAsSeen(state, levelIndex) {
+            let level = _.find(state.levels, function(level) {
+                return level.position === levelIndex;
+            });
+            level.seen = true;
         }
     },
     actions: {
+        /**
+         * Determines the current language.
+         *
+         * @param context
+         *
+         * @returns {Promise<void>}
+         */
         async loadLang(context) {
             const lang = $('html').attr('lang').replace(/-/g, '_');
             context.commit('setLang', lang);
         },
+        /**
+         * Fetches the i18n data for the current language.
+         *
+         * @param context
+         * @returns {Promise<void>}
+         */
         async loadComponentStrings(context) {
-            const lang = $('html').attr('lang').replace(/-/g, '_');
+            let lang = this.state.lang;
             const cacheKey = 'mod_millionaire/strings/' + lang;
             const cachedStrings = moodleStorage.get(cacheKey);
             if (cachedStrings) {
@@ -115,7 +135,9 @@ export const store = new Vuex.Store({
             });
         },
         /**
-         * Closes the current game session (i.e. sets state to FINISHED).
+         * Closes the current game session (i.e. sets state to FINISHED). Should only be called when the current state
+         * of the game session allows it, i.e. current question is already answered / no question is currently shown
+         * to be answered.
          *
          * @param context
          *
@@ -132,6 +154,41 @@ export const store = new Vuex.Store({
             });
         },
         /**
+         * Loads the question for the given level index. Doesn't matter if it's already answered.
+         *
+         * @param context
+         * @param levelIndex
+         *
+         * @returns {Promise<void>}
+         */
+        async showQuestionForLevel(context, levelIndex) {
+            context.dispatch('fetchQuestion', levelIndex).then(() => {
+                context.commit('markLevelAsSeen', levelIndex);
+                context.commit('setGameMode', MODE_QUESTION_SHOWN);
+            });
+        },
+        /**
+         * Submit an answer to the currently loaded question.
+         *
+         * @param context
+         * @param payload
+         *
+         * @returns {Promise<void>}
+         */
+        async submitAnswer(context, payload) {
+            context.commit('setGameMode', MODE_QUESTION_ANSWERED);
+            const result = await ajax('mod_millionaire_submit_answer', payload);
+            context.commit('setQuestion', result);
+            context.dispatch('fetchGameSession').then(() => {
+                if (this.state.gameSession.finished) {
+                    context.commit('setGameMode', MODE_GAME_FINISHED);
+                }
+            });
+        },
+
+        // INTERNAL FUNCTIONS. these shouldn't be called from outside the store.
+        // TODO: would be nice to be able to actually prevent these actions from being called from outside the store.
+        /**
          * Fetches levels, including information on whether or not a level is finished.
          * Should not be called directly. Will be called automatically in fetchGameSession.
          *
@@ -147,11 +204,20 @@ export const store = new Vuex.Store({
             const levels = await ajax('mod_millionaire_get_levels', args);
             context.commit('setLevels', levels);
         },
-        async fetchQuestion(context) {
+        /**
+         * Fetches the question, moodle question and moodle answers for the given level index.
+         *
+         * @param context
+         * @param levelIndex
+         *
+         * @returns {Promise<void>}
+         */
+        async fetchQuestion(context, levelIndex) {
             let args = {
-                gamesessionid: this.state.gameSession.id
+                gamesessionid: this.state.gameSession.id,
+                levelindex: levelIndex
             };
-            const question = await ajax('mod_millionaire_get_current_question', args);
+            const question = await ajax('mod_millionaire_get_question', args);
             if (question.id === 0) {
                 context.commit('setQuestion', null);
                 context.commit('setMdlQuestion', null);
@@ -162,6 +228,13 @@ export const store = new Vuex.Store({
                 context.dispatch('fetchMdlAnswers');
             }
         },
+        /**
+         * Fetches the moodle question for the currently loaded question.
+         *
+         * @param context
+         *
+         * @returns {Promise<void>}
+         */
         async fetchMdlQuestion(context) {
             if (this.state.question) {
                 let args = {
@@ -173,6 +246,13 @@ export const store = new Vuex.Store({
                 context.commit('setMdlQuestion', null);
             }
         },
+        /**
+         * Fetches the moodle answers for the currently loaded question.
+         *
+         * @param context
+         *
+         * @returns {Promise<void>}
+         */
         async fetchMdlAnswers(context) {
             if (this.state.question) {
                 let args = {
@@ -183,21 +263,6 @@ export const store = new Vuex.Store({
             } else {
                 context.commit('setMdlAnswers', []);
             }
-        },
-        async startNextLevel(context) {
-            context.dispatch('fetchQuestion').then(() => {
-                context.commit('setGameMode', MODE_QUESTION_SHOWN);
-            });
-        },
-        async submitAnswer(context, payload) {
-            context.commit('setGameMode', MODE_QUESTION_ANSWERED);
-            const result = await ajax('mod_millionaire_submit_answer', payload);
-            context.commit('setQuestion', result);
-            context.dispatch('fetchGameSession').then(() => {
-                if (this.state.gameSession.finished) {
-                    context.commit('setGameMode', MODE_GAME_FINISHED);
-                }
-            });
         },
     }
 });

@@ -109,6 +109,10 @@ class level_dto extends exporter {
             'reached_score' => [
                 'type' => PARAM_INT,
                 'description' => 'the score that was reached by answering this question',
+            ],
+            'seen' => [
+                'type' => PARAM_BOOL,
+                'description' => 'whether or not this level has been seen by the user (i.e. if a question was shown)',
             ]
         ];
     }
@@ -126,7 +130,8 @@ class level_dto extends exporter {
                 'currency' => $this->game->get_currency_for_levels(),
                 'finished' => $this->question ? $this->question->is_finished() : false,
                 'correct' => $this->question ? $this->question->is_correct() : false,
-                'reached_score' => $this->question ? $this->question->get_score() : -1
+                'reached_score' => $this->question ? $this->question->get_score() : -1,
+                'seen' => $this->question !== null,
             ]
         );
     }
