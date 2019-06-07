@@ -1,7 +1,10 @@
 <template lang="pug">
     #millionaire-question_singlechoice
-        .uk-card.uk-card-default.uk-card-body
-            p._question {{ mdl_question.questiontext }}
+        .uk-card.uk-card-default
+            .uk-card-header(style="padding-top: 5px; padding-bottom: 5px;")
+                i.uk-h5 {{ strings.game_question_headline | stringParams({number: levelNumber, level: levelName}) }}
+            .uk-card-body
+                p._question {{ mdl_question.questiontext }}
         vk-grid.uk-margin-top(matched)
             div(v-for="(answer, index) in mdl_answers", :key="answer.id", class="uk-width-1-1@s uk-width-1-2@m uk-width-1-4@l")
                 .uk-alert.uk-alert-default._answer(uk-alert, @click="selectAnswer(answer)", :class="getAnswerClasses(answer)")
@@ -18,7 +21,7 @@
 
     export default {
         mixins: [mixins],
-        data () {
+        data() {
             return {
                 mostRecentQuestionId: null,
                 clickedAnswerId: null,
@@ -27,25 +30,54 @@
         computed: {
             ...mapState([
                 'strings',
+                'levels',
                 'question',
                 'mdl_question',
                 'mdl_answers'
             ]),
-            correctAnswerId () {
-                let correct = _.find(this.mdl_answers, function(mdl_answer) {
+            correctAnswerId() {
+                let correct = _.find(this.mdl_answers, function (mdl_answer) {
                     return mdl_answer.fraction === 1;
                 });
                 return correct ? correct.id : null;
             },
-            isAnyAnswerGiven () {
+            isAnyAnswerGiven() {
                 return this.clickedAnswerId !== null;
+            },
+            level() {
+                if (this.question) {
+                    let questionIndex = this.question.index;
+                    return _.find(this.levels, function (level) {
+                        return level.position === questionIndex;
+                    });
+                } else {
+                    return null;
+                }
+            },
+            levelNumber() {
+                if (this.level) {
+                    return this.level.position + 1;
+                } else {
+                    return '';
+                }
+            },
+            levelName() {
+                if (this.level) {
+                    if (this.level.name) {
+                        return this.level.name;
+                    } else {
+                        return this.formatCurrency(this.level.score, this.level.currency);
+                    }
+                } else {
+                    return '';
+                }
             }
         },
         methods: {
             ...mapActions([
                 'submitAnswer'
             ]),
-            selectAnswer (answer) {
+            selectAnswer(answer) {
                 if (this.isAnyAnswerGiven) {
                     // don't allow another submission
                     return;
@@ -59,11 +91,11 @@
                     'mdlanswerid': this.clickedAnswerId,
                 });
             },
-            getAnswerLetter (index) {
+            getAnswerLetter(index) {
                 let alphabet = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
                 return alphabet[index];
             },
-            getAnswerClasses (answer) {
+            getAnswerClasses(answer) {
                 let result = [];
                 if (this.isAnyAnswerGiven) {
                     if (this.isCorrectAnswer(answer)) {
@@ -80,13 +112,13 @@
                 }
                 return result.join(' ');
             },
-            isClickedAnswer (answer) {
+            isClickedAnswer(answer) {
                 return this.isAnyAnswerGiven && this.clickedAnswerId === answer.id;
             },
-            isWrongAnswer (answer) {
+            isWrongAnswer(answer) {
                 return this.correctAnswerId !== answer.id;
             },
-            isCorrectAnswer (answer) {
+            isCorrectAnswer(answer) {
                 return this.correctAnswerId === answer.id;
             },
             initQuestion() {
@@ -94,13 +126,13 @@
                 this.clickedAnswerId = (this.question.mdl_answer > 0) ? this.question.mdl_answer : null;
             }
         },
-        mounted () {
-            if  (this.question) {
+        mounted() {
+            if (this.question) {
                 this.initQuestion();
             }
         },
         watch: {
-            question (question) {
+            question(question) {
                 if (this.mostRecentQuestionId !== question.id) {
                     this.initQuestion();
                 }
@@ -117,10 +149,12 @@
         border-width: 1px;
         border-style: solid;
     }
+
     ._answer {
         border-radius: 5px;
         font-size: 1.2em;
     }
+
     ._question {
         font-size: 1.4em;
     }

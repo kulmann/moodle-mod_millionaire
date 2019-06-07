@@ -139,6 +139,7 @@ $string['game_btn_stats'] = 'Bestenliste';
 $string['game_btn_quit'] = 'Beenden';
 $string['game_btn_start'] = 'Spiel Starten';
 $string['game_btn_game'] = 'Zum Spiel';
+$string['game_question_headline'] = 'Frage {$a->number}: {$a->level}';
 $string['game_won_headline'] = 'Gewonnen!';
 $string['game_lost_headline'] = 'Leider verloren.';
 $string['game_intro_message'] = 'Hier müssen wir noch ein Logo und ggf. Text platzieren.';

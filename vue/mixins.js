@@ -1,16 +1,16 @@
 import _ from 'lodash';
 export default {
     filters: {
-        formatCurrency(amount, currencySign) {
-            return amount.toLocaleString() + " " + currencySign;
-        },
+        formatCurrency: formatCurrencyInternal,
         stringParams(translation, params) {
             let tmp = translation;
             if (translation.includes('{$a}')) {
                 return _.replace(tmp, '{$a}', params);
-            } else {
-                // figure this out when it's needed
-                return 'todo: implement multi param strings.';
+            } else if (translation.includes('{$a->')) {
+                _.forEach(params, function(value, key) {
+                    tmp = _.replace(tmp, '{$a->' + key + '}', value);
+                });
+                return tmp;
             }
         }
     },
@@ -26,5 +26,9 @@ export default {
                 return _.last(seenLevels);
             }
         },
+        formatCurrency: formatCurrencyInternal,
     }
+}
+function formatCurrencyInternal(amount, currencySign) {
+    return amount.toLocaleString() + " " + currencySign;
 }
