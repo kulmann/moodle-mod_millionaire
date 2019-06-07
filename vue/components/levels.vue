@@ -4,6 +4,9 @@
             tbody
                 tr.level.uk-text-nowrap(v-for="level in sortedLevels" :key="level.position", @click="showLevel(level)"
                     :class="{'_pointer': isDone(level) || isUpcoming(level), 'upcoming-level': isUpcoming(level) && isSeen(level), 'won-level': isWon(level), 'lost-level': isLost(level)}")
+                    td.uk-table-shrink
+                        v-icon(v-if="isSelected(level) && isWon(level)", name="flag-checkered", :scale="0.7")
+                        v-icon(v-else-if="isSelected(level)", name="flag", :scale="0.7")
                     td.uk-table-shrink.uk-text-center
                         span {{ level.position + 1 }}
                     td.uk-table-shrink.uk-preserve-width.uk-text-center
@@ -24,7 +27,8 @@
             ...mapState([
                 'strings',
                 'levels',
-                'gameSession'
+                'gameSession',
+                'question',
             ]),
             sortedLevels() {
                 return _.reverse(this.levels);
@@ -54,6 +58,13 @@
             },
             isSafeSpot(level) {
                 return level.safe_spot;
+            },
+            isSelected(level) {
+                if (this.question) {
+                    return this.question.level === level.id;
+                } else {
+                    return false;
+                }
             },
             hasIcon(level) {
                 return this.getIconName(level) !== null;

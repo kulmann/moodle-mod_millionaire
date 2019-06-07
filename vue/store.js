@@ -131,6 +131,7 @@ export const store = new Vuex.Store({
             const gameSession = await ajax('mod_millionaire_create_gamesession');
             context.commit('setGameSession', gameSession);
             return context.dispatch('fetchLevels').then(() => {
+                context.commit('setQuestion', null);
                 context.commit('setGameMode', MODE_INTRO);
             });
         },
