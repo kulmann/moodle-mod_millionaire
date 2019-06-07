@@ -9,7 +9,7 @@
                 stats(v-if="statsVisible")
                 help(v-if="helpVisible")
             div.uk-flex-right
-                jokers(v-if="questionVisible").uk-margin-small-bottom
+                jokers.uk-margin-small-bottom
                 levels
 </template>
 

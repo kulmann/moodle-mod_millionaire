@@ -12,3 +12,11 @@ export const VALID_MODES = [
     MODE_QUESTION_ANSWERED,
     MODE_GAME_FINISHED,
 ];
+export const JOKER_FEEDBACK = 'feedback';
+export const JOKER_CROWD = 'crowd';
+export const JOKER_CHANCE = 'chance';
+export const VALID_JOKERS = [
+    JOKER_FEEDBACK,
+    JOKER_CROWD,
+    JOKER_CHANCE,
+];
