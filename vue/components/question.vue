@@ -9,7 +9,7 @@
                         span
             template(v-else)
                 div(:is="componentByType")
-                actions(v-if="isCurrentQuestion").uk-margin-small-top
+                actions(v-if="isCurrentQuestion && !isGameOver").uk-margin-small-top
         .uk-alert.uk-alert-primary(uk-alert, v-else)
             p Show info about level selection if not dead. If dead, show stats?!
 </template>
@@ -53,7 +53,10 @@
             },
             isCurrentQuestion() {
                 return this.highestSeenLevel.position === this.question.index;
-            }
+            },
+            isGameOver() {
+                return this.gameSession.state !== 'progress';
+            },
         },
         components: {
             'actions': questionActions,

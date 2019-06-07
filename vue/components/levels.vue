@@ -3,7 +3,7 @@
         table.uk-table.uk-table-small.uk-table-striped
             tbody
                 tr.level.uk-text-nowrap(v-for="level in sortedLevels" :key="level.position", @click="showLevel(level)"
-                    :class="{'_pointer': isDoneOrUpcoming(level), 'upcoming-level': isUpcoming(level), 'won-level': isWon(level), 'lost-level': isLost(level)}")
+                    :class="{'_pointer': isDone(level) || isUpcoming(level), 'upcoming-level': isUpcoming(level) && isSeen(level), 'won-level': isWon(level), 'lost-level': isLost(level)}")
                     td.uk-table-shrink.uk-text-center
                         span {{ level.position + 1 }}
                     td.uk-table-shrink.uk-preserve-width.uk-text-center
@@ -34,14 +34,17 @@
             ...mapActions([
                 'showQuestionForLevel',
             ]),
-            isDoneOrUpcoming(level) {
-                return this.isDone(level) || this.isUpcoming(level);
+            isGameOver() {
+                return this.gameSession.state !== 'progress'
+            },
+            isSeen(level) {
+                return level.seen;
             },
             isDone(level) {
                 return level.finished;
             },
             isUpcoming(level) {
-                return level.position === this.gameSession.current_level;
+                return level.position === this.gameSession.current_level && !this.isGameOver();
             },
             isWon(level) {
                 return this.isDone(level) && level.correct;
@@ -49,23 +52,30 @@
             isLost(level) {
                 return this.isDone(level) && !level.correct;
             },
+            isSafeSpot(level) {
+                return level.safe_spot;
+            },
             hasIcon(level) {
                 return this.getIconName(level) !== null;
             },
             getIconName(level) {
                 if (this.isDone(level)) {
-                    if (level.safe_spot) {
+                    if (this.isSafeSpot(level)) {
                         return 'star';
                     } else if (this.isWon(level)) {
                         return 'check';
-                    } else if(this.isLost(level)) {
+                    } else if (this.isLost(level)) {
                         return 'cross';
+                    } else if (this.isGameOver()) {
+                        return 'lock';
                     } else {
-                        return 'circle';
+                        return null;
                     }
-                } else if(level.safe_spot) {
+                } else if (this.isGameOver()) {
+                    return 'lock';
+                } else if (this.isSafeSpot(level)) {
                     return 'regular/star';
-                } else if(this.isUpcoming(level)) {
+                } else if (this.isUpcoming(level) && this.isSeen(level)) {
                     return 'circle';
                 } else {
                     return null;
@@ -79,7 +89,7 @@
                 }
             },
             showLevel(level) {
-                if (this.isDoneOrUpcoming(level)) {
+                if (this.isDone(level) || this.isUpcoming(level)) {
                     this.showQuestionForLevel(level.position);
                 }
             }
@@ -97,6 +107,7 @@
 
     .upcoming-level {
         font-weight: bold;
+
         & > td {
             padding-top: 3px !important;
             padding-bottom: 3px !important;

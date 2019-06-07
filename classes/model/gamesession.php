@@ -104,7 +104,7 @@ class gamesession extends abstract_model {
         $this->score = isset($data['score']) ? $data['score'] : 0;
         $this->answers_total = isset($data['answers_total']) ? $data['answers_total'] : 0;
         $this->answers_correct = isset($data['answers_correct']) ? $data['answers_correct'] : 0;
-        $this->state = isset($data['finished']) ? $data['finished'] : 'progress';
+        $this->state = isset($data['state']) ? $data['state'] : 'progress';
     }
 
     /**
