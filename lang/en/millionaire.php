@@ -137,6 +137,8 @@ $string['game_btn_restart'] = 'New Game';
 $string['game_btn_continue'] = 'Next Question';
 $string['game_btn_stats'] = 'Leader Board';
 $string['game_btn_quit'] = 'Quit';
+$string['game_won_headline'] = 'You won!';
+$string['game_lost_headline'] = 'Sorry, you lost.';
 
 
 $string['topic'] = 'Topic';

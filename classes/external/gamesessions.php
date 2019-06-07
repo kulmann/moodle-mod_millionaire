@@ -147,6 +147,7 @@ class gamesessions extends external_api {
         }
         if ($gamesession->is_in_progress()) {
             $gamesession->set_state(gamesession::STATE_FINISHED);
+            $gamesession->set_won(true);
             $gamesession->save();
         }
 
@@ -401,7 +402,10 @@ class gamesessions extends external_api {
             $gamesession->increment_answers_correct();
         }
         if ($gamesession->get_answers_total() === $game->count_active_levels()) {
+            // set to finished
             $gamesession->set_state(gamesession::STATE_FINISHED);
+            // determine if user won
+            $gamesession->set_won($gamesession->is_continue_on_failure() || $question->is_correct());
         }
         $gamesession->save();
 

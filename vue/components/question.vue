@@ -8,6 +8,7 @@
                         span
                         span
             template(v-else)
+                finished(v-if="isGameFinished")
                 div(:is="componentByType")
                 actions(v-if="isCurrentQuestion && !isGameOver").uk-margin-small-top
         .uk-alert.uk-alert-primary(uk-alert, v-else)
@@ -16,6 +17,7 @@
 
 <script>
     import {mapState} from 'vuex';
+    import gameFinished from './game-finished';
     import mixins from '../mixins';
     import questionActions from './question-actions';
     import questionError from './question-error';
@@ -41,7 +43,7 @@
                 }
             },
             highestSeenLevel() {
-                let seenLevels = _.filter(this.levels, function(level) {
+                let seenLevels = _.filter(this.levels, function (level) {
                     return level.seen;
                 });
                 if (seenLevels.length === 0) {
@@ -57,10 +59,14 @@
             isGameOver() {
                 return this.gameSession.state !== 'progress';
             },
+            isGameFinished() {
+                return this.gameSession.state === 'finished';
+            }
         },
         components: {
             'actions': questionActions,
             'error': questionError,
+            'finished': gameFinished,
             'singlechoice': questionSingleChoice,
         }
     }

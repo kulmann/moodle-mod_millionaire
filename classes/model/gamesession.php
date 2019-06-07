@@ -67,6 +67,10 @@ class gamesession extends abstract_model {
      * @var string The state of the gamesession, out of [progress, finished, dumped].
      */
     protected $state;
+    /**
+     * @var bool Whether or not the gamesession is won.
+     */
+    protected $won;
 
     /**
      * gamesession constructor.
@@ -82,6 +86,7 @@ class gamesession extends abstract_model {
         $this->answers_total = 0;
         $this->answers_correct = 0;
         $this->state = 'progress';
+        $this->won = false;
     }
 
     /**
@@ -105,6 +110,7 @@ class gamesession extends abstract_model {
         $this->answers_total = isset($data['answers_total']) ? $data['answers_total'] : 0;
         $this->answers_correct = isset($data['answers_correct']) ? $data['answers_correct'] : 0;
         $this->state = isset($data['state']) ? $data['state'] : 'progress';
+        $this->won = isset($data['won']) ? ($data['won'] == 1) : false;
     }
 
     /**
@@ -183,7 +189,7 @@ class gamesession extends abstract_model {
             return $level;
         }
         $highest = \array_shift($levels);
-        $level->apply($highest);
+        $level->load_data_by_id($highest->id);
         return $level;
     }
 
@@ -382,5 +388,19 @@ class gamesession extends abstract_model {
      */
     public function set_state(string $state): void {
         $this->state = $state;
+    }
+
+    /**
+     * @return bool
+     */
+    public function is_won(): bool {
+        return $this->won;
+    }
+
+    /**
+     * @param bool $won
+     */
+    public function set_won(bool $won): void {
+        $this->won = $won;
     }
 }

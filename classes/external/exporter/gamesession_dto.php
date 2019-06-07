@@ -92,6 +92,10 @@ class gamesession_dto extends exporter {
                 'type' => PARAM_TEXT,
                 'description' => 'progress, finished or dumped',
             ],
+            'won' => [
+                'type' => PARAM_BOOL,
+                'description' => 'whether or not the game session is won'
+            ],
             'current_level' => [
                 'type' => PARAM_INT,
                 'description' => 'the index of the current level'
@@ -106,11 +110,16 @@ class gamesession_dto extends exporter {
     }
 
     protected function get_other_values(renderer_base $output) {
-        return \array_merge(
+        // collect data
+        $result = \array_merge(
             $this->gamesession->to_array(),
             [
                 'current_level' => $this->gamesession->get_answers_total()
             ]
         );
+        // make sure that only finished game sessions can be shown as won.
+        $result['won'] &= $result['state'] === gamesession::STATE_FINISHED;
+        // return
+        return $result;
     }
 }
