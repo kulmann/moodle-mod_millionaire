@@ -368,7 +368,7 @@ class gamesessions extends external_api {
             }
         );
         if (count($correct_mdl_answers) !== 1) {
-            throw new \moodle_exception('The moodle question with id ' . $question->get_mdl_question() . ' seems to be unapplicable for this activity.');
+            throw new \moodle_exception('The moodle question with id ' . $question->get_mdl_question() . ' seems to be inapplicable for this activity.');
         }
         $correct_mdl_answer = \array_pop($correct_mdl_answers);
         \assert($correct_mdl_answer instanceof \question_answer);
