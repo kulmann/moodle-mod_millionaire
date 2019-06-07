@@ -10,11 +10,21 @@ export default {
                 return _.replace(tmp, '{$a}', params);
             } else {
                 // figure this out when it's needed
-                return 'yo! implement multi param strings.';
+                return 'todo: implement multi param strings.';
             }
         }
     },
     methods: {
-
+        findHighestSeenLevel(levels) {
+            let sortedLevels = _.sortBy(levels, ['position']);
+            let seenLevels = _.filter(sortedLevels, function (level) {
+                return level.seen;
+            });
+            if (seenLevels.length === 0) {
+                return _.first(sortedLevels);
+            } else {
+                return _.last(seenLevels);
+            }
+        },
     }
 }

@@ -1,10 +1,14 @@
 <template lang="pug">
     #millionaire-intro
-        p Blabla intro text. Start game by clicking on the first level or hit the button "new game" at the top bar.
+        .uk-alert.uk-alert-warning
+            p(v-html="strings.game_intro_message")
+        p.uk-text-center
+            button.uk-button.uk-button-primary(@click="startGame")
+                span {{ strings.game_btn_start }}
 </template>
 
 <script>
-    import {mapState} from 'vuex';
+    import {mapActions, mapState} from 'vuex';
     import mixins from '../mixins';
 
     export default {
@@ -14,5 +18,13 @@
                 'strings'
             ]),
         },
+        methods: {
+            ...mapActions([
+                'showQuestionForLevel'
+            ]),
+            startGame() {
+                this.showQuestionForLevel(0);
+            }
+        }
     }
 </script>

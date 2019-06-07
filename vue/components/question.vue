@@ -43,15 +43,7 @@
                 }
             },
             highestSeenLevel() {
-                let seenLevels = _.filter(this.levels, function (level) {
-                    return level.seen;
-                });
-                if (seenLevels.length === 0) {
-                    return _.first(this.levels);
-                } else {
-                    let sortedSeenLevels = _.sortBy(seenLevels, ['position']);
-                    return _.last(sortedSeenLevels);
-                }
+                return this.findHighestSeenLevel(this.levels);
             },
             isCurrentQuestion() {
                 return this.highestSeenLevel.position === this.question.index;

@@ -18,7 +18,7 @@
                 'gameSession'
             ]),
             isOver() {
-                return this.gameSession.state !== 'process';
+                return this.gameSession.state !== 'progress';
             },
             isWon() {
                 return this.gameSession.won;

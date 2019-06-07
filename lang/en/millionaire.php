@@ -137,8 +137,13 @@ $string['game_btn_restart'] = 'New Game';
 $string['game_btn_continue'] = 'Next Question';
 $string['game_btn_stats'] = 'Leader Board';
 $string['game_btn_quit'] = 'Quit';
+$string['game_btn_start'] = 'Start Game';
+$string['game_btn_game'] = 'Show Game';
 $string['game_won_headline'] = 'You won!';
 $string['game_lost_headline'] = 'Sorry, you lost.';
+$string['game_intro_message'] = 'We need to place a logo, text, etc, here.';
+$string['game_help_headline'] = 'Game introduction';
+$string['game_help_message'] = '<ul><li>You can start a new game at any time by clicking »New Game«.</li><li>You can switch between the Leader Board and the actual Game at any time.</li><li>You can end the game with your current score by clicking »Quit« (button below the question).</li><li>Each game provides you with three jokers (top right).</li></ul>';
 
 
 $string['topic'] = 'Topic';

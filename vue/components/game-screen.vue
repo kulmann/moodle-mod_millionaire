@@ -7,13 +7,16 @@
                 intro(v-if="introVisible")
                 question(v-if="questionVisible")
                 stats(v-if="statsVisible")
+                help(v-if="helpVisible")
             div.uk-flex-right
                 jokers(v-if="questionVisible").uk-margin-small-bottom
                 levels
 </template>
 
 <script>
-    import {mapState, mapActions} from 'vuex';
+    import mixins from '../mixins';
+    import {mapActions, mapMutations, mapState} from 'vuex';
+    import help from './help';
     import intro from './intro';
     import jokers from './jokers';
     import levels from './levels';
@@ -23,6 +26,7 @@
     import VkGrid from "vuikit/src/library/grid/components/grid";
     import {
         MODE_GAME_FINISHED,
+        MODE_HELP,
         MODE_INTRO,
         MODE_QUESTION_ANSWERED,
         MODE_QUESTION_SHOWN,
@@ -30,10 +34,14 @@
     } from "../constants";
 
     export default {
+        mixins: [mixins],
         computed: {
             ...mapState([
                 'strings',
                 'gameMode',
+                'gameSession',
+                'levels',
+                'question',
             ]),
             introVisible() {
                 return this.gameMode === MODE_INTRO;
@@ -44,17 +52,42 @@
             },
             statsVisible() {
                 return this.gameMode === MODE_STATS;
+            },
+            helpVisible() {
+                return this.gameMode === MODE_HELP;
             }
         },
         methods: {
             ...mapActions([
-                'fetchGameSession'
+                'fetchGameSession',
+                'showQuestionForLevel',
+            ]),
+            ...mapMutations([
+                'setGameMode'
             ]),
         },
         created () {
-            this.fetchGameSession();
+            this.fetchGameSession().then(() => {
+                let highestSeenLevel = this.findHighestSeenLevel(this.levels);
+                if (highestSeenLevel.seen) {
+                    // the game was obviously already started. So fetch the last seen question.
+                    this.showQuestionForLevel(highestSeenLevel.position).then(() => {
+                        // set the appropriate game mode.
+                        if (this.gameSession.state === 'finished') {
+                            this.setGameMode(MODE_GAME_FINISHED);
+                        } else {
+                            if (this.question.finished) {
+                                this.setGameMode(MODE_QUESTION_ANSWERED);
+                            } else {
+                                this.setGameMode(MODE_QUESTION_SHOWN);
+                            }
+                        }
+                    });
+                }
+            });
         },
         components: {
+            help,
             intro,
             jokers,
             levels,

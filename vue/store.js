@@ -118,7 +118,7 @@ export const store = new Vuex.Store({
         async fetchGameSession(context) {
             const gameSession = await ajax('mod_millionaire_get_current_gamesession');
             context.commit('setGameSession', gameSession);
-            context.dispatch('fetchLevels');
+            return context.dispatch('fetchLevels');
         },
         /**
          * Forces that a new game session gets created. Dumps all old in progress game sessions.
@@ -130,7 +130,7 @@ export const store = new Vuex.Store({
         async createGameSession(context) {
             const gameSession = await ajax('mod_millionaire_create_gamesession');
             context.commit('setGameSession', gameSession);
-            context.dispatch('fetchLevels').then(() => {
+            return context.dispatch('fetchLevels').then(() => {
                 context.commit('setGameMode', MODE_INTRO);
             });
         },
@@ -149,7 +149,7 @@ export const store = new Vuex.Store({
             };
             const gameSession = await ajax('mod_millionaire_close_gamesession', args);
             context.commit('setGameSession', gameSession);
-            context.dispatch('fetchLevels').then(() => {
+            return context.dispatch('fetchLevels').then(() => {
                 context.commit('setGameMode', MODE_GAME_FINISHED);
             });
         },
@@ -162,7 +162,7 @@ export const store = new Vuex.Store({
          * @returns {Promise<void>}
          */
         async showQuestionForLevel(context, levelIndex) {
-            context.dispatch('fetchQuestion', levelIndex).then(() => {
+            return context.dispatch('fetchQuestion', levelIndex).then(() => {
                 context.commit('markLevelAsSeen', levelIndex);
                 context.commit('setGameMode', MODE_QUESTION_SHOWN);
             });
@@ -179,7 +179,7 @@ export const store = new Vuex.Store({
             context.commit('setGameMode', MODE_QUESTION_ANSWERED);
             const result = await ajax('mod_millionaire_submit_answer', payload);
             context.commit('setQuestion', result);
-            context.dispatch('fetchGameSession').then(() => {
+            return context.dispatch('fetchGameSession').then(() => {
                 if (this.state.gameSession.finished) {
                     context.commit('setGameMode', MODE_GAME_FINISHED);
                 }

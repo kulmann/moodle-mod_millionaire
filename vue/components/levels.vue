@@ -65,7 +65,7 @@
                     } else if (this.isWon(level)) {
                         return 'check';
                     } else if (this.isLost(level)) {
-                        return 'cross';
+                        return 'times';
                     } else if (this.isGameOver()) {
                         return 'lock';
                     } else {

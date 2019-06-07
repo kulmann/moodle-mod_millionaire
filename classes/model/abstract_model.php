@@ -94,13 +94,13 @@ abstract class abstract_model extends \stdClass {
      */
     public function save(): void {
         global $DB;
+        if (property_exists($this, 'timemodified')) {
+            $this->timemodified = \time();
+        }
         if ($this->get_id() === null || $this->get_id() === 0) {
             $insertedid = $DB->insert_record($this->get_table_name(), $this->to_data_object());
             $this->set_id($insertedid);
         } else {
-            if (property_exists($this, 'timemodified')) {
-                $this->timemodified = \time();
-            }
             $DB->update_record($this->get_table_name(), $this->to_data_object());
         }
     }
@@ -119,7 +119,7 @@ abstract class abstract_model extends \stdClass {
      *
      * @return \stdClass
      */
-    public function to_data_object(): \stdClass {
+    private function to_data_object(): \stdClass {
         $result = new \stdClass();
         $array = $this->to_array();
         foreach ($array as $key => $value) {
