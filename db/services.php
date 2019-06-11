@@ -78,5 +78,19 @@ $functions = [
         'description'  => 'Retrieves the moodle answers for a given moodle question.',
         'type' => 'read',
         'ajax' => true,
-    ]
+    ],
+    'mod_millionaire_get_used_jokers' => [
+        'classname' => 'mod_millionaire\external\jokers',
+        'methodname' => 'get_used_jokers',
+        'description' => 'Retrieves the used jokers for a given gamesession.',
+        'type' => 'read',
+        'ajax' => true
+    ],
+    'mod_millionaire_submit_joker' => [
+        'classname' => 'mod_millionaire\external\jokers',
+        'methodname' => 'submit_joker',
+        'description' => 'Submits a joker type for a given gamesession and question.',
+        'type' => 'write',
+        'ajax' => true
+    ],
 ];

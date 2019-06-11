@@ -1,7 +1,7 @@
 <template lang="pug">
     table.uk-table.uk-table-small.uk-table-striped
         tbody
-            tr.level.uk-text-nowrap(v-for="level in sortedLevels" :key="level.position", @click="showLevel(level)"
+            tr.level.uk-text-nowrap(v-for="level in sortedLevels" :key="level.position", @click="selectLevel(level)"
                 :class="{'_pointer': isDone(level) || isUpcoming(level), 'upcoming-level': isUpcoming(level) && isSeen(level), 'won-level': isWon(level), 'lost-level': isLost(level)}")
                 td.uk-table-shrink
                     v-icon(v-if="isSelected(level) && isWon(level)", name="flag-checkered", :scale="0.7")
@@ -99,7 +99,7 @@
                     return 0.7;
                 }
             },
-            showLevel(level) {
+            selectLevel(level) {
                 if (this.isDone(level) || this.isUpcoming(level)) {
                     this.showQuestionForLevel(level.position);
                 }

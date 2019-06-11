@@ -230,6 +230,20 @@ class gamesession extends abstract_model {
     }
 
     /**
+     * Checks if the given $joker_type is already used in this game session.
+     *
+     * @param string $joker_type
+     *
+     * @return bool
+     * @throws \dml_exception
+     */
+    public function is_joker_used($joker_type) {
+        global $DB;
+        $count = $DB->count_records_select('millionaire_jokers', 'gamesession = ? AND joker_type = ?', [$this->get_id(), $joker_type]);
+        return $count > 0;
+    }
+
+    /**
      * @return int
      */
     public function get_timecreated(): int {

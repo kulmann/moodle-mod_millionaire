@@ -9,7 +9,7 @@
                         span
             template(v-else)
                 finished(v-if="isGameFinished")
-                div(:is="componentByType", :levels="levels", :question="question", :mdl_question="mdl_question", :mdl_answers="mdl_answers")
+                div(:is="componentByType", :levels="levels", :question="question", :mdl_question="mdl_question", :mdl_answers="mdl_answers", :usedJokers="usedJokers")
                 actions(v-if="isCurrentQuestion && !isGameOver").uk-margin-small-top
         .uk-alert.uk-alert-primary(uk-alert, v-else)
             p Show info about level selection if not dead. If dead, show stats?!
@@ -31,6 +31,7 @@
                 'strings',
                 'gameSession',
                 'levels',
+                'usedJokers',
                 'question',
                 'mdl_question',
                 'mdl_answers'

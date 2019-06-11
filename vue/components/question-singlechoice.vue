@@ -14,10 +14,11 @@
 </template>
 
 <script>
-    import {mapState, mapActions} from 'vuex';
+    import {mapActions, mapState} from 'vuex';
     import mixins from '../mixins';
     import VkGrid from "vuikit/src/library/grid/components/grid";
     import _ from 'lodash';
+    import {JOKER_CHANCE} from "../constants";
 
     export default {
         mixins: [mixins],
@@ -26,6 +27,7 @@
             question: Object,
             mdl_question: Object,
             mdl_answers: Array,
+            usedJokers: Array,
         },
         data() {
             return {
@@ -84,11 +86,14 @@
                     // don't allow another submission
                     return;
                 }
+                if (this.isAnswerDisabled(answer)) {
+                    // don't allow selecting a disabled answer
+                    return;
+                }
                 this.mostRecentQuestionId = this.question.id;
                 this.clickedAnswerId = answer.id;
                 this.submitAnswer({
                     'gamesessionid': this.question.gamesession,
-                    'levelid': this.question.level,
                     'questionid': this.question.id,
                     'mdlanswerid': this.clickedAnswerId,
                 });
@@ -99,6 +104,9 @@
             },
             getAnswerClasses(answer) {
                 let result = [];
+                if (this.isAnswerDisabled(answer)) {
+                    result.push('uk-alert-danger');
+                }
                 if (this.isAnyAnswerGiven) {
                     if (this.isCorrectAnswer(answer)) {
                         result.push('uk-alert-success');
@@ -109,10 +117,22 @@
                             result.push('uk-alert-danger');
                         }
                     }
-                } else {
+                } else if(!this.isAnswerDisabled(answer)) {
                     result.push('_pointer');
                 }
                 return result.join(' ');
+            },
+            isAnswerDisabled(answer) {
+                let jokerChance = this.getUsedJokerByType(JOKER_CHANCE);
+                if (jokerChance) {
+                    let disabledAnswerIds = _.map(_.split(jokerChance.joker_data, ","), function (strId) {
+                        return parseInt(strId);
+                    });
+                    if (_.includes(disabledAnswerIds, answer.id)) {
+                        return true;
+                    }
+                }
+                return false;
             },
             isClickedAnswer(answer) {
                 return this.isAnyAnswerGiven && this.clickedAnswerId === answer.id;
@@ -126,7 +146,12 @@
             initQuestion() {
                 this.mostRecentQuestionId = this.question.id;
                 this.clickedAnswerId = (this.question.mdl_answer > 0) ? this.question.mdl_answer : null;
-            }
+            },
+            getUsedJokerByType(type) {
+                return _.find(this.usedJokers, function (joker) {
+                    return joker.joker_type === type && joker.question === this.question.id;
+                }.bind(this));
+            },
         },
         mounted() {
             if (this.question) {

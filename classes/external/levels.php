@@ -16,14 +16,12 @@
 
 namespace mod_millionaire\external;
 
+use external_api;
 use external_function_parameters;
 use external_multiple_structure;
 use external_value;
 use mod_millionaire\external\exporter\level_dto;
-use mod_millionaire\model\game;
-use mod_millionaire\model\gamesession;
 use mod_millionaire\model\level;
-use external_api;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -35,6 +33,12 @@ defined('MOODLE_INTERNAL') || die();
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class levels extends external_api {
+
+    /**
+     * Definition of parameters for {@see get_levels}.
+     *
+     * @return external_function_parameters
+     */
     public static function get_levels_parameters() {
         return new external_function_parameters([
             'coursemoduleid' => new external_value(PARAM_INT, 'course module id'),
@@ -43,6 +47,11 @@ class levels extends external_api {
         ]);
     }
 
+    /**
+     * Definition of return type for {@see get_levels}.
+     *
+     * @return external_multiple_structure
+     */
     public static function get_levels_returns() {
         return new external_multiple_structure(
             level_dto::get_read_structure()
@@ -73,14 +82,12 @@ class levels extends external_api {
         global $PAGE, $DB;
         $renderer = $PAGE->get_renderer('core');
         $ctx = $coursemodule->context;
-        $game_data = $DB->get_record('millionaire', ['id' => $coursemodule->instance]);
-        $game = new game();
-        $game->apply($game_data);
+        $game = util::get_game($coursemodule);
 
         // try to get gamesession - only if it exists! don't create one here!
         if ($gamesessionid > 0) {
-            $gamesession = new gamesession();
-            $gamesession->load_data_by_id($gamesessionid);
+            $gamesession = util::get_gamesession($gamesessionid);
+            util::validate_gamesession($game, $gamesession);
         } else {
             $gamesession = null;
         }

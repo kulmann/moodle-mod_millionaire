@@ -1,22 +1,22 @@
 <template lang="pug">
     .joker-container.uk-flex.uk-flex-center.uk-flex-middle
-        button.uk-button.uk-button-primary.uk-button-small(@click="submitJoker(feedback)", :disabled="isJokerDisabled(feedback)").uk-margin-small-left
+        button.uk-button.uk-button-primary.uk-button-small(@click="selectJoker(feedback)", :disabled="isJokerDisabled(feedback)").uk-margin-small-left
             v-icon(name="comment-dots")
-        button.uk-button.uk-button-primary.uk-button-small(@click="submitJoker(crowd)", :disabled="isJokerDisabled(crowd)").uk-margin-small-left.uk-margin-small-right
+        button.uk-button.uk-button-primary.uk-button-small(@click="selectJoker(crowd)", :disabled="isJokerDisabled(crowd)").uk-margin-small-left.uk-margin-small-right
             v-icon(name="users")
-        button.uk-button.uk-button-primary.uk-button-small(@click="submitJoker(chance)", :disabled="isJokerDisabled(chance)").uk-margin-small-right
+        button.uk-button.uk-button-primary.uk-button-small(@click="selectJoker(chance)", :disabled="isJokerDisabled(chance)").uk-margin-small-right
             v-icon(name="percent")
 </template>
 
 <script>
-    import {mapState} from 'vuex';
+    import {mapActions, mapState} from 'vuex';
     import {
+        JOKER_CHANCE,
+        JOKER_CROWD,
+        JOKER_FEEDBACK,
         MODE_GAME_FINISHED,
         MODE_QUESTION_ANSWERED,
         MODE_QUESTION_SHOWN,
-        JOKER_FEEDBACK,
-        JOKER_CROWD,
-        JOKER_CHANCE,
         VALID_JOKERS
     } from "../constants";
     import _ from 'lodash';
@@ -26,6 +26,7 @@
             ...mapState([
                 'strings',
                 'gameSession',
+                'usedJokers',
                 'question',
                 'gameMode',
             ]),
@@ -40,6 +41,9 @@
             }
         },
         methods: {
+            ...mapActions([
+                'submitJoker'
+            ]),
             isInGame() {
                 let modes = [MODE_QUESTION_SHOWN, MODE_QUESTION_ANSWERED, MODE_GAME_FINISHED];
                 return _.includes(modes, this.gameMode);
@@ -51,13 +55,21 @@
                 if (!this.isInGame() || !this.isJokerValid(type)) {
                     return true;
                 }
-                return type === 'crowd';
+                let joker = _.find(this.usedJokers, function (joker) {
+                    return joker.joker_type === type;
+                });
+                return !!joker;
             },
-            submitJoker(type) {
+            selectJoker(type) {
                 if (this.isJokerDisabled(type)) {
                     return;
                 }
-                console.log("TODO: implement joker type " + type);
+                let args = {
+                    gamesessionid: this.gameSession.id,
+                    questionid: this.question.id,
+                    jokertype: type,
+                };
+                this.submitJoker(args);
             }
         },
     }

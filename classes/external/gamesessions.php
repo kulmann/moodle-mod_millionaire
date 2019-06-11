@@ -21,7 +21,6 @@ use external_function_parameters;
 use external_value;
 use mod_millionaire\external\exporter\gamesession_dto;
 use mod_millionaire\external\exporter\question_dto;
-use mod_millionaire\model\game;
 use mod_millionaire\model\gamesession;
 use mod_millionaire\model\question;
 
@@ -80,13 +79,13 @@ class gamesessions extends external_api {
         global $PAGE;
         $renderer = $PAGE->get_renderer('core');
         $ctx = $coursemodule->context;
-        $game = self::get_game($coursemodule);
+        $game = util::get_game($coursemodule);
 
         // dump existing game sessions
-        self::dump_running_gamesessions($game);
+        util::dump_running_gamesessions($game);
 
         // create a new one
-        $gamesession = self::insert_gamesession($game);
+        $gamesession = util::insert_gamesession($game);
 
         // return it
         $exporter = new gamesession_dto($gamesession, $ctx);
@@ -137,14 +136,13 @@ class gamesessions extends external_api {
         global $PAGE, $USER;
         $renderer = $PAGE->get_renderer('core');
         $ctx = $coursemodule->context;
-        $game = self::get_game($coursemodule);
+        $game = util::get_game($coursemodule);
 
         // get gamesession by the provided id
-        $gamesession = new gamesession();
-        $gamesession->load_data_by_id($gamesessionid);
-        if (\intval($gamesession->get_mdl_user()) !== \intval($USER->id)) {
-            throw new \invalid_parameter_exception("Game session doesn't belong to current user.");
-        }
+        $gamesession = util::get_gamesession($gamesessionid);
+        util::validate_gamesession($game, $gamesession);
+
+        // close the gamesession
         if ($gamesession->is_in_progress()) {
             $gamesession->set_state(gamesession::STATE_FINISHED);
             $gamesession->set_won(true);
@@ -198,10 +196,10 @@ class gamesessions extends external_api {
         global $PAGE;
         $renderer = $PAGE->get_renderer('core');
         $ctx = $coursemodule->context;
-        $game = self::get_game($coursemodule);
+        $game = util::get_game($coursemodule);
 
         // try to find existing in-progress gamesession or create a new one
-        $gamesession = self::get_or_create_gamesession($game);
+        $gamesession = util::get_or_create_gamesession($game);
         $exporter = new gamesession_dto($gamesession, $ctx);
         return $exporter->export($renderer);
     }
@@ -255,10 +253,11 @@ class gamesessions extends external_api {
         global $PAGE, $DB;
         $renderer = $PAGE->get_renderer('core');
         $ctx = $coursemodule->context;
-        $game = self::get_game($coursemodule);
+        $game = util::get_game($coursemodule);
 
         // try to find existing in-progress gamesession or create a new one
-        $gamesession = self::get_or_create_gamesession($game);
+        $gamesession = util::get_or_create_gamesession($game);
+        util::validate_gamesession($game, $gamesession);
 
         // grab the requested level
         $level = $gamesession->get_level_by_index($levelindex);
@@ -287,7 +286,6 @@ class gamesessions extends external_api {
         return new external_function_parameters([
             'coursemoduleid' => new external_value(PARAM_INT, 'course module id'),
             'gamesessionid' => new external_value(PARAM_INT, 'game session id'),
-            'levelid' => new external_value(PARAM_INT, 'level id'),
             'questionid' => new external_value(PARAM_INT, 'question id'),
             'mdlanswerid' => new external_value(PARAM_INT, 'id of the selected moodle answer'),
         ]);
@@ -307,7 +305,6 @@ class gamesessions extends external_api {
      *
      * @param int $coursemoduleid
      * @param int $gamesessionid
-     * @param int $levelid
      * @param int $questionid
      * @param int $mdlanswerid
      *
@@ -317,11 +314,10 @@ class gamesessions extends external_api {
      * @throws \moodle_exception
      * @throws \restricted_context_exception
      */
-    public static function submit_answer($coursemoduleid, $gamesessionid, $levelid, $questionid, $mdlanswerid) {
+    public static function submit_answer($coursemoduleid, $gamesessionid, $questionid, $mdlanswerid) {
         $params = [
             'coursemoduleid' => $coursemoduleid,
             'gamesessionid' => $gamesessionid,
-            'levelid' => $levelid,
             'questionid' => $questionid,
             'mdlanswerid' => $mdlanswerid,
         ];
@@ -333,25 +329,18 @@ class gamesessions extends external_api {
         global $PAGE, $DB;
         $renderer = $PAGE->get_renderer('core');
         $ctx = $coursemodule->context;
-        $game = self::get_game($coursemodule);
+        $game = util::get_game($coursemodule);
 
         // try to find existing in-progress gamesession or create a new one
-        $gamesession = self::get_or_create_gamesession($game);
+        $gamesession = util::get_gamesession($gamesessionid);
         if (!$gamesession->is_in_progress()) {
             throw new \moodle_exception('gamesession is not available anymore.');
         }
+        util::validate_gamesession($game, $gamesession);
 
-        // try to find level and validate against input data
-        $level = $gamesession->get_current_level();
-        if ($level->get_id() !== $levelid) {
-            throw new \invalid_parameter_exception('inconsistent input data. given level is not the current level of this gamesession.');
-        }
-
-        // try to find question and validate against input data
-        $question = $gamesession->get_question_by_level($levelid);
-        if ($question === null || $question->get_id() !== $questionid) {
-            throw new \invalid_parameter_exception('inconsistent input data. question doesn\'t belong to this gamesession.');
-        }
+        // get the question
+        $question = util::get_question($questionid);
+        util::validate_question($gamesession, $question);
         if ($question->is_finished()) {
             throw new \moodle_exception('question has already been answered.');
         }
@@ -359,6 +348,9 @@ class gamesessions extends external_api {
         if (!property_exists($mdl_question, 'answers')) {
             throw new \coding_exception('property »answers« doesn\'t exist on the moodle question with id ' . $question->get_mdl_question() . '.');
         }
+
+        // load the level
+        $level = util::get_level($question->get_level());
 
         // submit the answer
         $correct_mdl_answers = \array_filter(
@@ -412,93 +404,5 @@ class gamesessions extends external_api {
         // return result object
         $exporter = new question_dto($question, $level, $ctx);
         return $exporter->export($renderer);
-    }
-
-    /**
-     * Gets the game instance from the database.
-     *
-     * @param \cm_info $coursemodule
-     *
-     * @return game
-     * @throws \dml_exception
-     */
-    private static function get_game(\cm_info $coursemodule) {
-        global $DB;
-        $game_data = $DB->get_record('millionaire', ['id' => $coursemodule->instance]);
-        $game = new game();
-        $game->apply($game_data);
-        return $game;
-    }
-
-    /**
-     * Gets or creates a gamesession for the current user. Allowed existing gamesessions are either in state
-     * PROGRESS or FINISHED.
-     *
-     * @param game $game
-     *
-     * @return gamesession
-     * @throws \dml_exception
-     */
-    private static function get_or_create_gamesession(game $game) {
-        global $DB, $USER;
-        // try to find existing in-progress or finished gamesession
-        $sql = "
-            SELECT *
-              FROM {millionaire_gamesessions}
-             WHERE game = ? AND mdl_user = ? AND state IN (?, ?)
-          ORDER BY timemodified DESC
-        ";
-        $params = [
-            $game->get_id(),
-            $USER->id,
-            gamesession::STATE_PROGRESS,
-            gamesession::STATE_FINISHED,
-        ];
-        $record = $DB->get_record_sql($sql, $params);
-        // get or create gamesession
-        if ($record === false) {
-            $gamesession = self::insert_gamesession($game);
-        } else {
-            $gamesession = new gamesession();
-            $gamesession->apply($record);
-        }
-        return $gamesession;
-    }
-
-    /**
-     * Closes all game sessions of the current user, which are in state 'progress'.
-     *
-     * @param game $game
-     *
-     * @return void
-     * @throws \dml_exception
-     */
-    private static function dump_running_gamesessions(game $game) {
-        global $DB, $USER;
-        $conditions = [
-            'game' => $game->get_id(),
-            'mdl_user' => $USER->id,
-            'state' => gamesession::STATE_PROGRESS,
-        ];
-        $gamesession = new gamesession();
-        $DB->set_field($gamesession->get_table_name(), 'state', $gamesession::STATE_DUMPED, $conditions);
-    }
-
-    /**
-     * Inserts a new game session into the DB (for the current user).
-     *
-     * @param game $game
-     *
-     * @return gamesession
-     * @throws \dml_exception
-     */
-    private static function insert_gamesession(game $game) {
-        global $USER;
-        $gamesession = new gamesession();
-        $gamesession->set_game($game->get_id());
-        $gamesession->set_mdl_user($USER->id);
-        $gamesession->set_continue_on_failure($game->is_continue_on_failure());
-        $gamesession->save();
-        return $gamesession;
     }
 }

@@ -20,8 +20,8 @@ export const store = new Vuex.Store({
         question: null,
         mdl_question: null,
         mdl_answers: [],
+        usedJokers: [],
         gameMode: MODE_INTRO,
-        gameCurrentLevel: null,
     },
     //strict: process.env.NODE_ENV !== 'production',
     mutations: {
@@ -39,6 +39,9 @@ export const store = new Vuex.Store({
         },
         setLevels(state, levels) {
             state.levels = levels;
+        },
+        setUsedJokers(state, usedJokers) {
+            state.usedJokers = usedJokers;
         },
         setGameSession(state, gameSession) {
             state.gameSession = gameSession;
@@ -60,7 +63,7 @@ export const store = new Vuex.Store({
             }
         },
         markLevelAsSeen(state, levelIndex) {
-            let level = _.find(state.levels, function(level) {
+            let level = _.find(state.levels, function (level) {
                 return level.position === levelIndex;
             });
             level.seen = true;
@@ -118,7 +121,10 @@ export const store = new Vuex.Store({
         async fetchGameSession(context) {
             const gameSession = await ajax('mod_millionaire_get_current_gamesession');
             context.commit('setGameSession', gameSession);
-            return context.dispatch('fetchLevels');
+            return Promise.all([
+                context.dispatch('fetchLevels'),
+                context.dispatch('fetchUsedJokers')
+            ]);
         },
         /**
          * Forces that a new game session gets created. Dumps all old in progress game sessions.
@@ -132,6 +138,7 @@ export const store = new Vuex.Store({
             context.commit('setGameSession', gameSession);
             return context.dispatch('fetchLevels').then(() => {
                 context.commit('setQuestion', null);
+                context.commit('setUsedJokers', []);
                 context.commit('setGameMode', MODE_INTRO);
             });
         },
@@ -186,6 +193,20 @@ export const store = new Vuex.Store({
                 }
             });
         },
+        /**
+         * Submits a joker to the currently loaded question.
+         *
+         * @param context
+         * @param payload
+         *
+         * @returns {Promise<void>}
+         */
+        async submitJoker(context, payload) {
+            const result = await ajax('mod_millionaire_submit_joker', payload);
+            let usedJokers = this.state.usedJokers;
+            usedJokers.push(result);
+            context.commit('setUsedJokers', usedJokers);
+        },
 
         // INTERNAL FUNCTIONS. these shouldn't be called from outside the store.
         // TODO: would be nice to be able to actually prevent these actions from being called from outside the store.
@@ -204,6 +225,21 @@ export const store = new Vuex.Store({
             }
             const levels = await ajax('mod_millionaire_get_levels', args);
             context.commit('setLevels', levels);
+        },
+        /**
+         * Fetches already used jokers for the current game session.
+         * Should not be called directly. Will be called automatically in fetchGameSession.
+         *
+         * @param context
+         *
+         * @returns {Promise<void>}
+         */
+        async fetchUsedJokers(context) {
+            let args = {
+                gamesessionid: this.state.gameSession.id,
+            };
+            const usedJokers = await ajax('mod_millionaire_get_used_jokers', args);
+            context.commit('setUsedJokers', usedJokers);
         },
         /**
          * Fetches the question, moodle question and moodle answers for the given level index.
