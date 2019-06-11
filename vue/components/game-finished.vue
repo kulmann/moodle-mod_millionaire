@@ -9,6 +9,7 @@
 <script>
     import {mapState} from 'vuex';
     import mixins from '../mixins';
+    import {GAME_PROGRESS} from "../constants";
 
     export default {
         mixins: [mixins],
@@ -18,7 +19,7 @@
                 'gameSession'
             ]),
             isOver() {
-                return this.gameSession.state !== 'progress';
+                return this.gameSession.state !== GAME_PROGRESS;
             },
             isWon() {
                 return this.gameSession.won;

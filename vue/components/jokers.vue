@@ -1,5 +1,5 @@
 <template lang="pug">
-    #millionaire-game_jokers.uk-text-center
+    .joker-container.uk-flex.uk-flex-center.uk-flex-middle
         button.uk-button.uk-button-primary.uk-button-small(@click="submitJoker(feedback)", :disabled="isJokerDisabled(feedback)").uk-margin-small-left
             v-icon(name="comment-dots")
         button.uk-button.uk-button-primary.uk-button-small(@click="submitJoker(crowd)", :disabled="isJokerDisabled(crowd)").uk-margin-small-left.uk-margin-small-right
@@ -62,3 +62,11 @@
         },
     }
 </script>
+
+<style scoped>
+    .joker-container {
+        background-color: #f8f8f8;
+        border: 1px solid #ccc;
+        height: 50px;
+    }
+</style>

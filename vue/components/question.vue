@@ -9,7 +9,7 @@
                         span
             template(v-else)
                 finished(v-if="isGameFinished")
-                div(:is="componentByType")
+                div(:is="componentByType", :levels="levels", :question="question", :mdl_question="mdl_question", :mdl_answers="mdl_answers")
                 actions(v-if="isCurrentQuestion && !isGameOver").uk-margin-small-top
         .uk-alert.uk-alert-primary(uk-alert, v-else)
             p Show info about level selection if not dead. If dead, show stats?!
@@ -22,7 +22,7 @@
     import questionActions from './question-actions';
     import questionError from './question-error';
     import questionSingleChoice from './question-singlechoice';
-    import _ from 'lodash';
+    import {GAME_FINISHED, GAME_PROGRESS} from "../constants";
 
     export default {
         mixins: [mixins],
@@ -32,7 +32,8 @@
                 'gameSession',
                 'levels',
                 'question',
-                'mdl_question'
+                'mdl_question',
+                'mdl_answers'
             ]),
             componentByType() {
                 switch (this.question.mdl_question_type) {
@@ -49,10 +50,10 @@
                 return this.highestSeenLevel.position === this.question.index;
             },
             isGameOver() {
-                return this.gameSession.state !== 'progress';
+                return this.gameSession.state !== GAME_PROGRESS;
             },
             isGameFinished() {
-                return this.gameSession.state === 'finished';
+                return this.gameSession.state === GAME_FINISHED;
             }
         },
         components: {

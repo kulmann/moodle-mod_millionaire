@@ -21,6 +21,12 @@
 
     export default {
         mixins: [mixins],
+        props: {
+            levels: Array,
+            question: Object,
+            mdl_question: Object,
+            mdl_answers: Array,
+        },
         data() {
             return {
                 mostRecentQuestionId: null,
@@ -30,10 +36,6 @@
         computed: {
             ...mapState([
                 'strings',
-                'levels',
-                'question',
-                'mdl_question',
-                'mdl_answers'
             ]),
             correctAnswerId() {
                 let correct = _.find(this.mdl_answers, function (mdl_answer) {
