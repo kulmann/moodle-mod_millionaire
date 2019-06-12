@@ -27,6 +27,7 @@ export const store = new Vuex.Store({
         mdl_answers: [],
         usedJokers: [],
         gameMode: MODE_INTRO,
+        scores: [],
     },
     //strict: process.env.NODE_ENV !== 'production',
     mutations: {
@@ -72,7 +73,10 @@ export const store = new Vuex.Store({
                 return level.position === levelIndex;
             });
             level.seen = true;
-        }
+        },
+        setScores(state, scores) {
+            state.scores = scores;
+        },
     },
     getters: {
         getUsedJokerByType: (state) => (type) => {
@@ -217,6 +221,17 @@ export const store = new Vuex.Store({
             let usedJokers = this.state.usedJokers;
             usedJokers.push(result);
             context.commit('setUsedJokers', usedJokers);
+        },
+        /**
+         * Fetches scores according to the current scoring mode of the game.
+         *
+         * @param context
+         *
+         * @returns {Promise<void>}
+         */
+        async fetchScores(context) {
+            const scores = await ajax('mod_millionaire_get_scores_global');
+            context.commit('setScores', scores);
         },
 
         // INTERNAL FUNCTIONS. these shouldn't be called from outside the store.

@@ -133,6 +133,8 @@ $string['course_reset_include_topics'] = 'Reset topics etc. (Everything will be 
 $string['game_screen_title'] = 'Play »Who wants to be a millionaire«';
 $string['game_qtype_not_supported'] = 'The question type »{$a}« is not supported.';
 $string['game_loading_question'] = 'Loading question details';
+$string['game_loading_stats'] = 'Loading leader board';
+$string['game_loading_stats_failed'] = 'An error occurred while loading the leader board.';
 $string['game_btn_restart'] = 'New Game';
 $string['game_btn_continue'] = 'Next Question';
 $string['game_btn_stats'] = 'Leader Board';
@@ -148,6 +150,9 @@ $string['game_help_message'] = '<ul><li>You can start a new game at any time by 
 $string['game_joker_feedback_unavailable'] = 'Unfortunately there is no hint available for this question.';
 $string['game_joker_feedback_title'] = 'Hint:';
 $string['game_joker_audience_title'] = 'Audience lifeline:';
+$string['game_stats_rank'] = 'Rank';
+$string['game_stats_user'] = 'User';
+$string['game_stats_score'] = 'Score';
 
 
 $string['topic'] = 'Topic';

@@ -127,10 +127,10 @@ class gamesession extends abstract_model {
             SELECT q.id
               FROM {millionaire_questions} AS q
         INNER JOIN {millionaire_levels} AS l on q.level = l.id 
-             WHERE q.gamesession = ?
+             WHERE q.gamesession = :gamesession
           ORDER BY l.position DESC
         ";
-        $questions = $DB->get_records_sql($sql_questions, [$this->get_id()]);
+        $questions = $DB->get_records_sql($sql_questions, ['gamesession' => $this->get_id()]);
         if ($questions === false || empty($questions)) {
             return null;
         }
@@ -175,7 +175,7 @@ class gamesession extends abstract_model {
     public function get_level_by_index($index): level {
         global $DB;
         $level = new level();
-        $record = $DB->get_record_select($level->get_table_name(), 'game = ? AND position = ?', [$this->get_game(), $index]);
+        $record = $DB->get_record_select($level->get_table_name(), 'game = :game AND position = :position', ['game' => $this->get_game(), 'position' => $index]);
         if ($record === false) {
             throw new \dml_exception('There is no level with position=' . $index . ' for the game with id ' . $this->get_game());
         }
@@ -195,10 +195,10 @@ class gamesession extends abstract_model {
             SELECT l.id
               FROM {millionaire_levels} AS l
         INNER JOIN {millionaire_questions} AS q on l.id=q.level
-             WHERE l.game = ? AND q.gamesession = ? AND l.safe_spot = ?
+             WHERE l.game = :game AND q.gamesession = :gamesession AND l.safe_spot = :safe_spot
           ORDER BY l.position DESC
         ";
-        $levels = $DB->get_records_sql($sql, [$this->get_game(), $this->get_id(), 1]);
+        $levels = $DB->get_records_sql($sql, ['game' => $this->get_game(), 'gamesession' => $this->get_id(), 'safe_spot' => true]);
         $level = new level();
         if ($levels === false || empty($levels)) {
             $level->set_game($this->get_game());
@@ -236,8 +236,8 @@ class gamesession extends abstract_model {
         $question = new question();
         $record = $DB->get_record_select(
             $question->get_table_name(),
-            'gamesession = ? AND level = ?',
-            [$this->get_id(), $id_level]
+            'gamesession = :gamesession AND level = :level',
+            ['gamesession' => $this->get_id(), 'level' => $id_level]
         );
         if ($record) {
             $question->apply($record);
@@ -257,7 +257,7 @@ class gamesession extends abstract_model {
      */
     public function is_joker_used($joker_type) {
         global $DB;
-        $count = $DB->count_records_select('millionaire_jokers', 'gamesession = ? AND joker_type = ?', [$this->get_id(), $joker_type]);
+        $count = $DB->count_records_select('millionaire_jokers', 'gamesession = :gamesession AND joker_type = :joker_type', ['gamesession' => $this->get_id(), 'joker_type' => $joker_type]);
         return $count > 0;
     }
 

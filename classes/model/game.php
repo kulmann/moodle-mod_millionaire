@@ -126,9 +126,9 @@ class game extends abstract_model {
         $sql = "
             SELECT COUNT(id)
               FROM {millionaire_levels}
-             WHERE game = ? AND state = ?
+             WHERE game = :game AND state = :state
         ";
-        $count = $DB->get_field_sql($sql, [$this->get_id(), level::STATE_ACTIVE]);
+        $count = $DB->get_field_sql($sql, ['game' => $this->get_id(), 'state' => level::STATE_ACTIVE]);
         return $count === false ? 0 : $count;
     }
 

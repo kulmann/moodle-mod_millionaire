@@ -47,7 +47,7 @@ $string['continue_on_failure_help'] = 'Wenn diese Option aktiviert ist, kann wei
 $string['question_repeatable'] = 'Fragen wiederholbar?';
 $string['question_repeatable_help'] = 'Wenn diese Option aktiviert ist, können Fragen bei mehrfacher Durchführung durch einen Benutzer insgesamt häufiger als einmal vorkommen.';
 $string['question_shuffle_answers'] = 'Antworten mischen?';
-$string['question_shuffle_answers_help'] = 'Wenn diese Option aktiviert ist, werden die Antworten der Fragen gemischt bevor sie angezeigt werden. Dabei wird individuell berücksichtigt, ob die Fragen-Konfiguration das Mischen erlaubt (siehe Fragensammlung).';
+$string['question_shuffle_answers_help'] = 'Wenn diese Option aktiviert ist, werden die Antworten der Fragen gemischt bevor sie angezeigt werden.';
 $string['highscore_count'] = 'Länge der Highscore-Liste';
 $string['highscore_count_help'] = 'Hier kann die Anzahl der Einträge definiert werden, die in der Highscore-Tabelle nach einem abgeschlossenen Spiel angezeigt wird (Standard: 5). Wenn Sie 0 eingeben, werden nach einem abgeschlossenen Spiel keine Highscores gezeigt.';
 $string['completionrounds'] = 'Teilnehmer/in muss Anzahl Runden spielen';
@@ -133,6 +133,8 @@ $string['course_reset_include_topics'] = 'Eingestellte Themen etc. zurücksetzen
 $string['game_screen_title'] = 'Spiele »Wer wird Millionär«';
 $string['game_qtype_not_supported'] = 'Der Fragentyp »{$a}« wird nicht unterstützt.';
 $string['game_loading_question'] = 'Frage wird geladen';
+$string['game_loading_stats'] = 'Bestenliste wird geladen';
+$string['game_loading_stats_failed'] = 'Beim Laden der Bestenliste ist ein Fehler aufgetreten.';
 $string['game_btn_restart'] = 'Neues Spiel';
 $string['game_btn_continue'] = 'Nächste Frage';
 $string['game_btn_stats'] = 'Bestenliste';
@@ -148,6 +150,9 @@ $string['game_help_message'] = '<ul><li>Mit dem Button »Neues Spiel« kann jede
 $string['game_joker_feedback_unavailable'] = 'Leider ist für diese Frage kein Hinweis verfügbar.';
 $string['game_joker_feedback_title'] = 'Hinweis:';
 $string['game_joker_audience_title'] = 'Publikums-Joker:';
+$string['game_stats_rank'] = 'Platz';
+$string['game_stats_user'] = 'Nutzer';
+$string['game_stats_score'] = 'Punkte';
 
 
 $string['topic'] = 'Thema';

@@ -84,13 +84,20 @@ $functions = [
         'methodname' => 'get_used_jokers',
         'description' => 'Retrieves the used jokers for a given gamesession.',
         'type' => 'read',
-        'ajax' => true
+        'ajax' => true,
     ],
     'mod_millionaire_submit_joker' => [
         'classname' => 'mod_millionaire\external\jokers',
         'methodname' => 'submit_joker',
         'description' => 'Submits a joker type for a given gamesession and question.',
         'type' => 'write',
-        'ajax' => true
+        'ajax' => true,
+    ],
+    'mod_millionaire_get_scores_global' => [
+        'classname' => 'mod_millionaire\external\scores',
+        'methodname' => 'get_scores_global',
+        'description' => 'Gets a list of scores',
+        'type' => 'read',
+        'ajax' => true,
     ],
 ];

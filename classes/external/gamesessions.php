@@ -21,6 +21,7 @@ use function array_map;
 use function array_pop;
 use function assert;
 use coding_exception;
+use core\plugininfo\qtype;
 use dml_exception;
 use external_api;
 use external_function_parameters;
@@ -294,7 +295,9 @@ class gamesessions extends external_api {
                 },
                 $mdl_question->answers
             );
-            shuffle($mdl_answer_ids);
+            if ($game->is_question_shuffle_answers()) {
+                shuffle($mdl_answer_ids);
+            }
             $question->set_mdl_answers_order(implode(",", $mdl_answer_ids));
             $question->save();
         }

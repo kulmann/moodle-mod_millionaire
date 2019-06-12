@@ -29,6 +29,8 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use mod_millionaire\model\gamesession;
+
 defined('MOODLE_INTERNAL') || die();
 
 // different highscore modes
@@ -334,7 +336,7 @@ function millionaire_get_completion_state($course, $cm, $userid, $type) {
     }
     $result = $type;
     if ($millionaire->completionrounds) {
-        $sqlParams = ['game' => $millionaire->id, 'mdl_user' => $userid, 'finished' => true];
+        $sqlParams = ['game' => $millionaire->id, 'mdl_user' => $userid, 'state' => gamesession::STATE_FINISHED];
         $value = $millionaire->completionrounds <= $DB->count_records('millionaire_gamesessions', $sqlParams);
         if ($type == COMPLETION_AND) {
             $result &= $value;

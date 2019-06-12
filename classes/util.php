@@ -148,14 +148,14 @@ class util {
         $sql = "
             SELECT *
               FROM {millionaire_gamesessions}
-             WHERE game = ? AND mdl_user = ? AND state IN (?, ?)
+             WHERE game = :game AND mdl_user = :mdl_user AND state IN (:state_progress, :state_finished)
           ORDER BY timemodified DESC
         ";
         $params = [
-            $game->get_id(),
-            $USER->id,
-            gamesession::STATE_PROGRESS,
-            gamesession::STATE_FINISHED,
+            'game' => $game->get_id(),
+            'mdl_user' => $USER->id,
+            'state_progress' => gamesession::STATE_PROGRESS,
+            'state_finished' => gamesession::STATE_FINISHED,
         ];
         $record = $DB->get_record_sql($sql, $params);
         // get or create game session

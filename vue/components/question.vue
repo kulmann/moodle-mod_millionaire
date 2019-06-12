@@ -1,12 +1,7 @@
 <template lang="pug">
     #millionaire-question
         template(v-if="question")
-            .uk-alert.uk-alert-primary(uk-alert, v-if="mdl_question === null")
-                p {{ strings.game_loading_question }}
-                    span._loader
-                        span
-                        span
-                        span
+            loadingAlert(v-if="mdl_question === null", :message="strings.game_loading_question")
             template(v-else)
                 finished(v-if="isGameFinished")
                 jokerAudience(v-if="usedJokerAudience", :joker="usedJokerAudience")
@@ -27,6 +22,7 @@
     import questionError from './question-error';
     import questionSingleChoice from './question-singlechoice';
     import {GAME_FINISHED, GAME_PROGRESS, JOKER_AUDIENCE, JOKER_FEEDBACK} from "../constants";
+    import loadingAlert from '../helper/loading-alert';
 
     export default {
         mixins: [mixins],
@@ -68,6 +64,7 @@
         components: {
             jokerAudience,
             jokerFeedback,
+            loadingAlert,
             'actions': questionActions,
             'error': questionError,
             'finished': gameFinished,

@@ -79,9 +79,9 @@ class jokers extends external_api {
      */
     public static function get_used_jokers($coursemoduleid, $gamesessionid) {
         $params = ['coursemoduleid' => $coursemoduleid, 'gamesessionid' => $gamesessionid];
-        $params = self::validate_parameters(self::get_used_jokers_parameters(), $params);
+        self::validate_parameters(self::get_used_jokers_parameters(), $params);
 
-        list($course, $coursemodule) = get_course_and_cm_from_cmid($params['coursemoduleid'], 'millionaire');
+        list($course, $coursemodule) = get_course_and_cm_from_cmid($coursemoduleid, 'millionaire');
         self::validate_context($coursemodule->context);
 
         global $PAGE, $DB;
@@ -149,9 +149,9 @@ class jokers extends external_api {
             'questionid' => $questionid,
             'jokertype' => $jokertype,
         ];
-        $params = self::validate_parameters(self::submit_joker_parameters(), $params);
+        self::validate_parameters(self::submit_joker_parameters(), $params);
 
-        list($course, $coursemodule) = get_course_and_cm_from_cmid($params['coursemoduleid'], 'millionaire');
+        list($course, $coursemodule) = get_course_and_cm_from_cmid($coursemoduleid, 'millionaire');
         self::validate_context($coursemodule->context);
 
         if (!in_array($jokertype, MOD_MILLIONAIRE_JOKERS)) {

@@ -64,7 +64,6 @@
                 this.submitJoker(args);
             },
             getJokerIcon(type) {
-                console.log(JOKER_ICONS[type]);
                 return JOKER_ICONS[type];
             }
         },

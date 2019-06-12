@@ -113,11 +113,11 @@ class level extends abstract_model {
         $sql = "
             SELECT *
               FROM {millionaire_categories}
-             WHERE level = ? 
+             WHERE level = :level 
           ORDER BY RAND()
              LIMIT 0,1
         ";
-        $result = $DB->get_record_sql($sql, [$this->get_id()]);
+        $result = $DB->get_record_sql($sql, ['level' => $this->get_id()]);
         if ($result) {
             $category = new category();
             $category->apply($result);

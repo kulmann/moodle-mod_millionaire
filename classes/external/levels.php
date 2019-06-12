@@ -80,9 +80,9 @@ class levels extends external_api {
      */
     public static function get_levels($coursemoduleid, $only_active = true, $gamesessionid = 0) {
         $params = ['coursemoduleid' => $coursemoduleid, 'only_active' => $only_active, 'gamesessionid' => $gamesessionid];
-        $params = self::validate_parameters(self::get_levels_parameters(), $params);
+        self::validate_parameters(self::get_levels_parameters(), $params);
 
-        list($course, $coursemodule) = get_course_and_cm_from_cmid($params['coursemoduleid'], 'millionaire');
+        list($course, $coursemodule) = get_course_and_cm_from_cmid($coursemoduleid, 'millionaire');
         self::validate_context($coursemodule->context);
 
         global $PAGE, $DB;
