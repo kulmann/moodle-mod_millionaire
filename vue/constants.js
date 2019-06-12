@@ -20,6 +20,11 @@ export const VALID_JOKERS = [
     JOKER_AUDIENCE,
     JOKER_CHANCE,
 ];
+export const JOKER_ICONS = {
+    feedback: 'regular/lightbulb',
+    audience: 'users',
+    chance: 'percent',
+};
 export const GAME_PROGRESS = 'progress';
 export const GAME_FINISHED = 'finished';
 export const GAME_DUMPED = 'dumped';

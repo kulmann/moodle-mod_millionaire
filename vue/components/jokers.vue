@@ -1,19 +1,13 @@
 <template lang="pug">
     .joker-container.uk-flex.uk-flex-center.uk-flex-middle
-        button.uk-button.uk-button-primary.uk-button-small(@click="selectJoker(feedback)", :disabled="isJokerDisabled(feedback)").uk-margin-small-left
-            v-icon(name="regular/lightbulb")
-        button.uk-button.uk-button-primary.uk-button-small(@click="selectJoker(audience)", :disabled="isJokerDisabled(audience)").uk-margin-small-left.uk-margin-small-right
-            v-icon(name="users")
-        button.uk-button.uk-button-primary.uk-button-small(@click="selectJoker(chance)", :disabled="isJokerDisabled(chance)").uk-margin-small-right
-            v-icon(name="percent")
+        button.uk-button.uk-button-primary.uk-button-small(v-for="(type,index) in jokerTypes", :key="type", @click="selectJoker(type)", :disabled="isJokerDisabled(type)", :class="getButtonClasses(index)")
+            v-icon(:name="getJokerIcon(type)")
 </template>
 
 <script>
     import {mapActions, mapState} from 'vuex';
     import {
-        JOKER_CHANCE,
-        JOKER_AUDIENCE,
-        JOKER_FEEDBACK,
+        JOKER_ICONS,
         MODE_GAME_FINISHED,
         MODE_QUESTION_ANSWERED,
         MODE_QUESTION_SHOWN,
@@ -30,20 +24,24 @@
                 'question',
                 'gameMode',
             ]),
-            feedback() {
-                return JOKER_FEEDBACK;
+            jokerTypes() {
+                return VALID_JOKERS;
             },
-            audience() {
-                return JOKER_AUDIENCE;
-            },
-            chance() {
-                return JOKER_CHANCE;
-            }
         },
         methods: {
             ...mapActions([
                 'submitJoker'
             ]),
+            getButtonClasses(index) {
+                let classes = [];
+                if (index !== 0) {
+                    classes.push('uk-margin-small-right');
+                }
+                if (index !== VALID_JOKERS.length - 1) {
+                    classes.push('uk-margin-small-left');
+                }
+                return classes.join(' ');
+            },
             isInGame() {
                 let modes = [MODE_QUESTION_SHOWN, MODE_QUESTION_ANSWERED, MODE_GAME_FINISHED];
                 return _.includes(modes, this.gameMode);
@@ -70,6 +68,10 @@
                     jokertype: type,
                 };
                 this.submitJoker(args);
+            },
+            getJokerIcon(type) {
+                console.log(JOKER_ICONS[type]);
+                return JOKER_ICONS[type];
             }
         },
     }
