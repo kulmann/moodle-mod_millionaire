@@ -16,12 +16,20 @@
 
 namespace mod_millionaire\external;
 
+use dml_exception;
 use external_api;
 use external_function_parameters;
 use external_multiple_structure;
+use external_single_structure;
 use external_value;
+use function in_array;
+use invalid_parameter_exception;
 use mod_millionaire\external\exporter\joker_dto;
 use mod_millionaire\model\joker;
+use mod_millionaire\util;
+use moodle_exception;
+use restricted_context_exception;
+use stdClass;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -64,10 +72,10 @@ class jokers extends external_api {
      * @param int $gamesessionid The id of the current game session
      *
      * @return array
-     * @throws \dml_exception
-     * @throws \invalid_parameter_exception
-     * @throws \moodle_exception
-     * @throws \restricted_context_exception
+     * @throws dml_exception
+     * @throws invalid_parameter_exception
+     * @throws moodle_exception
+     * @throws restricted_context_exception
      */
     public static function get_used_jokers($coursemoduleid, $gamesessionid) {
         $params = ['coursemoduleid' => $coursemoduleid, 'gamesessionid' => $gamesessionid];
@@ -114,7 +122,7 @@ class jokers extends external_api {
     /**
      * Definition of return type for {@see submit_joker}.
      *
-     * @return \external_single_structure
+     * @return external_single_structure
      */
     public static function submit_joker_returns() {
         return joker_dto::get_read_structure();
@@ -128,11 +136,11 @@ class jokers extends external_api {
      * @param int $questionid
      * @param string $jokertype
      *
-     * @return \stdClass
-     * @throws \dml_exception
-     * @throws \invalid_parameter_exception
-     * @throws \moodle_exception
-     * @throws \restricted_context_exception
+     * @return stdClass
+     * @throws dml_exception
+     * @throws invalid_parameter_exception
+     * @throws moodle_exception
+     * @throws restricted_context_exception
      */
     public static function submit_joker($coursemoduleid, $gamesessionid, $questionid, $jokertype) {
         $params = [
@@ -146,11 +154,11 @@ class jokers extends external_api {
         list($course, $coursemodule) = get_course_and_cm_from_cmid($params['coursemoduleid'], 'millionaire');
         self::validate_context($coursemodule->context);
 
-        if (!\in_array($jokertype, MOD_MILLIONAIRE_JOKERS)) {
-            throw new \invalid_parameter_exception("The given joker type '$jokertype' is invalid.");
+        if (!in_array($jokertype, MOD_MILLIONAIRE_JOKERS)) {
+            throw new invalid_parameter_exception("The given joker type '$jokertype' is invalid.");
         }
 
-        global $PAGE, $DB;
+        global $PAGE;
         $renderer = $PAGE->get_renderer('core');
         $ctx = $coursemodule->context;
         $game = util::get_game($coursemodule);
@@ -162,7 +170,7 @@ class jokers extends external_api {
 
         // check if allowed to use the joker
         if ($gamesession->is_joker_used($jokertype)) {
-            throw new \invalid_parameter_exception("The given joker type '$jokertype' was already used in the game session with id $gamesessionid.");
+            throw new invalid_parameter_exception("The given joker type '$jokertype' was already used in the game session with id $gamesessionid.");
         }
 
         // still allowed, so use it

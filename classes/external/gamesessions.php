@@ -16,15 +16,28 @@
 
 namespace mod_millionaire\external;
 
+use function array_filter;
+use function array_map;
+use function array_pop;
+use function assert;
+use coding_exception;
+use dml_exception;
 use external_api;
 use external_function_parameters;
+use external_single_structure;
 use external_value;
 use function implode;
+use invalid_parameter_exception;
 use mod_millionaire\external\exporter\gamesession_dto;
 use mod_millionaire\external\exporter\question_dto;
 use mod_millionaire\model\gamesession;
 use mod_millionaire\model\question;
+use mod_millionaire\util;
+use moodle_exception;
+use question_answer;
+use restricted_context_exception;
 use function shuffle;
+use stdClass;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -54,7 +67,7 @@ class gamesessions extends external_api {
     /**
      * Definition of return type for {@see create_gamesession}.
      *
-     * @return \external_single_structure
+     * @return external_single_structure
      */
     public static function create_gamesession_returns() {
         return gamesession_dto::get_read_structure();
@@ -65,11 +78,11 @@ class gamesessions extends external_api {
      *
      * @param int $coursemoduleid
      *
-     * @return \stdClass
-     * @throws \dml_exception
-     * @throws \invalid_parameter_exception
-     * @throws \moodle_exception
-     * @throws \restricted_context_exception
+     * @return stdClass
+     * @throws dml_exception
+     * @throws invalid_parameter_exception
+     * @throws moodle_exception
+     * @throws restricted_context_exception
      */
     public static function create_gamesession($coursemoduleid) {
         $params = ['coursemoduleid' => $coursemoduleid];
@@ -109,7 +122,7 @@ class gamesessions extends external_api {
     /**
      * Definition of return type for {@see close_gamesession}.
      *
-     * @return \external_single_structure
+     * @return external_single_structure
      */
     public static function close_gamesession_returns() {
         return gamesession_dto::get_read_structure();
@@ -121,12 +134,12 @@ class gamesessions extends external_api {
      * @param int $coursemoduleid
      * @param int $gamesessionid
      *
-     * @return \stdClass
-     * @throws \coding_exception
-     * @throws \dml_exception
-     * @throws \invalid_parameter_exception
-     * @throws \moodle_exception
-     * @throws \restricted_context_exception
+     * @return stdClass
+     * @throws coding_exception
+     * @throws dml_exception
+     * @throws invalid_parameter_exception
+     * @throws moodle_exception
+     * @throws restricted_context_exception
      */
     public static function close_gamesession($coursemoduleid, $gamesessionid) {
         $params = ['coursemoduleid' => $coursemoduleid, 'gamesessionid' => $gamesessionid];
@@ -135,7 +148,7 @@ class gamesessions extends external_api {
         list($course, $coursemodule) = get_course_and_cm_from_cmid($coursemoduleid, 'millionaire');
         self::validate_context($coursemodule->context);
 
-        global $PAGE, $USER;
+        global $PAGE;
         $renderer = $PAGE->get_renderer('core');
         $ctx = $coursemodule->context;
         $game = util::get_game($coursemodule);
@@ -146,9 +159,12 @@ class gamesessions extends external_api {
 
         // close the gamesession
         if ($gamesession->is_in_progress()) {
-            $gamesession->set_state(gamesession::STATE_FINISHED);
-            $gamesession->set_won(true);
-            $gamesession->save();
+            $question = $gamesession->get_most_recent_question();
+            if (!$question->is_finished() || $question->is_correct()) {
+                $gamesession->set_state(gamesession::STATE_FINISHED);
+                $gamesession->set_won(true);
+                $gamesession->save();
+            }
         }
 
         // return the changed game session
@@ -170,7 +186,7 @@ class gamesessions extends external_api {
     /**
      * Definition of return type for {@see get_current_gamesession}.
      *
-     * @return \external_single_structure
+     * @return external_single_structure
      */
     public static function get_current_gamesession_returns() {
         return gamesession_dto::get_read_structure();
@@ -181,12 +197,12 @@ class gamesessions extends external_api {
      *
      * @param int $coursemoduleid
      *
-     * @return \stdClass
-     * @throws \coding_exception
-     * @throws \dml_exception
-     * @throws \invalid_parameter_exception
-     * @throws \moodle_exception
-     * @throws \restricted_context_exception
+     * @return stdClass
+     * @throws coding_exception
+     * @throws dml_exception
+     * @throws invalid_parameter_exception
+     * @throws moodle_exception
+     * @throws restricted_context_exception
      */
     public static function get_current_gamesession($coursemoduleid) {
         $params = ['coursemoduleid' => $coursemoduleid];
@@ -222,7 +238,7 @@ class gamesessions extends external_api {
     /**
      * Definition of return type for {@see get_question}.
      *
-     * @return \external_single_structure
+     * @return external_single_structure
      */
     public static function get_question_returns() {
         return question_dto::get_read_structure();
@@ -235,11 +251,11 @@ class gamesessions extends external_api {
      * @param int $gamesessionid
      * @param int $levelindex
      *
-     * @return \stdClass
-     * @throws \dml_exception
-     * @throws \invalid_parameter_exception
-     * @throws \moodle_exception
-     * @throws \restricted_context_exception
+     * @return stdClass
+     * @throws dml_exception
+     * @throws invalid_parameter_exception
+     * @throws moodle_exception
+     * @throws restricted_context_exception
      */
     public static function get_question($coursemoduleid, $gamesessionid, $levelindex) {
         $params = [
@@ -252,7 +268,7 @@ class gamesessions extends external_api {
         list($course, $coursemodule) = get_course_and_cm_from_cmid($coursemoduleid, 'millionaire');
         self::validate_context($coursemodule->context);
 
-        global $PAGE, $DB;
+        global $PAGE;
         $renderer = $PAGE->get_renderer('core');
         $ctx = $coursemodule->context;
         $game = util::get_game($coursemodule);
@@ -272,7 +288,7 @@ class gamesessions extends external_api {
             $question->set_level($level->get_id());
             $mdl_question = $level->get_random_question();
             $question->set_mdl_question($mdl_question->id);
-            $mdl_answer_ids = \array_map(
+            $mdl_answer_ids = array_map(
                 function ($mdl_answer) {
                     return $mdl_answer->id;
                 },
@@ -305,7 +321,7 @@ class gamesessions extends external_api {
     /**
      * Definition of return type for {@see submit_answer}.
      *
-     * @return \external_single_structure
+     * @return external_single_structure
      */
     public static function submit_answer_returns() {
         return question_dto::get_read_structure();
@@ -319,11 +335,11 @@ class gamesessions extends external_api {
      * @param int $questionid
      * @param int $mdlanswerid
      *
-     * @return \stdClass
-     * @throws \dml_exception
-     * @throws \invalid_parameter_exception
-     * @throws \moodle_exception
-     * @throws \restricted_context_exception
+     * @return stdClass
+     * @throws dml_exception
+     * @throws invalid_parameter_exception
+     * @throws moodle_exception
+     * @throws restricted_context_exception
      */
     public static function submit_answer($coursemoduleid, $gamesessionid, $questionid, $mdlanswerid) {
         $params = [
@@ -337,7 +353,7 @@ class gamesessions extends external_api {
         list($course, $coursemodule) = get_course_and_cm_from_cmid($coursemoduleid, 'millionaire');
         self::validate_context($coursemodule->context);
 
-        global $PAGE, $DB;
+        global $PAGE;
         $renderer = $PAGE->get_renderer('core');
         $ctx = $coursemodule->context;
         $game = util::get_game($coursemodule);
@@ -345,7 +361,7 @@ class gamesessions extends external_api {
         // try to find existing in-progress gamesession or create a new one
         $gamesession = util::get_gamesession($gamesessionid);
         if (!$gamesession->is_in_progress()) {
-            throw new \moodle_exception('gamesession is not available anymore.');
+            throw new moodle_exception('gamesession is not available anymore.');
         }
         util::validate_gamesession($game, $gamesession);
 
@@ -353,28 +369,28 @@ class gamesessions extends external_api {
         $question = util::get_question($questionid);
         util::validate_question($gamesession, $question);
         if ($question->is_finished()) {
-            throw new \moodle_exception('question has already been answered.');
+            throw new moodle_exception('question has already been answered.');
         }
         $mdl_question = $question->get_mdl_question_ref();
         if (!property_exists($mdl_question, 'answers')) {
-            throw new \coding_exception('property »answers« doesn\'t exist on the moodle question with id ' . $question->get_mdl_question() . '.');
+            throw new coding_exception('property »answers« doesn\'t exist on the moodle question with id ' . $question->get_mdl_question() . '.');
         }
 
         // load the level
         $level = util::get_level($question->get_level());
 
         // submit the answer
-        $correct_mdl_answers = \array_filter(
+        $correct_mdl_answers = array_filter(
             $mdl_question->answers,
-            function (\question_answer $mdlanswer) {
+            function (question_answer $mdlanswer) {
                 return $mdlanswer->fraction == 1;
             }
         );
         if (count($correct_mdl_answers) !== 1) {
-            throw new \moodle_exception('The moodle question with id ' . $question->get_mdl_question() . ' seems to be inapplicable for this activity.');
+            throw new moodle_exception('The moodle question with id ' . $question->get_mdl_question() . ' seems to be inapplicable for this activity.');
         }
-        $correct_mdl_answer = \array_pop($correct_mdl_answers);
-        \assert($correct_mdl_answer instanceof \question_answer);
+        $correct_mdl_answer = array_pop($correct_mdl_answers);
+        assert($correct_mdl_answer instanceof question_answer);
         $question->set_mdl_answer($mdlanswerid);
         $question->set_finished(true);
         $question->set_correct($correct_mdl_answer->id == $mdlanswerid);

@@ -31,7 +31,10 @@
                 return _.includes(allowedModes, this.gameMode);
             },
             isQuitGameDisabled() {
-                return this.gameMode !== MODE_QUESTION_ANSWERED;
+                if (this.gameMode === MODE_QUESTION_SHOWN && this.question.index > 0) {
+                    return false;
+                }
+                return !(this.gameMode === MODE_QUESTION_ANSWERED && this.question.correct);
             },
             isNextLevelVisible() {
                 let allowedModes = [MODE_QUESTION_SHOWN, MODE_QUESTION_ANSWERED];

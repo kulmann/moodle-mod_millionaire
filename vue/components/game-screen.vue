@@ -24,14 +24,7 @@
     import stats from './stats';
     import topbar from './topbar';
     import VkGrid from "vuikit/src/library/grid/components/grid";
-    import {
-        MODE_GAME_FINISHED,
-        MODE_HELP,
-        MODE_INTRO,
-        MODE_QUESTION_ANSWERED,
-        MODE_QUESTION_SHOWN,
-        MODE_STATS
-    } from "../constants";
+    import {MODE_HELP, MODE_INTRO, MODE_QUESTION_ANSWERED, MODE_QUESTION_SHOWN, MODE_STATS} from "../constants";
 
     export default {
         mixins: [mixins],
@@ -47,7 +40,7 @@
                 return this.gameMode === MODE_INTRO;
             },
             questionVisible() {
-                let allowedModes = [MODE_QUESTION_SHOWN, MODE_QUESTION_ANSWERED, MODE_GAME_FINISHED];
+                let allowedModes = [MODE_QUESTION_SHOWN, MODE_QUESTION_ANSWERED];
                 return _.includes(allowedModes, this.gameMode);
             },
             statsVisible() {
@@ -66,21 +59,16 @@
                 'setGameMode'
             ]),
         },
-        created () {
+        created() {
             this.fetchGameSession().then(() => {
                 let highestSeenLevel = this.findHighestSeenLevel(this.levels);
                 if (highestSeenLevel.seen) {
                     // the game was obviously already started. So fetch the last seen question.
                     this.showQuestionForLevel(highestSeenLevel.position).then(() => {
-                        // set the appropriate game mode.
-                        if (this.gameSession.state === 'finished') {
-                            this.setGameMode(MODE_GAME_FINISHED);
+                        if (this.question.finished) {
+                            this.setGameMode(MODE_QUESTION_ANSWERED);
                         } else {
-                            if (this.question.finished) {
-                                this.setGameMode(MODE_QUESTION_ANSWERED);
-                            } else {
-                                this.setGameMode(MODE_QUESTION_SHOWN);
-                            }
+                            this.setGameMode(MODE_QUESTION_SHOWN);
                         }
                     });
                 }

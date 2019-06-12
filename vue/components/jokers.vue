@@ -6,13 +6,7 @@
 
 <script>
     import {mapActions, mapState} from 'vuex';
-    import {
-        JOKER_ICONS,
-        MODE_GAME_FINISHED,
-        MODE_QUESTION_ANSWERED,
-        MODE_QUESTION_SHOWN,
-        VALID_JOKERS
-    } from "../constants";
+    import {GAME_PROGRESS, JOKER_ICONS, MODE_QUESTION_ANSWERED, MODE_QUESTION_SHOWN, VALID_JOKERS} from "../constants";
     import _ from 'lodash';
 
     export default {
@@ -43,8 +37,8 @@
                 return classes.join(' ');
             },
             isInGame() {
-                let modes = [MODE_QUESTION_SHOWN, MODE_QUESTION_ANSWERED, MODE_GAME_FINISHED];
-                return _.includes(modes, this.gameMode);
+                let modes = [MODE_QUESTION_SHOWN, MODE_QUESTION_ANSWERED];
+                return _.includes(modes, this.gameMode) && this.gameSession.state === GAME_PROGRESS;
             },
             isJokerValid(type) {
                 return _.includes(VALID_JOKERS, type);

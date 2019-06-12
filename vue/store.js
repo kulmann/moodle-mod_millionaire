@@ -5,7 +5,12 @@ import moodleStorage from 'core/localstorage';
 import Notification from 'core/notification';
 import _ from 'lodash';
 import $ from 'jquery';
-import {MODE_GAME_FINISHED, MODE_INTRO, MODE_QUESTION_ANSWERED, MODE_QUESTION_SHOWN, VALID_MODES} from './constants';
+import {
+    MODE_INTRO,
+    MODE_QUESTION_ANSWERED,
+    MODE_QUESTION_SHOWN,
+    VALID_MODES
+} from './constants';
 
 Vue.use(Vuex);
 
@@ -169,9 +174,7 @@ export const store = new Vuex.Store({
             };
             const gameSession = await ajax('mod_millionaire_close_gamesession', args);
             context.commit('setGameSession', gameSession);
-            return context.dispatch('fetchLevels').then(() => {
-                context.commit('setGameMode', MODE_GAME_FINISHED);
-            });
+            return context.dispatch('fetchLevels');
         },
         /**
          * Loads the question for the given level index. Doesn't matter if it's already answered.
@@ -199,11 +202,7 @@ export const store = new Vuex.Store({
             context.commit('setGameMode', MODE_QUESTION_ANSWERED);
             const result = await ajax('mod_millionaire_submit_answer', payload);
             context.commit('setQuestion', result);
-            return context.dispatch('fetchGameSession').then(() => {
-                if (this.state.gameSession.finished) {
-                    context.commit('setGameMode', MODE_GAME_FINISHED);
-                }
-            });
+            return context.dispatch('fetchGameSession');
         },
         /**
          * Submits a joker to the currently loaded question.

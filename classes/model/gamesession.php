@@ -16,6 +16,8 @@
 
 namespace mod_millionaire\model;
 
+use mod_millionaire\external\util;
+
 defined('MOODLE_INTERNAL') || die();
 
 /**
@@ -114,6 +116,31 @@ class gamesession extends abstract_model {
     }
 
     /**
+     * Returns the most recent question for this gamesession. If there are no questions yet, null will be returned.
+     *
+     * @return question|null
+     * @throws \dml_exception
+     */
+    public function get_most_recent_question() {
+        global $DB;
+        $sql_questions = "
+            SELECT q.id
+              FROM {millionaire_questions} AS q
+        INNER JOIN {millionaire_levels} AS l on q.level = l.id 
+             WHERE q.gamesession = ?
+          ORDER BY l.position DESC
+        ";
+        $questions = $DB->get_records_sql($sql_questions, [$this->get_id()]);
+        if ($questions === false || empty($questions)) {
+            return null;
+        }
+        $most_recent_question = \array_shift($questions);
+        $question = new question();
+        $question->load_data_by_id($most_recent_question->id);
+        return $question;
+    }
+
+    /**
      * If this gamesession is not finished, this function returns the smallest unfinished level.
      *
      * @return level|null
@@ -123,26 +150,17 @@ class gamesession extends abstract_model {
         if ($this->is_finished()) {
             return null;
         }
-        global $DB;
-        $sql_questions = "
-            SELECT q.*, l.position
-              FROM {millionaire_questions} AS q
-        INNER JOIN {millionaire_levels} AS l on q.level = l.id 
-             WHERE q.gamesession = ?
-          ORDER BY l.position DESC
-        ";
-        $questions = $DB->get_records_sql($sql_questions, [$this->get_id()]);
-        if ($questions === false || empty($questions)) {
+        $most_recent_question = $this->get_most_recent_question();
+        if ($most_recent_question === null) {
             return $this->get_level_by_index(0);
         }
-        $most_recent_question = \array_shift($questions);
-        $most_recent_position = $most_recent_question->position;
-        if ($most_recent_question->finished) {
+        $current_level = util::get_level($most_recent_question->get_level());
+        if ($most_recent_question->is_finished()) {
             // return next level
-            return $this->get_level_by_index($most_recent_position + 1);
+            return $this->get_level_by_index($current_level->get_position() + 1);
         } else {
             // return this level, as it isn't finished yet
-            return $this->get_level_by_index($most_recent_position);
+            return $current_level;
         }
     }
 

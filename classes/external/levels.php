@@ -16,12 +16,18 @@
 
 namespace mod_millionaire\external;
 
+use coding_exception;
+use dml_exception;
 use external_api;
 use external_function_parameters;
 use external_multiple_structure;
 use external_value;
+use invalid_parameter_exception;
 use mod_millionaire\external\exporter\level_dto;
 use mod_millionaire\model\level;
+use mod_millionaire\util;
+use moodle_exception;
+use restricted_context_exception;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -66,11 +72,11 @@ class levels extends external_api {
      * @param int $gamesessionid The id of the current game session, if question information should be added.
      *
      * @return array
-     * @throws \coding_exception
-     * @throws \dml_exception
-     * @throws \invalid_parameter_exception
-     * @throws \moodle_exception
-     * @throws \restricted_context_exception
+     * @throws coding_exception
+     * @throws dml_exception
+     * @throws invalid_parameter_exception
+     * @throws moodle_exception
+     * @throws restricted_context_exception
      */
     public static function get_levels($coursemoduleid, $only_active = true, $gamesessionid = 0) {
         $params = ['coursemoduleid' => $coursemoduleid, 'only_active' => $only_active, 'gamesessionid' => $gamesessionid];

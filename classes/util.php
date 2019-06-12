@@ -14,8 +14,10 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace mod_millionaire\external;
+namespace mod_millionaire;
 
+use cm_info;
+use dml_exception;
 use invalid_parameter_exception;
 use mod_millionaire\model\game;
 use mod_millionaire\model\gamesession;
@@ -62,12 +64,12 @@ class util {
     /**
      * Gets the game instance from the database.
      *
-     * @param \cm_info $coursemodule
+     * @param cm_info $coursemodule
      *
      * @return game
-     * @throws \dml_exception
+     * @throws dml_exception
      */
-    public static function get_game(\cm_info $coursemodule) {
+    public static function get_game(cm_info $coursemodule) {
         global $DB;
         $game_data = $DB->get_record('millionaire', ['id' => $coursemodule->instance]);
         $game = new game();
@@ -81,7 +83,7 @@ class util {
      * @param int $gamesessionid
      *
      * @return gamesession
-     * @throws \dml_exception
+     * @throws dml_exception
      */
     public static function get_gamesession($gamesessionid) {
         $gamesession = new gamesession();
@@ -95,7 +97,7 @@ class util {
      * @param int $levelid
      *
      * @return level
-     * @throws \dml_exception
+     * @throws dml_exception
      */
     public static function get_level($levelid) {
         $level = new level();
@@ -109,7 +111,7 @@ class util {
      * @param int $questionid
      *
      * @return question
-     * @throws \dml_exception
+     * @throws dml_exception
      */
     public static function get_question($questionid) {
         $question = new question();
@@ -123,7 +125,7 @@ class util {
      * @param int $jokerid
      *
      * @return joker
-     * @throws \dml_exception
+     * @throws dml_exception
      */
     public static function get_joker($jokerid) {
         $joker = new joker();
@@ -138,7 +140,7 @@ class util {
      * @param game $game
      *
      * @return gamesession
-     * @throws \dml_exception
+     * @throws dml_exception
      */
     public static function get_or_create_gamesession(game $game) {
         global $DB, $USER;
@@ -172,7 +174,7 @@ class util {
      * @param game $game
      *
      * @return void
-     * @throws \dml_exception
+     * @throws dml_exception
      */
     public static function dump_running_gamesessions(game $game) {
         global $DB, $USER;
@@ -191,7 +193,7 @@ class util {
      * @param game $game
      *
      * @return gamesession
-     * @throws \dml_exception
+     * @throws dml_exception
      */
     public static function insert_gamesession(game $game) {
         global $USER;

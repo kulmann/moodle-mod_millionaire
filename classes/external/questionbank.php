@@ -16,12 +16,19 @@
 
 namespace mod_millionaire\external;
 
+use coding_exception;
 use external_api;
 use external_function_parameters;
 use external_multiple_structure;
+use external_single_structure;
 use external_value;
+use invalid_parameter_exception;
 use mod_millionaire\external\exporter\mdl_answer_dto;
 use mod_millionaire\external\exporter\mdl_question_dto;
+use mod_millionaire\util;
+use moodle_exception;
+use restricted_context_exception;
+use stdClass;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -34,6 +41,11 @@ defined('MOODLE_INTERNAL') || die();
  */
 class questionbank extends external_api {
 
+    /**
+     * Defines parameters for {@see get_mdl_question}.
+     *
+     * @return external_function_parameters
+     */
     public static function get_mdl_question_parameters() {
         return new external_function_parameters([
             'coursemoduleid' => new external_value(PARAM_INT, 'course module id'),
@@ -41,6 +53,11 @@ class questionbank extends external_api {
         ]);
     }
 
+    /**
+     * Defines return type for {@see get_mdl_question}.
+     *
+     * @return external_single_structure
+     */
     public static function get_mdl_question_returns() {
         return mdl_question_dto::get_read_structure();
     }
@@ -51,11 +68,11 @@ class questionbank extends external_api {
      * @param int $coursemoduleid
      * @param int $questionid
      *
-     * @return \stdClass
-     * @throws \coding_exception
-     * @throws \invalid_parameter_exception
-     * @throws \moodle_exception
-     * @throws \restricted_context_exception
+     * @return stdClass
+     * @throws coding_exception
+     * @throws invalid_parameter_exception
+     * @throws moodle_exception
+     * @throws restricted_context_exception
      */
     public static function get_mdl_question($coursemoduleid, $questionid) {
         $params = ['coursemoduleid' => $coursemoduleid, 'questionid' => $questionid];
@@ -64,7 +81,7 @@ class questionbank extends external_api {
         list($course, $coursemodule) = get_course_and_cm_from_cmid($coursemoduleid, 'millionaire');
         self::validate_context($coursemodule->context);
 
-        global $PAGE, $DB;
+        global $PAGE;
         $renderer = $PAGE->get_renderer('core');
         $ctx = $coursemodule->context;
 
@@ -76,6 +93,11 @@ class questionbank extends external_api {
         return $exporter->export($renderer);
     }
 
+    /**
+     * Defines parameters for {@see get_mdl_answers}.
+     *
+     * @return external_function_parameters
+     */
     public static function get_mdl_answers_parameters() {
         return new external_function_parameters([
             'coursemoduleid' => new external_value(PARAM_INT, 'course module id'),
@@ -83,6 +105,11 @@ class questionbank extends external_api {
         ]);
     }
 
+    /**
+     * Defines return type for {@see get_mdl_answers}.
+     *
+     * @return external_multiple_structure
+     */
     public static function get_mdl_answers_returns() {
         return new external_multiple_structure(
             mdl_answer_dto::get_read_structure()
@@ -96,10 +123,10 @@ class questionbank extends external_api {
      * @param int $questionid
      *
      * @return array
-     * @throws \coding_exception
-     * @throws \invalid_parameter_exception
-     * @throws \moodle_exception
-     * @throws \restricted_context_exception
+     * @throws coding_exception
+     * @throws invalid_parameter_exception
+     * @throws moodle_exception
+     * @throws restricted_context_exception
      */
     public static function get_mdl_answers($coursemoduleid, $questionid) {
         $params = ['coursemoduleid' => $coursemoduleid, 'questionid' => $questionid];
@@ -108,7 +135,7 @@ class questionbank extends external_api {
         list($course, $coursemodule) = get_course_and_cm_from_cmid($coursemoduleid, 'millionaire');
         self::validate_context($coursemodule->context);
 
-        global $PAGE, $DB;
+        global $PAGE;
         $renderer = $PAGE->get_renderer('core');
         $ctx = $coursemodule->context;
 
