@@ -19,10 +19,12 @@ namespace mod_millionaire\external;
 use external_api;
 use external_function_parameters;
 use external_value;
+use function implode;
 use mod_millionaire\external\exporter\gamesession_dto;
 use mod_millionaire\external\exporter\question_dto;
 use mod_millionaire\model\gamesession;
 use mod_millionaire\model\question;
+use function shuffle;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -268,7 +270,16 @@ class gamesessions extends external_api {
             $question = new question();
             $question->set_gamesession($gamesessionid);
             $question->set_level($level->get_id());
-            $question->set_mdl_question($level->get_random_question()->id);
+            $mdl_question = $level->get_random_question();
+            $question->set_mdl_question($mdl_question->id);
+            $mdl_answer_ids = \array_map(
+                function ($mdl_answer) {
+                    return $mdl_answer->id;
+                },
+                $mdl_question->answers
+            );
+            shuffle($mdl_answer_ids);
+            $question->set_mdl_answers_order(implode(",", $mdl_answer_ids));
             $question->save();
         }
 

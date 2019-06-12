@@ -9,6 +9,8 @@
                         span
             template(v-else)
                 finished(v-if="isGameFinished")
+                jokerAudience(v-if="usedJokerAudience", :joker="usedJokerAudience")
+                jokerFeedback(v-if="usedJokerFeedback", :joker="usedJokerFeedback")
                 div(:is="componentByType", :levels="levels", :question="question", :mdl_question="mdl_question", :mdl_answers="mdl_answers", :usedJokers="usedJokers")
                 actions(v-if="isCurrentQuestion && !isGameOver").uk-margin-small-top
         .uk-alert.uk-alert-primary(uk-alert, v-else)
@@ -19,10 +21,12 @@
     import {mapState} from 'vuex';
     import gameFinished from './game-finished';
     import mixins from '../mixins';
+    import jokerAudience from './joker-audience';
+    import jokerFeedback from './joker-feedback';
     import questionActions from './question-actions';
     import questionError from './question-error';
     import questionSingleChoice from './question-singlechoice';
-    import {GAME_FINISHED, GAME_PROGRESS} from "../constants";
+    import {GAME_FINISHED, GAME_PROGRESS, JOKER_AUDIENCE, JOKER_FEEDBACK} from "../constants";
 
     export default {
         mixins: [mixins],
@@ -36,6 +40,10 @@
                 'mdl_question',
                 'mdl_answers'
             ]),
+            ...mapState({
+                usedJokerFeedback: (state, getters) => getters.getUsedJokerByTypeAndQuestion(JOKER_FEEDBACK, state.question),
+                usedJokerAudience: (state, getters) => getters.getUsedJokerByTypeAndQuestion(JOKER_AUDIENCE, state.question),
+            }),
             componentByType() {
                 switch (this.question.mdl_question_type) {
                     case 'qtype_multichoice_single_question':
@@ -58,6 +66,8 @@
             }
         },
         components: {
+            jokerAudience,
+            jokerFeedback,
             'actions': questionActions,
             'error': questionError,
             'finished': gameFinished,

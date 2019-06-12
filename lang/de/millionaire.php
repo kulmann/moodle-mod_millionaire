@@ -145,6 +145,9 @@ $string['game_lost_headline'] = 'Leider verloren.';
 $string['game_intro_message'] = 'Hier müssen wir noch ein Logo und ggf. Text platzieren.';
 $string['game_help_headline'] = 'Spiel-Hinweise';
 $string['game_help_message'] = '<ul><li>Mit dem Button »Neues Spiel« kann jederzeit ein neues Spiel gestartet werden.</li><li>Auch im laufenden Spiel kann jederzeit zwischen der Bestenliste und dem Spiel gewechselt werden.</li><li>Das Spiel kann mit dem Button »Beenden« (links unter der Frage) auf der aktuellen Gewinnstufe beendet werden.</li><li>Es stehen drei Joker pro Spiel zur Verfügung (rechts oben).</li></ul>';
+$string['game_joker_feedback_unavailable'] = 'Leider ist für diese Frage kein Hinweis verfügbar.';
+$string['game_joker_feedback_title'] = 'Hinweis:';
+$string['game_joker_audience_title'] = 'Publikums-Joker:';
 
 
 $string['topic'] = 'Thema';

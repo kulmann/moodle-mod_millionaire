@@ -1,8 +1,8 @@
 <template lang="pug">
     .joker-container.uk-flex.uk-flex-center.uk-flex-middle
         button.uk-button.uk-button-primary.uk-button-small(@click="selectJoker(feedback)", :disabled="isJokerDisabled(feedback)").uk-margin-small-left
-            v-icon(name="comment-dots")
-        button.uk-button.uk-button-primary.uk-button-small(@click="selectJoker(crowd)", :disabled="isJokerDisabled(crowd)").uk-margin-small-left.uk-margin-small-right
+            v-icon(name="regular/lightbulb")
+        button.uk-button.uk-button-primary.uk-button-small(@click="selectJoker(audience)", :disabled="isJokerDisabled(audience)").uk-margin-small-left.uk-margin-small-right
             v-icon(name="users")
         button.uk-button.uk-button-primary.uk-button-small(@click="selectJoker(chance)", :disabled="isJokerDisabled(chance)").uk-margin-small-right
             v-icon(name="percent")
@@ -12,7 +12,7 @@
     import {mapActions, mapState} from 'vuex';
     import {
         JOKER_CHANCE,
-        JOKER_CROWD,
+        JOKER_AUDIENCE,
         JOKER_FEEDBACK,
         MODE_GAME_FINISHED,
         MODE_QUESTION_ANSWERED,
@@ -33,8 +33,8 @@
             feedback() {
                 return JOKER_FEEDBACK;
             },
-            crowd() {
-                return JOKER_CROWD;
+            audience() {
+                return JOKER_AUDIENCE;
             },
             chance() {
                 return JOKER_CHANCE;

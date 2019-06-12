@@ -98,6 +98,8 @@
                 <FIELD NAME="level" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false"/>
                 <FIELD NAME="mdl_question" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false"
                        COMMENT="Reference to a moodle question."/>
+                <FIELD NAME="mdl_answers_order" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"
+                       COMMENT="ids of moodle answers in their order, like they will be displayed in the game."/>
                 <FIELD NAME="mdl_answer" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false"
                        COMMENT="Reference to the moodle answer, picked by the user."/>
                 <FIELD NAME="score" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" DEFAULT="0"

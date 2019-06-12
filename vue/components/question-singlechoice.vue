@@ -6,10 +6,10 @@
             .uk-card-body
                 p._question {{ mdl_question.questiontext }}
         vk-grid.uk-margin-top(matched)
-            div(v-for="(answer, index) in mdl_answers", :key="answer.id", class="uk-width-1-1@s uk-width-1-2@m uk-width-1-4@l")
+            div(v-for="answer in mdl_answers", :key="answer.id", class="uk-width-1-1@s uk-width-1-2@m uk-width-1-4@l")
                 .uk-alert.uk-alert-default._answer(uk-alert, @click="selectAnswer(answer)", :class="getAnswerClasses(answer)")
                     vk-grid.uk-grid-small
-                        span.uk-width-auto.uk-text-bold {{ getAnswerLetter(index) }}
+                        span.uk-width-auto.uk-text-bold {{ answer.label }}
                         span.uk-width-expand.uk-text-center {{ answer.answer }}
 </template>
 
@@ -37,8 +37,11 @@
         },
         computed: {
             ...mapState([
-                'strings',
+                'strings'
             ]),
+            ...mapState({
+                usedJokerChance: (state, getters) => getters.getUsedJokerByTypeAndQuestion(JOKER_CHANCE, state.question),
+            }),
             correctAnswerId() {
                 let correct = _.find(this.mdl_answers, function (mdl_answer) {
                     return mdl_answer.fraction === 1;
@@ -98,10 +101,6 @@
                     'mdlanswerid': this.clickedAnswerId,
                 });
             },
-            getAnswerLetter(index) {
-                let alphabet = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
-                return alphabet[index];
-            },
             getAnswerClasses(answer) {
                 let result = [];
                 if (this.isAnswerDisabled(answer)) {
@@ -117,15 +116,14 @@
                             result.push('uk-alert-danger');
                         }
                     }
-                } else if(!this.isAnswerDisabled(answer)) {
+                } else if (!this.isAnswerDisabled(answer)) {
                     result.push('_pointer');
                 }
                 return result.join(' ');
             },
             isAnswerDisabled(answer) {
-                let jokerChance = this.getUsedJokerByType(JOKER_CHANCE);
-                if (jokerChance) {
-                    let disabledAnswerIds = _.map(_.split(jokerChance.joker_data, ","), function (strId) {
+                if (this.usedJokerChance) {
+                    let disabledAnswerIds = _.map(_.split(this.usedJokerChance.joker_data, ","), function (strId) {
                         return parseInt(strId);
                     });
                     if (_.includes(disabledAnswerIds, answer.id)) {
@@ -146,11 +144,6 @@
             initQuestion() {
                 this.mostRecentQuestionId = this.question.id;
                 this.clickedAnswerId = (this.question.mdl_answer > 0) ? this.question.mdl_answer : null;
-            },
-            getUsedJokerByType(type) {
-                return _.find(this.usedJokers, function (joker) {
-                    return joker.joker_type === type && joker.question === this.question.id;
-                }.bind(this));
             },
         },
         mounted() {

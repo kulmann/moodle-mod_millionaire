@@ -69,6 +69,18 @@ export const store = new Vuex.Store({
             level.seen = true;
         }
     },
+    getters: {
+        getUsedJokerByType: (state) => (type) => {
+            return _.find(state.usedJokers, function (joker) {
+                return joker.joker_type === type;
+            });
+        },
+        getUsedJokerByTypeAndQuestion: (state) => (type, question) => {
+            return _.find(state.usedJokers, function (joker) {
+                return joker.question === question.id && joker.joker_type === type;
+            });
+        },
+    },
     actions: {
         /**
          * Determines the current language.
@@ -275,7 +287,7 @@ export const store = new Vuex.Store({
         async fetchMdlQuestion(context) {
             if (this.state.question) {
                 let args = {
-                    mdlquestionid: this.state.question.mdl_question_id
+                    questionid: this.state.question.id
                 };
                 const question = await ajax('mod_millionaire_get_mdl_question', args);
                 context.commit('setMdlQuestion', question);
@@ -293,10 +305,13 @@ export const store = new Vuex.Store({
         async fetchMdlAnswers(context) {
             if (this.state.question) {
                 let args = {
-                    mdlquestionid: this.state.question.mdl_question_id
+                    questionid: this.state.question.id
                 };
                 const answers = await ajax('mod_millionaire_get_mdl_answers', args);
-                context.commit('setMdlAnswers', _.shuffle(answers));
+                let sortedAnswers = _.sortBy(answers, function(answer) {
+                    return answer.label;
+                });
+                context.commit('setMdlAnswers', sortedAnswers);
             } else {
                 context.commit('setMdlAnswers', []);
             }

@@ -20,18 +20,10 @@ use external_api;
 use external_function_parameters;
 use external_multiple_structure;
 use external_value;
-use mod_millionaire\external\exporter\gamesession_dto;
 use mod_millionaire\external\exporter\mdl_answer_dto;
 use mod_millionaire\external\exporter\mdl_question_dto;
-use mod_millionaire\external\exporter\question_dto;
-use mod_millionaire\model\game;
-use mod_millionaire\model\gamesession;
-use mod_millionaire\model\question;
 
 defined('MOODLE_INTERNAL') || die();
-
-global $CFG;
-require_once($CFG->dirroot . '/question/engine/bank.php');
 
 /**
  * Class questionbank
@@ -45,7 +37,7 @@ class questionbank extends external_api {
     public static function get_mdl_question_parameters() {
         return new external_function_parameters([
             'coursemoduleid' => new external_value(PARAM_INT, 'course module id'),
-            'mdlquestionid' => new external_value(PARAM_INT, 'the id of the moodle question')
+            'questionid' => new external_value(PARAM_INT, 'the id of the question')
         ]);
     }
 
@@ -57,7 +49,7 @@ class questionbank extends external_api {
      * Gets data of a specific moodle question.
      *
      * @param int $coursemoduleid
-     * @param int $mdlquestionid
+     * @param int $questionid
      *
      * @return \stdClass
      * @throws \coding_exception
@@ -65,8 +57,8 @@ class questionbank extends external_api {
      * @throws \moodle_exception
      * @throws \restricted_context_exception
      */
-    public static function get_mdl_question($coursemoduleid, $mdlquestionid) {
-        $params = ['coursemoduleid' => $coursemoduleid, 'mdlquestionid' => $mdlquestionid];
+    public static function get_mdl_question($coursemoduleid, $questionid) {
+        $params = ['coursemoduleid' => $coursemoduleid, 'questionid' => $questionid];
         self::validate_parameters(self::get_mdl_answers_parameters(), $params);
 
         list($course, $coursemodule) = get_course_and_cm_from_cmid($coursemoduleid, 'millionaire');
@@ -77,7 +69,8 @@ class questionbank extends external_api {
         $ctx = $coursemodule->context;
 
         // load the moodle question
-        $mdl_question = \question_bank::load_question($mdlquestionid, false);
+        $question = util::get_question($questionid);
+        $mdl_question = $question->get_mdl_question_ref();
 
         $exporter = new mdl_question_dto($mdl_question, $ctx);
         return $exporter->export($renderer);
@@ -86,7 +79,7 @@ class questionbank extends external_api {
     public static function get_mdl_answers_parameters() {
         return new external_function_parameters([
             'coursemoduleid' => new external_value(PARAM_INT, 'course module id'),
-            'mdlquestionid' => new external_value(PARAM_INT, 'the id of the moodle question')
+            'questionid' => new external_value(PARAM_INT, 'the id of the question')
         ]);
     }
 
@@ -100,7 +93,7 @@ class questionbank extends external_api {
      * Gets all answers for a specific moodle question.
      *
      * @param int $coursemoduleid
-     * @param int $mdlquestionid
+     * @param int $questionid
      *
      * @return array
      * @throws \coding_exception
@@ -108,8 +101,8 @@ class questionbank extends external_api {
      * @throws \moodle_exception
      * @throws \restricted_context_exception
      */
-    public static function get_mdl_answers($coursemoduleid, $mdlquestionid) {
-        $params = ['coursemoduleid' => $coursemoduleid, 'mdlquestionid' => $mdlquestionid];
+    public static function get_mdl_answers($coursemoduleid, $questionid) {
+        $params = ['coursemoduleid' => $coursemoduleid, 'questionid' => $questionid];
         self::validate_parameters(self::get_mdl_answers_parameters(), $params);
 
         list($course, $coursemodule) = get_course_and_cm_from_cmid($coursemoduleid, 'millionaire');
@@ -120,13 +113,14 @@ class questionbank extends external_api {
         $ctx = $coursemodule->context;
 
         // load the moodle question
-        $mdl_question = \question_bank::load_question($mdlquestionid, false);
+        $question = util::get_question($questionid);
+        $mdl_question = $question->get_mdl_question_ref();
 
         // transform answers
         $result = [];
         if (property_exists($mdl_question, 'answers')) {
             foreach ($mdl_question->answers as $answer) {
-                $exporter = new mdl_answer_dto($answer, $ctx);
+                $exporter = new mdl_answer_dto($answer, $question, $ctx);
                 $result[] = $exporter->export($renderer);
             }
         }

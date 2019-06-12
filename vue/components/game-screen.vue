@@ -1,6 +1,6 @@
 <template lang="pug">
     #millionaire-game_screen
-        h2 {{ strings.game_screen_title }}
+        .uk-clearfix
         topbar
         vk-grid.uk-margin-small-top
             div.uk-flex-left.uk-width-expand

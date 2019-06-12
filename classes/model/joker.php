@@ -16,10 +16,13 @@
 
 namespace mod_millionaire\model;
 
+use coding_exception;
+use moodle_exception;
 use function array_map;
 use function array_slice;
 use function count;
 use function implode;
+use function random_int;
 use function shuffle;
 
 defined('MOODLE_INTERNAL') || die();
@@ -91,27 +94,74 @@ class joker extends abstract_model {
         $this->joker_data = isset($data['joker_data']) ? $data['joker_data'] : '';
     }
 
+    /**
+     * Generates content for this joker, based on its type.
+     *
+     * @param question $question
+     *
+     * @throws coding_exception
+     * @throws moodle_exception
+     */
     public function generate_content(question $question) {
+        // collect wrong and correct answer ids
+        $mdl_question = $question->get_mdl_question_ref();
+        $mdl_answers = $mdl_question->answers;
+        $wrong_answer_ids = array_map(
+            function ($mdl_answer) {
+                return $mdl_answer->id;
+            },
+            array_filter($mdl_answers, function ($mdl_answer) {
+                return $mdl_answer->fraction == 0;
+            })
+        );
+        shuffle($wrong_answer_ids);
+        $correct_answer_ids = array_map(
+            function ($mdl_answer) {
+                return $mdl_answer->id;
+            },
+            array_filter($mdl_answers, function ($mdl_answer) {
+                return $mdl_answer->fraction > 0;
+            })
+        );
+        if (count($correct_answer_ids) !== 1) {
+            // can't handle multiple choice questions
+            throw new moodle_exception("can't handle multiple choice questions!");
+        }
+        // generate the joker content
         switch ($this->joker_type) {
             case MOD_MILLIONAIRE_JOKER_CHANCE:
-                $mdl_answers = $question->get_mdl_question_ref()->answers;
-                $wrong_answer_ids = array_map(
-                    function ($mdl_answer) {
-                        return $mdl_answer->id;
-                    },
-                    array_filter($mdl_answers, function ($mdl_answer) {
-                        return $mdl_answer->fraction == 0;
-                    })
-                );
-                shuffle($wrong_answer_ids);
                 if (count($wrong_answer_ids) > 2) {
                     $wrong_answer_ids = array_slice($wrong_answer_ids, 0, 2);
                 }
                 $this->set_joker_data(implode(",", $wrong_answer_ids));
                 break;
-            case MOD_MILLIONAIRE_JOKER_CROWD:
+            case MOD_MILLIONAIRE_JOKER_AUDIENCE:
+                $remainingPercentage = 100.0;
+                $percentages = [];
+                // correct answer percentage
+                $percentage_correct = random_int(40, 95);
+                $percentages[] = current($correct_answer_ids) . '=' . $percentage_correct;
+                $remainingPercentage -= $percentage_correct;
+                // wrong answer percentages
+                foreach ($wrong_answer_ids as $id) {
+                    if (end($false_answers_ids) === $id) {
+                        $percentage_wrong = $remainingPercentage;
+                    } else {
+                        // make sure that the false percentage doesn't exceed the correct percentage too much.
+                        $percentage_wrong = random_int(0, min($remainingPercentage, $percentage_correct + 3));
+                        $remainingPercentage -= $percentage_wrong;
+                    }
+                    $percentages[] = $id . '=' . $percentage_wrong;
+                }
+                $this->set_joker_data(implode(',', $percentages));
                 break;
             case MOD_MILLIONAIRE_JOKER_FEEDBACK:
+                // show a hint from the db if it exists
+                $feedback = $mdl_question->generalfeedback;
+                if (empty($feedback)) {
+                    $feedback = get_string('game_joker_feedback_unavailable', 'millionaire');
+                }
+                $this->set_joker_data($feedback);
                 break;
             default: // do nothing
         }

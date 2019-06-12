@@ -16,6 +16,10 @@
 
 namespace mod_millionaire\model;
 
+use function array_map;
+use function explode;
+use function intval;
+
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
@@ -51,6 +55,10 @@ class question extends abstract_model {
      */
     protected $mdl_question;
     /**
+     * @var string The ids of the moodle answers in their correct order, separated by commas.
+     */
+    protected $mdl_answers_order;
+    /**
      * @var int The id of the moodle answer the user has chosen.
      */
     protected $mdl_answer;
@@ -81,6 +89,7 @@ class question extends abstract_model {
         $this->gamesession = 0;
         $this->level = 0;
         $this->mdl_question = 0;
+        $this->mdl_answers_order = '';
         $this->mdl_answer = 0;
         $this->score = 0;
         $this->correct = 0;
@@ -104,6 +113,7 @@ class question extends abstract_model {
         $this->gamesession = $data['gamesession'];
         $this->level = $data['level'];
         $this->mdl_question = $data['mdl_question'];
+        $this->mdl_answers_order = $data['mdl_answers_order'];
         $this->mdl_answer = isset($data['mdl_answer']) ? $data['mdl_answer'] : null;
         $this->score = isset($data['score']) ? $data['score'] : 0;
         $this->correct = isset($data['correct']) ? ($data['correct'] == 1) : false;
@@ -120,6 +130,20 @@ class question extends abstract_model {
             $this->_mdl_question = \question_bank::load_question($this->mdl_question, false);
         }
         return $this->_mdl_question;
+    }
+
+    /**
+     * Returns the ids of the moodle answer ids in their stored order.
+     *
+     * @return int[]
+     */
+    public function get_mdl_answer_ids_ordered(): array {
+        return array_map(
+            function ($strId) {
+                return intval($strId);
+            },
+            explode(",", $this->get_mdl_answers_order())
+        );
     }
 
     /**
@@ -190,6 +214,20 @@ class question extends abstract_model {
      */
     public function set_mdl_question(int $mdl_question): void {
         $this->mdl_question = $mdl_question;
+    }
+
+    /**
+     * @return string
+     */
+    public function get_mdl_answers_order(): string {
+        return $this->mdl_answers_order;
+    }
+
+    /**
+     * @param string $mdl_answers_order
+     */
+    public function set_mdl_answers_order(string $mdl_answers_order): void {
+        $this->mdl_answers_order = $mdl_answers_order;
     }
 
     /**
