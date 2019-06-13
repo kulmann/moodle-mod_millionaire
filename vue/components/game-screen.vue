@@ -52,6 +52,7 @@
         },
         methods: {
             ...mapActions([
+                'fetchGame',
                 'fetchGameSession',
                 'showQuestionForLevel',
             ]),
@@ -60,6 +61,7 @@
             ]),
         },
         created() {
+            this.fetchGame();
             this.fetchGameSession().then(() => {
                 let highestSeenLevel = this.findHighestSeenLevel(this.levels);
                 if (highestSeenLevel.seen) {

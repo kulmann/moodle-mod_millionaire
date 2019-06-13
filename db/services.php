@@ -23,6 +23,13 @@
  */
 
 $functions = [
+    'mod_millionaire_get_game' => [
+        'classname' => 'mod_millionaire\external\game',
+        'methodname' => 'get_game',
+        'description' => 'Get options of the game and logged in user',
+        'type' => 'read',
+        'ajax' => true,
+    ],
     'mod_millionaire_get_levels' => [
         'classname' => 'mod_millionaire\external\levels',
         'methodname' => 'get_levels',

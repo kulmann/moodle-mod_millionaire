@@ -16,6 +16,7 @@
 
 namespace mod_millionaire\external\exporter;
 
+use coding_exception;
 use context;
 use core\external\exporter;
 use mod_millionaire\model\game;
@@ -45,7 +46,7 @@ class score_dto extends exporter {
     /**
      * @var int
      */
-    private $games;
+    private $sessions;
     /**
      * @var int
      */
@@ -64,18 +65,18 @@ class score_dto extends exporter {
      *
      * @param int $rank
      * @param float $score
-     * @param int $games
+     * @param int $sessions
      * @param int $mdl_user
      * @param string $mdl_user_name
      * @param bool $teacher
      * @param context $context
      *
-     * @throws \coding_exception
+     * @throws coding_exception
      */
-    public function __construct($rank, $score, $games, $mdl_user, $mdl_user_name, $teacher, context $context) {
+    public function __construct($rank, $score, $sessions, $mdl_user, $mdl_user_name, $teacher, context $context) {
         $this->rank = $rank;
         $this->score = $score;
-        $this->games = $games;
+        $this->sessions = $sessions;
         $this->mdl_user = $mdl_user;
         $this->mdl_user_name = $mdl_user_name;
         $this->teacher = $teacher;
@@ -92,7 +93,7 @@ class score_dto extends exporter {
                 'type' => PARAM_FLOAT,
                 'description' => 'score',
             ],
-            'games' => [
+            'sessions' => [
                 'type' => PARAM_INT,
                 'description' => 'the number of game sessions of this user',
             ],
@@ -121,7 +122,7 @@ class score_dto extends exporter {
         return [
             'rank' => $this->rank,
             'score' => $this->score,
-            'games' => $this->games,
+            'sessions' => $this->sessions,
             'mdl_user' => $this->mdl_user,
             'mdl_user_name' => $this->mdl_user_name,
             'teacher' => $this->teacher,

@@ -20,6 +20,7 @@ export const store = new Vuex.Store({
         courseModuleID: 0,
         contextID: 0,
         strings: {},
+        game: null,
         levels: null,
         gameSession: null,
         question: null,
@@ -42,6 +43,9 @@ export const store = new Vuex.Store({
         },
         setStrings(state, strings) {
             state.strings = strings;
+        },
+        setGame(state, game) {
+            state.game = game;
         },
         setLevels(state, levels) {
             state.levels = levels;
@@ -130,6 +134,17 @@ export const store = new Vuex.Store({
                 context.commit('setStrings', strings);
                 moodleStorage.set(cacheKey, JSON.stringify(strings));
             }
+        },
+        /**
+         * Fetches game options and active user info.
+         *
+         * @param context
+         *
+         * @returns {Promise<void>}
+         */
+        async fetchGame(context) {
+            const game = await ajax('mod_millionaire_get_game');
+            context.commit('setGame', game);
         },
         /**
          * Fetches the current game session from the server. If none exists, a new one will be created, so this

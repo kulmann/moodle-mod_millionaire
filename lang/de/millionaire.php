@@ -150,9 +150,11 @@ $string['game_help_message'] = '<ul><li>Mit dem Button »Neues Spiel« kann jede
 $string['game_joker_feedback_unavailable'] = 'Leider ist für diese Frage kein Hinweis verfügbar.';
 $string['game_joker_feedback_title'] = 'Hinweis:';
 $string['game_joker_audience_title'] = 'Publikums-Joker:';
+$string['game_stats_empty'] = 'Es gibt noch keine Einträge in der Bestenliste.';
 $string['game_stats_rank'] = 'Platz';
 $string['game_stats_user'] = 'Nutzer';
 $string['game_stats_score'] = 'Punkte';
+$string['game_stats_sessions'] = 'Versuche';
 
 
 $string['topic'] = 'Thema';

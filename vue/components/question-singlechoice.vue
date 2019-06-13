@@ -6,7 +6,7 @@
             .uk-card-body
                 p._question {{ mdl_question.questiontext }}
         vk-grid.uk-margin-top(matched)
-            div(v-for="answer in mdl_answers", :key="answer.id", class="uk-width-1-1@s uk-width-1-2@m uk-width-1-4@l")
+            div(v-for="answer in mdl_answers", :key="answer.id", class="uk-width-1-1@s uk-width-1-2@m")
                 .uk-alert.uk-alert-default._answer(uk-alert, @click="selectAnswer(answer)", :class="getAnswerClasses(answer)")
                     vk-grid.uk-grid-small
                         span.uk-width-auto.uk-text-bold {{ answer.label }}

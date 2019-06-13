@@ -1,7 +1,7 @@
 <template lang="pug">
     #millionaire-intro
-        .uk-alert.uk-alert-warning
-            p(v-html="strings.game_intro_message")
+        template(v-if="game")
+            h1.uk-text-center {{ game.name }}
         p.uk-text-center
             button.uk-button.uk-button-primary(@click="startGame")
                 span {{ strings.game_btn_start }}
@@ -15,7 +15,8 @@
         mixins: [mixins],
         computed: {
             ...mapState([
-                'strings'
+                'strings',
+                'game',
             ]),
         },
         methods: {

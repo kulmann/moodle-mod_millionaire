@@ -150,9 +150,11 @@ $string['game_help_message'] = '<ul><li>You can start a new game at any time by 
 $string['game_joker_feedback_unavailable'] = 'Unfortunately there is no hint available for this question.';
 $string['game_joker_feedback_title'] = 'Hint:';
 $string['game_joker_audience_title'] = 'Audience lifeline:';
+$string['game_stats_empty'] = 'No one is on the leader board, yet.';
 $string['game_stats_rank'] = 'Rank';
 $string['game_stats_user'] = 'User';
 $string['game_stats_score'] = 'Score';
+$string['game_stats_sessions'] = 'Attempts';
 
 
 $string['topic'] = 'Topic';

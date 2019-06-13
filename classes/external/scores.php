@@ -125,13 +125,12 @@ class scores extends external_api {
         $records = $DB->get_records_sql($sql, $params);
         $score_dtos = [];
         if ($records) {
-            $rank = 0;
+            $rank = 1;
             foreach ($records as $record) {
                 $teacher = has_capability('mod/millionaire:manage', $ctx, $record->mdl_user);
                 if (!$teacher || $game->is_highscore_teachers()) {
-                    $rank++;
+                    $score_dtos[] = new score_dto($rank++, $record->score, $record->sessions, $record->mdl_user, $record->mdl_user_name, $teacher, $ctx);
                 }
-                $score_dtos[] = new score_dto($rank, $record->score, $record->sessions, $record->mdl_user, $record->mdl_user_name, $teacher, $ctx);
             }
         }
 

@@ -56,6 +56,10 @@
                 if (this.isJokerDisabled(type)) {
                     return;
                 }
+                if (this.question.finished) {
+                    // show joker as available, but ignore it when the current question is already answered.
+                    return;
+                }
                 let args = {
                     gamesessionid: this.gameSession.id,
                     questionid: this.question.id,
