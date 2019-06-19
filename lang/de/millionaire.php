@@ -25,20 +25,20 @@
 defined('MOODLE_INTERNAL') || die();
 
 /* system */
-$string['modulename'] = 'Millionaire Quiz';
-$string['modulenameplural'] = 'Millionaire Quizzes';
-$string['modulename_help'] = 'Ein an "Wer wird Millionär" angelehntes Quiz-Spiel. Die Kursteilnehmer können mit Hilfe ihrer erreichten Gewinnstufe in eine Rangliste sortiert werden.';
-$string['pluginadministration'] = 'Millionaire Quiz Administration';
+$string['modulename'] = 'Wer wird Millionär';
+$string['modulenameplural'] = '»Wer wird Millionär« Spiele';
+$string['modulename_help'] = 'Ein an "Wer wird Millionär" angelehntes Quiz-Spiel. Die Kursteilnehmer können mit Hilfe ihrer erreichten Gewinnstufe in eine Bestenliste sortiert werden.';
+$string['pluginadministration'] = '»Wer wird Millionär« Administration';
 $string['pluginname'] = 'Millionaire';
 $string['millionaire'] = 'Millionaire';
-$string['millionaire:addinstance'] = 'Millionaire Quiz hinzufügen';
-$string['millionaire:submit'] = 'Millionaire Quiz speichern';
-$string['millionaire:view'] = 'Millionaire Quiz anzeigen';
+$string['millionaire:addinstance'] = '»Wer wird Millionär« Spiel hinzufügen';
+$string['millionaire:submit'] = '»Wer wird Millionär« Spiel speichern';
+$string['millionaire:view'] = '»Wer wird Millionär« Spiel anzeigen';
 $string['millionairename'] = 'Name';
-$string['millionairename_help'] = 'Bitte vergeben Sie einen Namen für dieses Millionaire Quiz.';
+$string['millionairename_help'] = 'Bitte vergeben Sie einen Namen für dieses »Wer wird Millionär« Spiel.';
 $string['introduction'] = 'Beschreibung';
 
-/* activity admin form: game options */
+/* main admin form: game options */
 $string['game_options_fieldset'] = 'Spieloptionen';
 $string['currency_for_levels'] = 'Punkte-Währung';
 $string['currency_for_levels_help'] = 'Symbol / Text wird an jeden Punktestand angefügt.';
@@ -129,7 +129,10 @@ $string['reset_progress_confirm_question'] = 'Möchten Sie wirklich den Fortschr
 $string['course_reset_include_progress'] = 'Fortschritt zurücksetzen (Highscores etc.)';
 $string['course_reset_include_topics'] = 'Eingestellte Themen etc. zurücksetzen (Alles wird gelöscht!)';
 
-/* game gui */
+/* admin screen in vue app */
+$string['admin_screen_title'] = 'Spiel-Inhalte bearbeiten';
+
+/* game screen in vue app */
 $string['game_screen_title'] = 'Spiele »Wer wird Millionär«';
 $string['game_qtype_not_supported'] = 'Der Fragentyp »{$a}« wird nicht unterstützt.';
 $string['game_loading_question'] = 'Frage wird geladen';
@@ -155,26 +158,3 @@ $string['game_stats_rank'] = 'Platz';
 $string['game_stats_user'] = 'Nutzer';
 $string['game_stats_score'] = 'Punkte';
 $string['game_stats_sessions'] = 'Versuche';
-
-
-$string['topic'] = 'Thema';
-$string['highscore_name'] = 'Name';
-$string['highscore_sessions'] = 'Runden';
-$string['highscore_score'] = 'Highscore';
-$string['highscore_rank'] = 'Platz';
-$string['highscore_msg_none'] = 'Es gibt noch keinen Highscore.';
-$string['question_question'] = 'Frage';
-$string['question_score'] = 'Gewinnstufe';
-$string['question_jokers'] = 'Joker';
-$string['question_joker_used'] = ' - verbraucht';
-$string['question_joker_50_50'] = 'Zwei falsche Antwort-Optionen entfernen';
-$string['question_joker_audience'] = 'Das Publikum befragen';
-$string['question_joker_audience_title'] = 'Publikums-Joker:';
-$string['question_joker_hint'] = 'Einen Hinweis erhalten';
-$string['question_joker_hint_title'] = 'Hinweis:';
-$string['question_joker_hint_unavailable'] = 'Leider ist kein Hinweis verfügbar.';
-$string['replay'] = 'Erneut spielen';
-$string['next_question'] = 'Weiter';
-$string['game_insufficient_questions'] = 'Es stehen nicht genug Fragen für weitere Runden zur Verfügung.';
-$string['answer_text_true'] = 'Wahr';
-$string['answer_text_false'] = 'Falsch';

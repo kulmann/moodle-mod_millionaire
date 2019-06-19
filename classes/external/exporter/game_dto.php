@@ -18,6 +18,7 @@ namespace mod_millionaire\external\exporter;
 
 use context;
 use core\external\exporter;
+use function has_capability;
 use mod_millionaire\model\game;
 use renderer_base;
 use stdClass;
@@ -41,6 +42,10 @@ class game_dto extends exporter {
      * @var stdClass
      */
     protected $user;
+    /**
+     * @var context
+     */
+    protected $ctx;
 
     /**
      * game_dto constructor.
@@ -54,6 +59,7 @@ class game_dto extends exporter {
     public function __construct(game $game, stdClass $user, context $context) {
         $this->game = $game;
         $this->user = $user;
+        $this->ctx = $context;
         parent::__construct([], ['context' => $context]);
     }
 
@@ -82,7 +88,11 @@ class game_dto extends exporter {
             'mdl_user' => [
                 'type' => PARAM_INT,
                 'description' => 'the id of the currently active moodle user',
-            ]
+            ],
+            'mdl_user_teacher' => [
+                'type' => PARAM_BOOL,
+                'description' => 'whether or not the logged in user has game editing capabilities',
+            ],
         ];
     }
 
@@ -100,6 +110,7 @@ class game_dto extends exporter {
             'highscore_count' => $this->game->get_highscore_count(),
             'highscore_teachers' => $this->game->is_highscore_teachers(),
             'mdl_user' => $this->user->id,
+            'mdl_user_teacher' => has_capability('mod/millionaire:manage', $this->ctx, $this->user->id),
         ];
     }
 }

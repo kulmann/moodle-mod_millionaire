@@ -27,7 +27,7 @@ defined('MOODLE_INTERNAL') || die();
 /* system */
 $string['modulename'] = 'Millionaire Quiz';
 $string['modulenameplural'] = 'Millionaire Quizzes';
-$string['modulename_help'] = 'This is a "who wants to be a millionaire" style quiz game. Course participants get ranked by their highscore.';
+$string['modulename_help'] = 'This is a "who wants to be a millionaire" style quiz game. Course participants get ranked in a leader board by their high scores.';
 $string['pluginadministration'] = 'Millionaire Administration';
 $string['pluginname'] = 'Millionaire';
 $string['millionaire'] = 'Millionaire';
@@ -38,7 +38,7 @@ $string['millionairename'] = 'Name';
 $string['millionairename_help'] = 'Please provide a name for your millionaire quiz.';
 $string['introduction'] = 'Description';
 
-/* activity admin form: game options */
+/* main admin form: game options */
 $string['game_options_fieldset'] = 'Game options';
 $string['currency_for_levels'] = 'Score currency';
 $string['currency_for_levels_help'] = 'Symbol / Text will be appended after each level score.';
@@ -129,6 +129,9 @@ $string['reset_progress_confirm_question'] = 'Are you sure you want to reset the
 $string['course_reset_include_progress'] = 'Reset progress (Highscores etc.)';
 $string['course_reset_include_topics'] = 'Reset topics etc. (Everything will be deleted!)';
 
+/* admin screen in vue app */
+$string['admin_screen_title'] = 'Edit game content';
+
 /* game gui */
 $string['game_screen_title'] = 'Play »Who wants to be a millionaire«';
 $string['game_qtype_not_supported'] = 'The question type »{$a}« is not supported.';
@@ -155,26 +158,3 @@ $string['game_stats_rank'] = 'Rank';
 $string['game_stats_user'] = 'User';
 $string['game_stats_score'] = 'Score';
 $string['game_stats_sessions'] = 'Attempts';
-
-
-$string['topic'] = 'Topic';
-$string['highscore_name'] = 'Name';
-$string['highscore_sessions'] = 'Sessions';
-$string['highscore_score'] = 'Highscore';
-$string['highscore_rank'] = 'Rank';
-$string['highscore_msg_none'] = 'There is no highscore, yet.';
-$string['question_question'] = 'Question';
-$string['question_score'] = 'Score';
-$string['question_jokers'] = 'Lifelines';
-$string['question_joker_used'] = ' - used';
-$string['question_joker_50_50'] = 'Erase two wrong answers';
-$string['question_joker_audience'] = 'Ask the audience';
-$string['question_joker_audience_title'] = 'Audience lifeline:';
-$string['question_joker_hint'] = 'Get a hint';
-$string['question_joker_hint_title'] = 'Hint:';
-$string['question_joker_hint_unavailable'] = 'Unfortunately there is no hint available.';
-$string['replay'] = 'Play again';
-$string['next_question'] = 'Continue';
-$string['game_insufficient_questions'] = 'There are not enough questions for further rounds.';
-$string['answer_text_true'] = 'True';
-$string['answer_text_false'] = 'False';

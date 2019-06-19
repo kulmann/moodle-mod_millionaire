@@ -1,17 +1,19 @@
 <template lang="pug">
     .uk-grid.uk-grid-collapse.top-bar(uk-grid).uk-flex-middle
         .uk-width-expand
-            button.uk-button.uk-button-default.uk-button-small.uk-margin-small-left(@click="restart", :class="{'uk-button-primary': isGameOver}")
+            button.uk-button.uk-button-default.uk-button-small.uk-margin-small-left(@click="restartGame", :class="{'uk-button-primary': isGameOver}")
                 v-icon(name="redo").uk-margin-small-right
                 span {{ strings.game_btn_restart }}
-            button.uk-button.uk-button-default.uk-button-small.uk-margin-small-left(@click="stats", v-if="statsButtonVisible")
+            button.uk-button.uk-button-default.uk-button-small.uk-margin-small-left(@click="showStats", v-if="statsButtonVisible")
                 v-icon(name="chart-line").uk-margin-small-right
                 span {{ strings.game_btn_stats }}
-            button.uk-button.uk-button-default.uk-button-small.uk-margin-small-left(@click="game", v-if="gameButtonVisible")
+            button.uk-button.uk-button-default.uk-button-small.uk-margin-small-left(@click="showGame", v-if="gameButtonVisible")
                 v-icon(name="gamepad").uk-margin-small-right
                 span {{ strings.game_btn_game }}
         .uk-width-auto
-            button.uk-button.uk-button-default.uk-button-small.uk-margin-small-right(@click="help")
+            button.uk-button.uk-button-default.uk-button-small.uk-margin-small-right(@click="goToAdminRoute", v-if="isAdminUser")
+                v-icon(name="cogs")
+            button.uk-button.uk-button-default.uk-button-small.uk-margin-small-right(@click="showHelp")
                 v-icon(name="regular/question-circle")
 </template>
 
@@ -24,10 +26,20 @@
         computed: {
             ...mapState([
                 'strings',
+                'game',
                 'gameMode',
                 'gameSession',
                 'question'
             ]),
+            isAdminUser() {
+                return this.game.mdl_user_teacher;
+            },
+            isAdminScreen() {
+                return this.$route.name === 'admin-screen';
+            },
+            isGameScreen() {
+                return this.$route.name === 'game-screen';
+            },
             isGameOver() {
                 return this.gameSession === null || this.gameSession.state !== GAME_PROGRESS;
             },
@@ -46,22 +58,36 @@
             ...mapMutations([
                 'setGameMode'
             ]),
-            restart() {
+            restartGame() {
                 this.createGameSession();
+                this.goToGameRoute();
             },
-            stats() {
+            showStats() {
                 this.setGameMode(MODE_STATS);
+                this.goToGameRoute();
             },
-            game() {
+            showGame() {
                 if (this.question.finished) {
                     this.setGameMode(MODE_QUESTION_ANSWERED);
                 } else {
                     this.setGameMode(MODE_QUESTION_SHOWN)
                 }
+                this.goToGameRoute();
             },
-            help() {
+            showHelp() {
                 this.setGameMode(MODE_HELP);
+                this.goToGameRoute();
             },
+            goToAdminRoute() {
+                if (!this.isAdminScreen) {
+                    this.$router.push({name: 'admin-screen'});
+                }
+            },
+            goToGameRoute() {
+                if (!this.isGameScreen) {
+                    this.$router.push({name: 'game-screen'});
+                }
+            }
         },
     }
 </script>

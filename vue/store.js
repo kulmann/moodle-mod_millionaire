@@ -5,17 +5,14 @@ import moodleStorage from 'core/localstorage';
 import Notification from 'core/notification';
 import _ from 'lodash';
 import $ from 'jquery';
-import {
-    MODE_INTRO,
-    MODE_QUESTION_ANSWERED,
-    MODE_QUESTION_SHOWN,
-    VALID_MODES
-} from './constants';
+import {MODE_INTRO, MODE_QUESTION_ANSWERED, MODE_QUESTION_SHOWN, VALID_MODES} from './constants';
+import mixins from './mixins';
 
 Vue.use(Vuex);
 
 export const store = new Vuex.Store({
     state: {
+        initialized: false,
         lang: null,
         courseModuleID: 0,
         contextID: 0,
@@ -32,6 +29,9 @@ export const store = new Vuex.Store({
     },
     //strict: process.env.NODE_ENV !== 'production',
     mutations: {
+        setInitialized(state, initialized) {
+            state.initialized = initialized;
+        },
         setLang(state, lang) {
             state.lang = lang;
         },
@@ -95,6 +95,34 @@ export const store = new Vuex.Store({
         },
     },
     actions: {
+        /**
+         * Initializes everything (load language, strings, game, gameSession, gameMode, current question, etc).
+         *
+         * @param context
+         */
+        async init(context) {
+            context.dispatch('loadLang').then(() => {
+                Promise.all([
+                    context.dispatch('loadComponentStrings'),
+                    context.dispatch('fetchGame'),
+                    context.dispatch('fetchGameSession').then(() => {
+                        let highestSeenLevel = mixins.methods.findHighestSeenLevel(context.state.levels);
+                        if (highestSeenLevel.seen) {
+                            // the game was obviously already started. So fetch the last seen question.
+                            context.dispatch('showQuestionForLevel', highestSeenLevel.position).then(() => {
+                                if (context.state.question.finished) {
+                                    context.commit('setGameMode', MODE_QUESTION_ANSWERED);
+                                } else {
+                                    context.commit('setGameMode', MODE_QUESTION_SHOWN);
+                                }
+                            });
+                        }
+                    }),
+                ]).then(() => {
+                    context.commit('setInitialized', true);
+                });
+            });
+        },
         /**
          * Determines the current language.
          *
@@ -337,7 +365,7 @@ export const store = new Vuex.Store({
                     questionid: this.state.question.id
                 };
                 const answers = await ajax('mod_millionaire_get_mdl_answers', args);
-                let sortedAnswers = _.sortBy(answers, function(answer) {
+                let sortedAnswers = _.sortBy(answers, function (answer) {
                     return answer.label;
                 });
                 context.commit('setMdlAnswers', sortedAnswers);
