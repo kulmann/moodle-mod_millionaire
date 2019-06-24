@@ -33,6 +33,7 @@ $string['pluginname'] = 'Millionaire';
 $string['millionaire'] = 'Millionaire';
 $string['millionaire:addinstance'] = 'Add a new Millionaire quiz';
 $string['millionaire:submit'] = 'Submit Millionaire quiz';
+$string['millionaire:manage'] = 'Manage Millionaire quiz';
 $string['millionaire:view'] = 'View Millionaire quiz';
 $string['millionairename'] = 'Name';
 $string['millionairename_help'] = 'Please provide a name for your millionaire quiz.';
@@ -62,61 +63,6 @@ $string['highscore_mode_help'] = 'Please select which scoring mode you want to u
 $string['highscore_teachers'] = 'Teachers appear in highscore list?';
 $string['highscore_teachers_help'] = 'If enabled teachers scores will appear in highscore list.';
 
-/* activity edit page: topics */
-$string['topics_edit'] = 'Edit topics';
-$string['topic_edit_new'] = 'Add new topic in &quot;<i>{$a}</i>&quot;';
-$string['topic_edit_x'] = 'Edit topic in &quot;<i>{$a}</i>&quot;';
-$string['topics_edit_x'] = 'Edit topics in &quot;<i>{$a}</i>&quot;';
-$string['topics_edit_empty'] = 'No topics added, yet.';
-$string['topics_edit_button_add'] = 'Add topic';
-$string['topics_edit_button_edit'] = 'Edit topic';
-$string['topics_edit_button_categories'] = 'Edit categories';
-$string['topics_edit_button_delete'] = 'Delete topic';
-$string['topics_edit_button_move_up'] = 'Move topic up';
-$string['topics_edit_button_move_down'] = 'Move topic down';
-$string['topics_edit_category_count_1'] = '1 category';
-$string['topics_edit_category_count_n'] = '{$a} categories';
-$string['topics_edit_question_count_1'] = '1 question';
-$string['topics_edit_question_count_n'] = '{$a} questions';
-$string['topics_form_submit'] = 'Save';
-$string['topics_form_cancel'] = 'Cancel';
-$string['topics_form_name'] = 'Name';
-$string['topics_form_name_help'] = 'The topic will be shown to the user with this name.';
-$string['topics_form_name_error_required'] = 'Please provide a name for this topic.';
-$string['topics_form_score'] = 'Score';
-$string['topics_form_score_help'] = 'Score to be reached on correct answer.';
-$string['topics_form_score_error_required'] = 'Please define a score greater than 0.';
-$string['topics_form_safe_spot'] = 'Safe level';
-$string['topics_form_safe_spot_help'] = 'When game option &quot;Continue Game?&quot; is inactive, the player falls back to the nearest safe level when giving an incorrect answer.';
-$string['topics_form_color'] = 'Color';
-$string['topics_form_color_help'] = 'Instead of an image you may want to select a color which represents this topic on the game board. Please use a html color code in hexadecimal format for this (e.g. #FF5733, with or without the hash sign).';
-$string['topics_form_color_invalid'] = 'The html color code needs to be in hexadecimal format (e.g. #FF5533 or #F53). The hash sign will be prefixed if it is missing.';
-$string['topics_form_preview'] = 'Preview';
-$string['category_edit_new'] = 'Add category for topic &quot;<i>{$a}</i>&quot;';
-$string['category_edit_x'] = 'Edit category of topic &quot;<i>{$a}</i>&quot;';
-$string['categories_edit_x'] = 'Edit categories of topic &quot;<i>{$a}</i>&quot;';
-$string['categories_edit_error_access_topic'] = 'The topic doesn\'t belong to the activity.';
-$string['categories_edit_error_access_category'] = 'The category doesn\'t belong to the topic.';
-$string['categories_edit_empty'] = 'No categories added, yet.';
-$string['categories_edit_button_add'] = 'Add category';
-$string['categories_edit_button_edit'] = 'Edit category';
-$string['categories_edit_button_delete'] = 'Delete category';
-$string['categories_edit_button_back_to_topics'] = 'To topics list';
-$string['category_form_name'] = 'Name';
-$string['category_form_name_help'] = 'This allows to specify an identifier for this category in the category list of your topic. This might come in handy when you specify certain tags and want to show this within the category list.';
-$string['category_form_category'] = 'Category';
-$string['category_form_category_help'] = 'Please select a category to use questions from within the topic.';
-$string['category_form_subcategories'] = 'Subcategories';
-$string['category_form_subcategories_help'] = 'If enabled, the question from subcategories of the selected category will be used, too. If disabled, only questions which are assigned directly to the selected category will be used.';
-$string['category_form_tags_all'] = 'Use all tags';
-$string['category_form_tags_all_help'] = 'If enabled, the questions will not be filtered by tags. If disabled, only questions which have been tagged with the specified tags will be used.';
-$string['category_form_tags'] = 'Tags';
-$string['category_form_tags_help'] = 'Please select the tags a question needs to be taggged with in order to be used. Note: the listed tags are those which have been used in the selected category.';
-$string['topic_delete_confirm_title'] = 'Delete topic?';
-$string['topic_delete_confirm_message'] = 'Are you sure you want to delete this topic? this action is irreversible.';
-$string['category_delete_confirm_title'] = 'Delete category?';
-$string['category_delete_confirm_message'] = 'Are you sure you want to delete this category? this action is irreversible.';
-
 /* activity edit page: control */
 $string['control_edit'] = 'Control';
 $string['control_edit_title'] = 'Control Options';
@@ -131,6 +77,13 @@ $string['course_reset_include_topics'] = 'Reset topics etc. (Everything will be 
 
 /* admin screen in vue app */
 $string['admin_screen_title'] = 'Edit game content';
+$string['admin_not_allowed'] = 'You have insufficient permissions to view this page.';
+$string['admin_levels_title'] = 'Edit levels';
+$string['admin_levels_none'] = 'You didn\'t add any levels, yet.';
+$string['admin_levels_intro'] = 'You have already created the following levels for this game. You may edit their data and order, or even delete them. Please note, that editing levels for an already started game is limited.';
+$string['admin_btn_add'] = 'Add';
+$string['admin_level_lbl_name'] = 'Name';
+$string['admin_level_lbl_score'] = 'Score';
 
 /* game gui */
 $string['game_screen_title'] = 'Play »Who wants to be a millionaire«';

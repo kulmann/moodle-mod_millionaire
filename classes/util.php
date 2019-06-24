@@ -28,6 +28,34 @@ use mod_millionaire\model\question;
 class util {
 
     /**
+     * Checks if the logged in user has the given $capability.
+     *
+     * @param string $capability
+     * @param \context $context
+     * @param int|null $userid
+     *
+     * @return bool
+     * @throws \coding_exception
+     */
+    public static function user_has_capability(string $capability, \context $context, $userid = null) : bool {
+        return \has_capability($capability, $context, $userid);
+    }
+
+    /**
+     * Kills the current request if the logged in user doesn't have the required capabilities.
+     *
+     * @param string $capability
+     * @param \context $context
+     * @param int|null $userid
+     *
+     * @return void
+     * @throws \required_capability_exception
+     */
+    public static function require_user_has_capability(string $capability, \context $context, $userid = null): void {
+        \require_capability($capability, $context, $userid);
+    }
+
+    /**
      * Checks that the gamesession belongs to the given $game and the logged in $USER.
      *
      * @param game $game
@@ -36,7 +64,7 @@ class util {
      * @return void
      * @throws invalid_parameter_exception
      */
-    public static function validate_gamesession(game $game, gamesession $gamesession) {
+    public static function validate_gamesession(game $game, gamesession $gamesession): void {
         if ($game->get_id() !== $gamesession->get_game()) {
             throw new invalid_parameter_exception("gamesession " . $gamesession->get_id() . " doesn't belong to game " . $game->get_id());
         }
@@ -55,7 +83,7 @@ class util {
      * @return void
      * @throws invalid_parameter_exception
      */
-    public static function validate_question(gamesession $gamesession, question $question) {
+    public static function validate_question(gamesession $gamesession, question $question): void {
         if ($gamesession->get_id() !== $question->get_gamesession()) {
             throw new invalid_parameter_exception("question " . $question->get_id() . " doesn't belong to given gamesession");
         }
@@ -69,7 +97,7 @@ class util {
      * @return game
      * @throws dml_exception
      */
-    public static function get_game(cm_info $coursemodule) {
+    public static function get_game(cm_info $coursemodule): game {
         global $DB;
         $game_data = $DB->get_record('millionaire', ['id' => $coursemodule->instance]);
         $game = new game();
@@ -85,7 +113,7 @@ class util {
      * @return gamesession
      * @throws dml_exception
      */
-    public static function get_gamesession($gamesessionid) {
+    public static function get_gamesession($gamesessionid): gamesession {
         $gamesession = new gamesession();
         $gamesession->load_data_by_id($gamesessionid);
         return $gamesession;
@@ -99,7 +127,7 @@ class util {
      * @return level
      * @throws dml_exception
      */
-    public static function get_level($levelid) {
+    public static function get_level($levelid): level {
         $level = new level();
         $level->load_data_by_id($levelid);
         return $level;
@@ -113,7 +141,7 @@ class util {
      * @return question
      * @throws dml_exception
      */
-    public static function get_question($questionid) {
+    public static function get_question($questionid): question {
         $question = new question();
         $question->load_data_by_id($questionid);
         return $question;
@@ -127,7 +155,7 @@ class util {
      * @return joker
      * @throws dml_exception
      */
-    public static function get_joker($jokerid) {
+    public static function get_joker($jokerid): joker {
         $joker = new joker();
         $joker->load_data_by_id($jokerid);
         return $joker;
@@ -142,7 +170,7 @@ class util {
      * @return gamesession
      * @throws dml_exception
      */
-    public static function get_or_create_gamesession(game $game) {
+    public static function get_or_create_gamesession(game $game): gamesession {
         global $DB, $USER;
         // try to find existing in-progress or finished gamesession
         $sql = "
@@ -176,7 +204,7 @@ class util {
      * @return void
      * @throws dml_exception
      */
-    public static function dump_running_gamesessions(game $game) {
+    public static function dump_running_gamesessions(game $game): void {
         global $DB, $USER;
         $conditions = [
             'game' => $game->get_id(),
@@ -195,7 +223,7 @@ class util {
      * @return gamesession
      * @throws dml_exception
      */
-    public static function insert_gamesession(game $game) {
+    public static function insert_gamesession(game $game): gamesession {
         global $USER;
         $gamesession = new gamesession();
         $gamesession->set_game($game->get_id());

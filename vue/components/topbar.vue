@@ -11,7 +11,7 @@
                 v-icon(name="gamepad").uk-margin-small-right
                 span {{ strings.game_btn_game }}
         .uk-width-auto
-            button.uk-button.uk-button-default.uk-button-small.uk-margin-small-right(@click="goToAdminRoute", v-if="isAdminUser")
+            button.uk-button.uk-button-default.uk-button-small.uk-margin-small-right(@click="showAdmin", v-if="adminButtonVisible")
                 v-icon(name="cogs")
             button.uk-button.uk-button-default.uk-button-small.uk-margin-small-right(@click="showHelp")
                 v-icon(name="regular/question-circle")
@@ -44,11 +44,14 @@
                 return this.gameSession === null || this.gameSession.state !== GAME_PROGRESS;
             },
             statsButtonVisible() {
-                return this.gameMode !== MODE_STATS;
+                return this.gameMode !== MODE_STATS || !this.isGameScreen;
             },
             gameButtonVisible() {
                 let modes = [MODE_STATS, MODE_HELP];
-                return _.includes(modes, this.gameMode);
+                return _.includes(modes, this.gameMode) || !this.isGameScreen;
+            },
+            adminButtonVisible() {
+                return this.isAdminUser && !this.isAdminScreen;
             }
         },
         methods: {
@@ -73,6 +76,9 @@
                     this.setGameMode(MODE_QUESTION_SHOWN)
                 }
                 this.goToGameRoute();
+            },
+            showAdmin() {
+                this.goToAdminRoute();
             },
             showHelp() {
                 this.setGameMode(MODE_HELP);

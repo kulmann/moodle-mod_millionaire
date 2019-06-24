@@ -29,7 +29,9 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use mod_millionaire\form\form_controller;
 use mod_millionaire\model\gamesession;
+use mod_millionaire\util;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -192,131 +194,6 @@ function millionaire_delete_instance($id) {
     return $result;
 }
 
-/* File API */
-
-/**
- * Returns the lists of all browsable file areas within the given module context
- *
- * The file area 'intro' for the activity introduction field is added automatically
- * by {@link file_browser::get_file_info_context_module()}
- *
- * @param stdClass $course
- * @param stdClass $cm
- * @param stdClass $context
- * @return array of [(string)filearea] => (string)description
- */
-function millionaire_get_file_areas($course, $cm, $context) {
-    return [];
-}
-
-/**
- * File browsing support for millionaire file areas
- *
- * @package mod_millionaire
- * @category files
- *
- * @param file_browser $browser
- * @param array $areas
- * @param stdClass $course
- * @param stdClass $cm
- * @param stdClass $context
- * @param string $filearea
- * @param int $itemid
- * @param string $filepath
- * @param string $filename
- * @return file_info instance or null if not found
- */
-function millionaire_get_file_info($browser, $areas, $course, $cm, $context, $filearea, $itemid, $filepath, $filename) {
-    return null;
-}
-
-/**
- * Serves the files from the millionaire file areas
- *
- * @param stdClass $course the course object
- * @param stdClass $cm the course module object
- * @param stdClass $context the millionaire's context
- * @param string $filearea the name of the file area
- * @param array $args extra arguments (itemid, path)
- * @param bool $forcedownload whether or not force download
- * @param array $options additional options affecting the file serving
- * @return bool
- * @throws coding_exception
- * @throws moodle_exception
- * @throws require_login_exception
- * @package mod_millionaire
- * @category files
- */
-function millionaire_pluginfile($course, $cm, $context, $filearea, array $args, $forcedownload, array $options = []) {
-    global $DB, $CFG;
-
-    if ($context->contextlevel != CONTEXT_MODULE) {
-        return false;
-    }
-
-    require_login($course, true, $cm);
-
-    if (!has_capability('mod/millionaire:view', $context)) {
-        return false;
-    }
-
-    $itemid = array_shift($args);
-
-    // Extract the filename / filepath from the $args array.
-    $filename = array_pop($args); // The last item in the $args array.
-    if (!$args) {
-        $filepath = '/'; // $args is empty => the path is '/'
-    } else {
-        $filepath = '/' . implode('/', $args) . '/'; // $args contains elements of the filepath
-    }
-
-    $fs = get_file_storage();
-
-    $file = $fs->get_file($context->id, 'mod_millionaire', $filearea, $itemid, $filepath, $filename);
-    if (!$file) {
-        return false;
-    }
-    send_stored_file($file, 8400, 0, $forcedownload, $options);
-}
-
-/* Navigation API */
-/**
- * Extends the settings navigation with the millionaire settings
- *
- * This function is called when the context for the page is a millionaire module. This is not called by AJAX
- * so it is safe to rely on the $PAGE.
- *
- * @param settings_navigation $settingsnav complete settings navigation tree
- * @param navigation_node $millionairenode millionaire administration node
- * @throws coding_exception
- * @throws moodle_exception
- */
-function millionaire_extend_settings_navigation(settings_navigation $settingsnav, navigation_node $millionairenode = null) {
-    global $PAGE;
-    // determine location of first custom nav element (after "edit settings" node and before "Locally assigned roles" node).
-    $keys = $millionairenode->get_children_key_list();
-    $beforekey = null;
-    $i = array_search('modedit', $keys);
-    if ($i === false and array_key_exists(0, $keys)) {
-        $beforekey = $keys[0];
-    } else if (array_key_exists($i + 1, $keys)) {
-        $beforekey = $keys[$i + 1];
-    }
-    // add custom nav elements
-//    if (has_capability('mod/millionaire:manage', $PAGE->cm->context)) {
-//        $node = navigation_node::create(get_string('levels_edit', 'millionaire'),
-//            new moodle_url('/mod/millionaire/edit_levels.php', ['cmid' => $PAGE->cm->id]),
-//            navigation_node::TYPE_SETTING, null, 'mod_millionaire_edit',
-//            new pix_icon('t/edit', ''));
-//        $millionairenode->add_node($node, $beforekey);
-//        $node = navigation_node::create(get_string('control_edit', 'millionaire'),
-//            new moodle_url('/mod/millionaire/edit_control.php', ['cmid' => $PAGE->cm->id]),
-//            navigation_node::TYPE_SETTING, null, 'mod_millionaire_control',
-//            new pix_icon('t/edit', ''));
-//        $millionairenode->add_node($node, $beforekey);
-//    }
-}
-
 /**
  * Obtains the automatic completion state for this forum based on any conditions
  * in forum settings.
@@ -345,7 +222,7 @@ function millionaire_get_completion_state($course, $cm, $userid, $type) {
         }
     }
     if ($millionaire->completionpoints) {
-        $value = $millionaire->completionpoints <= \mod_millionaire\util\highscore_utils::calculate_score($millionaire, $userid);
+        $value = $millionaire->completionpoints <= highscore_utils::calculate_score($millionaire, $userid);
         if ($type == COMPLETION_AND) {
             $result &= $value;
         } else {
@@ -363,61 +240,45 @@ function millionaire_perform_completion($course, $cm, $millionaire) {
     }
 }
 
-function millionaire_reset_progress($course, $cm, $millionaire) {
-    global $DB;
-    $gamesession_ids = $DB->get_fieldset_select('millionaire_gamesessions', 'id', 'game = :game', ['game' => $millionaire->id]);
-    if ($gamesession_ids) {
-        $DB->delete_records_list('millionaire_questions', 'gamesession', $gamesession_ids);
-        $DB->delete_records_list('millionaire_jokers', 'gamesession', $gamesession_ids);
+/**
+ * View or submit an mform.
+ *
+ * Returns the HTML to view an mform.
+ * If form data is delivered and the data is valid, this returns 'ok'.
+ *
+ * @param array $args
+ * @return string
+ * @throws moodle_exception
+ */
+function millionaire_output_fragment_mform($args) {
+    $context = $args['context'];
+    if ($context->contextlevel != CONTEXT_MODULE) {
+        throw new \moodle_exception('fragment_mform_wrong_context', 'millionaire');
     }
-    $DB->delete_records('millionaire_gamesessions', ['game' => $millionaire->id]);
-}
 
-function millionaire_reset_levels($millionaire) {
-    global $DB;
-    $level_ids = $DB->get_fieldset_select('millionaire_levels', 'id', 'game=:game', ['game' => $millionaire->id]);
-    if ($level_ids) {
-        $DB->delete_records_list('millionaire_categories', 'level', $level_ids);
-        $DB->delete_records_list('millionaire_levels', 'id', $level_ids);
-    }
-    millionaire_reset_progress(null, null, $millionaire);
-}
+    list($course, $coursemodule) = \get_course_and_cm_from_cmid($context->instanceid, 'millionaire');
+    $game = util::get_game($coursemodule);
 
-function millionaire_reset_course_form_definition(&$mform) {
-    $mform->addElement('header', 'millionaireheader', get_string('modulenameplural', 'millionaire'));
-    $mform->addElement('checkbox', 'reset_millionaire_progress', get_string('course_reset_include_progress', 'millionaire'));
-    $mform->disabledIf('reset_millionaire_progress', 'reset_millionaire_levels', 'checked');
-    $mform->addElement('checkbox', 'reset_millionaire_levels', get_string('course_reset_include_levels', 'millionaire'));
-}
-
-function millionaire_reset_userdata($data) {
-    global $DB;
-    $status = [];
-    $componentstr = get_string('modulenameplural', 'millionaire');
-    $wwIds = $DB->get_fieldset_select('millionaire', 'id', 'course=:course', ['course' => $data->courseid]);
-    if (!empty($data->reset_millionaire_levels)) {
-        foreach ($wwIds as $id) {
-            $ww = new stdClass();
-            $ww->id = $id;
-            $ww->course = $data->courseid;
-            millionaire_reset_levels($ww);
+    $formdata = [];
+    if (!empty($args['jsonformdata'])) {
+        $serializeddata = \json_decode($args['jsonformdata']);
+        if (\is_string($serializeddata)) {
+            \parse_str($serializeddata, $formdata);
         }
-        $status[] = ['component' => $componentstr, 'item' => get_string('course_reset_include_progress', 'millionaire'), 'error' => false];
-        $status[] = ['component' => $componentstr, 'item' => get_string('course_reset_include_levels', 'millionaire'), 'error' => false];
+    }
+
+    $moreargs = (isset($args['moreargs'])) ? \json_decode($args['moreargs']) : new stdClass();
+    $formname = $args['form'] ?? '';
+
+    $controller = form_controller::get_controller($formname, $game, $context, $formdata, $moreargs);
+
+    if ($controller->success()) {
+        $ret = 'ok';
+        if ($msg = $controller->get_message()) {
+            $ret .= ' ' . $msg;
+        }
+        return $ret;
     } else {
-        if (!empty($data->reset_millionaire_progress)) {
-            foreach ($wwIds as $id) {
-                $ww = new stdClass();
-                $ww->id = $id;
-                $ww->course = $data->courseid;
-                millionaire_reset_progress(null, null, $ww);
-            }
-            $status[] = ['component' => $componentstr, 'item' => get_string('course_reset_include_progress', 'millionaire'), 'error' => false];
-        }
+        return $controller->render();
     }
-    return $status;
-}
-
-function millionaire_reset_course_form_defaults($course) {
-    return ['reset_millionaire_progress' => 1, 'reset_millionaire_levels' => 0];
 }

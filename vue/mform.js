@@ -11,6 +11,7 @@ import Y from 'core/yui';
 export class MFormModal {
 
     constructor(form, modalTitle, contextid, moreargs) {
+        this.mod = 'millionaire';
         this.form = form;
         this.modalTitle = modalTitle;
         this.contextid = contextid;
@@ -75,7 +76,7 @@ export class MFormModal {
             moreargs: JSON.stringify(this.moreargs),
         };
 
-        return Fragment.loadFragment('mod_millionaire', 'mform', this.contextid, params);
+        return Fragment.loadFragment(this.mod, 'mform', this.contextid, params);
     }
 
     saveButtonText() {

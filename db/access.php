@@ -24,28 +24,28 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$capabilities = array(
-    'mod/millionaire:addinstance' => array(
+$capabilities = [
+    'mod/millionaire:addinstance' => [
         'riskbitmask' => RISK_XSS,
         'captype' => 'write',
         'contextlevel' => CONTEXT_COURSE,
         'archetypes' => array(
             'manager' => CAP_ALLOW
         ),
-    ),
-    'mod/millionaire:view' => array(
-        'captype' => 'read',
+    ],
+    'mod/millionaire:manage' => [
+        'captype' => 'write',
         'contextlevel' => CONTEXT_MODULE,
         'archetypes' => array(
-            'guest' => CAP_ALLOW,
-            'frontpage' => CAP_ALLOW,
-            'student' => CAP_ALLOW,
+            'guest' => CAP_PREVENT,
+            'frontpage' => CAP_PREVENT,
+            'student' => CAP_PREVENT,
             'teacher' => CAP_ALLOW,
             'editingteacher' => CAP_ALLOW,
             'manager' => CAP_ALLOW
         )
-    ),
-    'mod/millionaire:manage' => array(
+    ],
+    'mod/millionaire:view' => [
         'riskbitmask' => RISK_SPAM,
         'captype' => 'write',
         'contextlevel' => CONTEXT_MODULE,
@@ -53,5 +53,5 @@ $capabilities = array(
             'editingteacher' => CAP_ALLOW,
             'manager' => CAP_ALLOW
         )
-    ),
-);
+    ],
+];

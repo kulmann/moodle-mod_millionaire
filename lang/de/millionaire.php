@@ -33,6 +33,7 @@ $string['pluginname'] = 'Millionaire';
 $string['millionaire'] = 'Millionaire';
 $string['millionaire:addinstance'] = '»Wer wird Millionär« Spiel hinzufügen';
 $string['millionaire:submit'] = '»Wer wird Millionär« Spiel speichern';
+$string['millionaire:manage'] = '»Wer wird Millionär« Spiel verwalten';
 $string['millionaire:view'] = '»Wer wird Millionär« Spiel anzeigen';
 $string['millionairename'] = 'Name';
 $string['millionairename_help'] = 'Bitte vergeben Sie einen Namen für dieses »Wer wird Millionär« Spiel.';
@@ -62,61 +63,6 @@ $string['highscore_mode_help'] = 'Bitte wählen Sie den Bewertungs-Modus, wie Er
 $string['highscore_teachers'] = 'Dozenten in Highscore Liste?';
 $string['highscore_teachers_help'] = 'Wenn diese Option aktiviert ist, werden die Spiel-Ergebnisse der Dozenten mit in der Highscore Liste angezeigt.';
 
-/* activity edit page: topics */
-$string['topics_edit'] = 'Themen bearbeiten';
-$string['topic_edit_new'] = 'Thema in &quot;<i>{$a}</i>&quot; erstellen';
-$string['topic_edit_x'] = 'Thema in &quot;<i>{$a}</i>&quot; bearbeiten';
-$string['topics_edit_x'] = 'Themen in &quot;<i>{$a}</i>&quot; bearbeiten';
-$string['topics_edit_empty'] = 'Es wurden noch keine Themen hinzugefügt.';
-$string['topics_edit_button_add'] = 'Thema hinzufügen';
-$string['topics_edit_button_edit'] = 'Thema bearbeiten';
-$string['topics_edit_button_categories'] = 'Kategorien bearbeiten';
-$string['topics_edit_button_delete'] = 'Thema löschen';
-$string['topics_edit_button_move_up'] = 'Thema nach oben verschieben';
-$string['topics_edit_button_move_down'] = 'Theme nach unten verschieben';
-$string['topics_edit_category_count_1'] = '1 Kategorie';
-$string['topics_edit_category_count_n'] = '{$a} Kategorien';
-$string['topics_edit_question_count_1'] = '1 Frage';
-$string['topics_edit_question_count_n'] = '{$a} Fragen';
-$string['topics_form_submit'] = 'Speichern';
-$string['topics_form_cancel'] = 'Abbrechen';
-$string['topics_form_name'] = 'Bezeichnung';
-$string['topics_form_name_help'] = 'Unter dieser Bezeichnung wird das Thema im Spiel angezeigt.';
-$string['topics_form_name_error_required'] = 'Bitte vergeben Sie eine Bezeichnung für dises Thema.';
-$string['topics_form_score'] = 'Gewinnstufe';
-$string['topics_form_score_help'] = 'Gewinnstufe die bei korrekter Beantwortung erreicht wird.';
-$string['topics_form_score_error_required'] = 'Bitte definieren Sie eine Gewinnstufe größer 0.';
-$string['topics_form_safe_spot'] = 'Sicherheitsstufe';
-$string['topics_form_safe_spot_help'] = 'Gewinnstufe, auf die der Teilnehmer bei falscher Beantwortung einer Frage zurückfällt. Nur relevant, wenn die Spieloption &quot;Weiterspielen&quot; inaktiv ist.';
-$string['topics_form_color'] = 'Farbe';
-$string['topics_form_color_help'] = 'Statt eines Bildes können Sie eine Farbe auswählen, die auf dem Spielbrett für die Darstellung dieses Themas verwendet wird. Bitte verwenden Sie hierzu einen HTML-Farbcode in Hexadezimal-Schreibweise (z.B. #FF5533, mit oder ohne Raute).';
-$string['topics_form_color_invalid'] = 'Der HTML-Farbcode muss in Hexadezimal-Schreibweise angegeben werden und aus 3 oder 6 Zeichen bestehen (z.B. #FF5533 oder #F53). Die führende Raute wird automatisch ergänzt, falls sie fehlt.';
-$string['topics_form_preview'] = 'Vorschau';
-$string['category_edit_new'] = 'Kategorie für Thema &quot;<i>{$a}</i>&quot; hinzufügen';
-$string['category_edit_x'] = 'Kategorie für Thema &quot;<i>{$a}</i>&quot; bearbeiten';
-$string['categories_edit_x'] = 'Kategorien für Thema &quot;<i>{$a}</i>&quot; bearbeiten';
-$string['categories_edit_error_access_topic'] = 'Das Thema gehört nicht zu dieser Aktivität.';
-$string['categories_edit_error_access_category'] = 'Die Kategorie gehört nicht zu diesem Thema.';
-$string['categories_edit_empty'] = 'Es wurden noch keine Kategorien hinzugefügt.';
-$string['categories_edit_button_add'] = 'Kategorie hinzufügen';
-$string['categories_edit_button_edit'] = 'Kategorie bearbeiten';
-$string['categories_edit_button_delete'] = 'Kategorie löschen';
-$string['categories_edit_button_back_to_topics'] = 'Zur Themen-Liste';
-$string['category_form_name'] = 'Name';
-$string['category_form_name_help'] = 'Hier kann ein sprechender Bezeichner eingegeben werden, der in der Kategorie-Liste genutzt wird. Dies kann sinnvoll sein, wenn eine Eingrenzung nach Schlagworten erfolgt und Sie diese in der Kategorie-Übersicht des Themas bereits kenntlich machen wollen.';
-$string['category_form_category'] = 'Kategorie';
-$string['category_form_category_help'] = 'Bitte wählen Sie hier eine Kategorie, deren Fragen für das Thema benutzt werden sollen.';
-$string['category_form_subcategories'] = 'Unterkategorien';
-$string['category_form_subcategories_help'] = 'Wenn diese Option aktiviert ist, werden Unterkategorien der oben ausgewählten Kategorie mit einbezogen. Wenn sie deaktiviert ist, werden nur Fragen gewählt, die unmittelbar der oben ausgewählten Kategorie zugeordnet sind.';
-$string['category_form_tags_all'] = 'Alle Schlagworte';
-$string['category_form_tags_all_help'] = 'Wenn diese Option aktiviert ist, werden keine Frage aus der ausgewählten Kategorie gefiltert. Wenn sie deaktiviert ist, können Sie Schlagworte auswählen, die eine Frage besitzen muss, damit sie genutzt wird.';
-$string['category_form_tags'] = 'Schlagworte';
-$string['category_form_tags_help'] = 'Bitte wählen Sie hier die Schlagworte aus, die eine Frage besitzen muss, um genutzt zu werden. Hinweis: die aufgelisteten Schlagworte sind die, die für Fragen in der ausgewählten Kategorie genutzt wurden.';
-$string['topic_delete_confirm_title'] = 'Thema löschen?';
-$string['topic_delete_confirm_message'] = 'Möchten Sie dieses Thema wirklich löschen? diese Aktion ist kann nicht rückgängig gemacht werden.';
-$string['category_delete_confirm_title'] = 'Kategorie löschen?';
-$string['category_delete_confirm_message'] = 'Möchten Sie diese Kategorie wirklich löschen? diese Aktion ist kann nicht rückgängig gemacht werden.';
-
 /* activity edit page: control */
 $string['control_edit'] = 'Steuerung';
 $string['control_edit_title'] = 'Steuerungs Optionen';
@@ -131,6 +77,15 @@ $string['course_reset_include_topics'] = 'Eingestellte Themen etc. zurücksetzen
 
 /* admin screen in vue app */
 $string['admin_screen_title'] = 'Spiel-Inhalte bearbeiten';
+$string['admin_not_allowed'] = 'Sie haben nicht die nötigen Zugriffsrechte, um diese Seite zu betrachten.';
+$string['admin_levels_title'] = 'Levels bearbeiten';
+$string['admin_levels_none'] = 'Sie haben noch keine Levels angelegt.';
+$string['admin_levels_intro'] = 'Sie haben die folgenden Levels für dieses Spiel angelegt. Sie können hier die Daten und Reihenfolge der Levels verändern, oder Levels löschen. Bitte beachten Sie, dass für ein bereits begonnenes Spiel Levels nur eingeschränkt bearbeitet werden können.';
+$string['admin_btn_add'] = 'Hinzufügen';
+$string['admin_level_title_add'] = 'Level erstellen';
+$string['admin_level_title_edit'] = 'Level bearbeiten';
+$string['admin_level_lbl_name'] = 'Name';
+$string['admin_level_lbl_score'] = 'Gewinnstufe';
 
 /* game screen in vue app */
 $string['game_screen_title'] = 'Spiele »Wer wird Millionär«';

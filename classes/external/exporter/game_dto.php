@@ -18,8 +18,8 @@ namespace mod_millionaire\external\exporter;
 
 use context;
 use core\external\exporter;
-use function has_capability;
 use mod_millionaire\model\game;
+use mod_millionaire\util;
 use renderer_base;
 use stdClass;
 
@@ -110,7 +110,7 @@ class game_dto extends exporter {
             'highscore_count' => $this->game->get_highscore_count(),
             'highscore_teachers' => $this->game->is_highscore_teachers(),
             'mdl_user' => $this->user->id,
-            'mdl_user_teacher' => has_capability('mod/millionaire:manage', $this->ctx, $this->user->id),
+            'mdl_user_teacher' => util::user_has_capability('mod/millionaire:manage', $this->ctx, $this->user->id),
         ];
     }
 }
