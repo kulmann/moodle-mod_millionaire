@@ -22,9 +22,9 @@
                                 td.actions.uk-table-shrink.uk-preserve-width
                                     button.uk-button.uk-button-small.uk-button-default(@click="editLevel(level)")
                                         v-icon(name="regular/edit")
-                                    button.uk-button.uk-button-small.uk-button-default(@click="moveLevel(level, -1)")
+                                    button.uk-button.uk-button-small.uk-button-default(@click="moveLevel(level, -1)", :disabled="level.position === 0")
                                         v-icon(name="arrow-down")
-                                    button.uk-button.uk-button-small.uk-button-default(@click="moveLevel(level, 1)")
+                                    button.uk-button.uk-button-small.uk-button-default(@click="moveLevel(level, 1)", :disabled="level.position === (levels.length - 1)")
                                         v-icon(name="arrow-up")
                                     button.uk-button.uk-button-small.uk-button-default(@click="deleteLevelAsk(level)")
                                         v-icon(name="trash")
