@@ -76,7 +76,7 @@ class level_dto extends exporter {
             ],
             'state' => [
                 'type' => PARAM_TEXT,
-                'description' => 'private, active, deleted',
+                'description' => 'active, deleted',
             ],
             'name' => [
                 'type' => PARAM_TEXT,
@@ -113,7 +113,11 @@ class level_dto extends exporter {
             'seen' => [
                 'type' => PARAM_BOOL,
                 'description' => 'whether or not this level has been seen by the user (i.e. if a question was shown)',
-            ]
+            ],
+            'title' => [
+                'type' => PARAM_TEXT,
+                'description' => 'if the level has a set name, it will be returned here. If there is none, we will return the score and the currency sign instead.'
+            ],
         ];
     }
 
@@ -124,7 +128,7 @@ class level_dto extends exporter {
     }
 
     protected function get_other_values(renderer_base $output) {
-        return \array_merge(
+        $result = \array_merge(
             $this->level->to_array(),
             [
                 'currency' => $this->game->get_currency_for_levels(),
@@ -134,5 +138,11 @@ class level_dto extends exporter {
                 'seen' => $this->question !== null,
             ]
         );
+        if (empty($result['name'])) {
+            $result['title'] = $result['score'] . ' ' . $result['currency'];
+        } else {
+            $result['title'] = $result['name'];
+        }
+        return $result;
     }
 }

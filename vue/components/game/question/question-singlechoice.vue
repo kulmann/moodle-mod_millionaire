@@ -2,7 +2,7 @@
     #millionaire-question_singlechoice
         .uk-card.uk-card-default
             .uk-card-header(style="padding-top: 5px; padding-bottom: 5px;")
-                i.uk-h5 {{ strings.game_question_headline | stringParams({number: levelNumber, level: levelName}) }}
+                i.uk-h5 {{ strings.game_question_headline | stringParams({number: levelNumber, level: levelTitle}) }}
             .uk-card-body
                 p._question {{ mdl_question.questiontext }}
         vk-grid.uk-margin-top(matched)
@@ -68,13 +68,9 @@
                     return '';
                 }
             },
-            levelName() {
+            levelTitle() {
                 if (this.level) {
-                    if (this.level.name) {
-                        return this.level.name;
-                    } else {
-                        return this.formatCurrency(this.level.score, this.level.currency);
-                    }
+                    return this.level.title;
                 } else {
                     return '';
                 }

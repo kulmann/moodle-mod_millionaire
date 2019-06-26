@@ -41,6 +41,10 @@ class level_edit_controller extends form_controller {
 
         $this->level->set_name($data->name);
         $this->level->set_score(\intval($data->score));
+        $this->level->set_safe_spot(\intval($data->safe_spot));
+        if ($this->levelid === null) {
+            $this->level->set_position($this->game->count_active_levels());
+        }
 
         $this->level->save();
         return true;

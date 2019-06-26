@@ -82,8 +82,14 @@ $string['admin_levels_title'] = 'Edit levels';
 $string['admin_levels_none'] = 'You didn\'t add any levels, yet.';
 $string['admin_levels_intro'] = 'You have already created the following levels for this game. You may edit their data and order, or even delete them. Please note, that editing levels for an already started game is limited.';
 $string['admin_btn_add'] = 'Add';
+$string['admin_btn_confirm_delete'] = 'Confirm Delete';
+$string['admin_level_delete_confirm'] = 'Do you really want to delete the level »{$a}«?';
+$string['admin_level_title_add'] = 'Create level';
+$string['admin_level_title_edit'] = 'Edit level';
 $string['admin_level_lbl_name'] = 'Name';
 $string['admin_level_lbl_score'] = 'Score';
+$string['admin_level_lbl_safe_spot'] = 'Safe level';
+$string['admin_level_lbl_safe_spot_help'] = 'When the game option &quot;Continue Game?&quot; is inactive, the player falls back to the nearest safe level when giving an incorrect answer.';
 
 /* game gui */
 $string['game_screen_title'] = 'Play »Who wants to be a millionaire«';

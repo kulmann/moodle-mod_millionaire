@@ -276,6 +276,34 @@ export const store = new Vuex.Store({
             const scores = await ajax('mod_millionaire_get_scores_global');
             context.commit('setScores', scores);
         },
+        /**
+         * Changes the position (+1 or -1) of the level and does the opposite to the other level.
+         *
+         * @param context
+         * @param payload
+         *
+         * @returns {Promise<void>}
+         */
+        async changeLevelPosition(context, payload) {
+            const result = await ajax('mod_millionaire_set_level_position', payload);
+            if (result.result === true) {
+                context.dispatch('fetchLevels');
+            }
+        },
+        /**
+         * Deletes this level.
+         *
+         * @param context
+         * @param payload
+         *
+         * @returns {Promise<void>}
+         */
+        async deleteLevel(context, payload) {
+            const result = await ajax('mod_millionaire_delete_level', payload);
+            if (result.result === true) {
+                context.dispatch('fetchLevels');
+            }
+        },
 
         // INTERNAL FUNCTIONS. these shouldn't be called from outside the store.
         // TODO: would be nice to be able to actually prevent these actions from being called from outside the store.

@@ -39,8 +39,8 @@
             <FIELDS>
                 <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true"/>
                 <FIELD NAME="game" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false"/>
-                <FIELD NAME="state" TYPE="char" LENGTH="50" NOTNULL="false" SEQUENCE="false" DEFAULT="private"
-                       COMMENT="The state of the level out of [private, active, deleted]."/>
+                <FIELD NAME="state" TYPE="char" LENGTH="50" NOTNULL="false" SEQUENCE="false" DEFAULT="active"
+                       COMMENT="The state of the level out of [active, deleted]."/>
                 <FIELD NAME="name" TYPE="char" LENGTH="50" NOTNULL="false" SEQUENCE="false" DEFAULT=""/>
                 <FIELD NAME="position" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false"
                        DEFAULT="0"/>

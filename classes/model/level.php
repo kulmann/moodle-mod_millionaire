@@ -36,7 +36,7 @@ class level extends abstract_model {
      */
     protected $game;
     /**
-     * @var string The state of the level, out of [private, active, deleted].
+     * @var string The state of the level, out of [active, deleted].
      */
     protected $state;
     /**
@@ -62,9 +62,9 @@ class level extends abstract_model {
     function __construct() {
         parent::__construct('millionaire_levels', 0);
         $this->game = 0;
-        $this->state = 'private';
+        $this->state = self::STATE_ACTIVE;
         $this->name = '';
-        $this->position = 0;
+        $this->position = -1;
         $this->score = 0;
         $this->safe_spot = false;
     }
@@ -82,7 +82,7 @@ class level extends abstract_model {
         }
         $this->id = isset($data['id']) ? $data['id'] : 0;
         $this->game = $data['game'];
-        $this->state = isset($data['state']) ? $data['state'] : self::STATE_PRIVATE;
+        $this->state = isset($data['state']) ? $data['state'] : self::STATE_ACTIVE;
         $this->name =  isset($data['name']) ? $data['name'] : '';
         $this->position = isset($data['position']) ? $data['position'] : 0;
         $this->score = isset($data['score']) ? $data['score'] : 0;

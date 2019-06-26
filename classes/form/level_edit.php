@@ -24,10 +24,6 @@ class level_edit extends \moodleform {
          */
         $levelid = $this->_customdata['levelid'];
 
-        // General section header.
-        $header_lang_key = 'admin_level_title_' . ($levelid ? 'edit' : 'add');
-        $mform->addElement('header', 'general', get_string($header_lang_key, 'mod_millionaire'));
-
         // Level id
         $mform->addElement('hidden', 'levelid');
         $mform->setType('levelid', PARAM_INT);
@@ -41,8 +37,13 @@ class level_edit extends \moodleform {
 
         // Score
         $mform->addElement('text', 'score', get_string('admin_level_lbl_score', 'mod_millionaire'));
-        $mform->addRule('admin_level_lbl_score', get_string('required'), 'required');
-        $mform->setType('admin_level_lbl_score', PARAM_INT);
+        $mform->addRule('score', get_string('required'), 'required');
+        $mform->setType('score', PARAM_INT);
+
+        // Safe spot
+        $mform->addElement('advcheckbox', 'safe_spot', get_string('admin_level_lbl_safe_spot', 'mod_millionaire'), '&nbsp;');
+        $mform->setDefault('safe_spot', 0);
+        $mform->addHelpButton('safe_spot', 'admin_level_lbl_safe_spot', 'mod_millionaire');
 
         $this->add_action_buttons(true, get_string('savechanges'));
     }

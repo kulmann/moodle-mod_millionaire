@@ -90,6 +90,21 @@ class util {
     }
 
     /**
+     * Checks that the level belongs to the given $game.
+     *
+     * @param game $game
+     * @param level $level
+     *
+     * @return void
+     * @throws invalid_parameter_exception
+     */
+    public static function validate_level(game $game, level $level): void {
+        if ($game->get_id() !== $level->get_game()) {
+            throw new invalid_parameter_exception("level " . $level->get_id() . " doesn't belong to given game");
+        }
+    }
+
+    /**
      * Gets the game instance from the database.
      *
      * @param cm_info $coursemodule

@@ -21,13 +21,16 @@ use dml_exception;
 use external_api;
 use external_function_parameters;
 use external_multiple_structure;
+use external_single_structure;
 use external_value;
 use invalid_parameter_exception;
+use mod_millionaire\external\exporter\bool_dto;
 use mod_millionaire\external\exporter\level_dto;
 use mod_millionaire\model\level;
 use mod_millionaire\util;
 use moodle_exception;
 use restricted_context_exception;
+use stdClass;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -48,7 +51,6 @@ class levels extends external_api {
     public static function get_levels_parameters() {
         return new external_function_parameters([
             'coursemoduleid' => new external_value(PARAM_INT, 'course module id'),
-            'only_active' => new external_value(PARAM_BOOL, 'whether all or just active levels should be fetched', false),
             'gamesessionid' => new external_value(PARAM_INT, 'the id of the current game session, if question information should be added', false)
         ]);
     }
@@ -68,7 +70,6 @@ class levels extends external_api {
      * Get all levels.
      *
      * @param int $coursemoduleid
-     * @param bool $only_active When true (default), only active levels will be fetched.
      * @param int $gamesessionid The id of the current game session, if question information should be added.
      *
      * @return array
@@ -78,14 +79,14 @@ class levels extends external_api {
      * @throws moodle_exception
      * @throws restricted_context_exception
      */
-    public static function get_levels($coursemoduleid, $only_active = true, $gamesessionid = 0) {
-        $params = ['coursemoduleid' => $coursemoduleid, 'only_active' => $only_active, 'gamesessionid' => $gamesessionid];
+    public static function get_levels($coursemoduleid, $gamesessionid = 0) {
+        $params = ['coursemoduleid' => $coursemoduleid, 'gamesessionid' => $gamesessionid];
         self::validate_parameters(self::get_levels_parameters(), $params);
 
         list($course, $coursemodule) = get_course_and_cm_from_cmid($coursemoduleid, 'millionaire');
         self::validate_context($coursemodule->context);
 
-        global $PAGE, $DB;
+        global $PAGE;
         $renderer = $PAGE->get_renderer('core');
         $ctx = $coursemodule->context;
         $game = util::get_game($coursemodule);
@@ -99,9 +100,7 @@ class levels extends external_api {
         }
 
         $result = [];
-        $sql_params = ['game' => $coursemodule->instance];
-        if ($only_active) $sql_params['state'] = 'active';
-        $levels = $DB->get_records('millionaire_levels', $sql_params);
+        $levels = $game->get_active_levels();
         foreach ($levels as $level_data) {
             $level = new level();
             $level->apply($level_data);
@@ -113,5 +112,146 @@ class levels extends external_api {
             $result[] = $exporter->export($renderer);
         }
         return $result;
+    }
+
+    /**
+     * Definition of parameters for {@see set_level_position}.
+     *
+     * @return external_function_parameters
+     */
+    public static function set_level_position_parameters() {
+        return new external_function_parameters([
+            'coursemoduleid' => new external_value(PARAM_INT, 'course module id'),
+            'levelid' => new external_value(PARAM_INT, 'the id of the level which needs to switch its position'),
+            'delta' => new external_value(PARAM_INT, 'the direction of the position change. must be either 1 or -1.')
+        ]);
+    }
+
+    /**
+     * Definition of return type for {@see set_level_position}.
+     *
+     * @return external_single_structure
+     */
+    public static function set_level_position_returns() {
+        return bool_dto::get_read_structure();
+    }
+
+    /**
+     * Switch the position of the given $levelid with the level before or after it.
+     *
+     * @param int $coursemoduleid
+     * @param int $levelid
+     * @param int $delta
+     *
+     * @return stdClass bool_dto with value true if successful, false if change not necessary. If something goes wrong, an exception will be thrown.
+     * @throws dml_exception
+     * @throws invalid_parameter_exception
+     * @throws moodle_exception
+     * @throws restricted_context_exception
+     */
+    public static function set_level_position($coursemoduleid, $levelid, $delta) {
+        $params = ['coursemoduleid' => $coursemoduleid, 'levelid' => $levelid, 'delta' => $delta];
+        self::validate_parameters(self::set_level_position_parameters(), $params);
+
+        list($course, $coursemodule) = get_course_and_cm_from_cmid($coursemoduleid, 'millionaire');
+        self::validate_context($coursemodule->context);
+
+        global $PAGE;
+        $renderer = $PAGE->get_renderer('core');
+        $ctx = $coursemodule->context;
+        $game = util::get_game($coursemodule);
+        util::require_user_has_capability('mod/millionaire:manage', $ctx);
+
+        // validate $delta value
+        if (!\in_array($delta, [1, -1])) {
+            throw new invalid_parameter_exception("delta value is invalid (is $delta but must be out of [1, -1])");
+        }
+
+        // get the levels
+        $level = util::get_level($levelid);
+        util::validate_level($game, $level);
+        $level_other = $game->get_active_level_by_position($level->get_position() + $delta);
+        if ($level_other === null) {
+            $exporter = new bool_dto(false, $ctx);
+            return $exporter->export($renderer);
+        } else {
+            util::validate_level($game, $level_other);
+        }
+
+        // switch them
+        $pos = $level->get_position();
+        $pos_other = $level_other->get_position();
+        $level->set_position($pos_other);
+        $level->save();
+        $level_other->set_position($pos);
+        $level_other->save();
+
+        // return success status
+        $exporter = new bool_dto(true, $ctx);
+        return $exporter->export($renderer);
+    }
+
+    /**
+     * Definition of parameters for {@see delete_level}.
+     *
+     * @return external_function_parameters
+     */
+    public static function delete_level_parameters() {
+        return new external_function_parameters([
+            'coursemoduleid' => new external_value(PARAM_INT, 'course module id'),
+            'levelid' => new external_value(PARAM_INT, 'the id of the level which is to be deleted'),
+        ]);
+    }
+
+    /**
+     * Definition of return type for {@see delete_level}.
+     *
+     * @return external_single_structure
+     */
+    public static function delete_level_returns() {
+        return bool_dto::get_read_structure();
+    }
+
+    /**
+     * Deletes the given level.
+     *
+     * @param int $coursemoduleid
+     * @param int $levelid
+     *
+     * @return stdClass
+     * @throws \required_capability_exception
+     * @throws coding_exception
+     * @throws dml_exception
+     * @throws invalid_parameter_exception
+     * @throws moodle_exception
+     * @throws restricted_context_exception
+     */
+    public static function delete_level($coursemoduleid, $levelid) {
+        $params = ['coursemoduleid' => $coursemoduleid, 'levelid' => $levelid];
+        self::validate_parameters(self::delete_level_parameters(), $params);
+
+        list($course, $coursemodule) = get_course_and_cm_from_cmid($coursemoduleid, 'millionaire');
+        self::validate_context($coursemodule->context);
+
+        global $PAGE;
+        $renderer = $PAGE->get_renderer('core');
+        $ctx = $coursemodule->context;
+        $game = util::get_game($coursemodule);
+        util::require_user_has_capability('mod/millionaire:manage', $ctx);
+
+        // get the level for validation
+        $level = util::get_level($levelid);
+        util::validate_level($game, $level);
+
+        // delete it
+        $level->set_state(level::STATE_DELETED);
+        $level->save();
+
+        // fix positions of higher levels
+        $game->fix_level_positions();
+
+        // return success status
+        $exporter = new bool_dto(true, $ctx);
+        return $exporter->export($renderer);
     }
 }

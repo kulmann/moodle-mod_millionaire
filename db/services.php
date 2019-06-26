@@ -23,17 +23,31 @@
  */
 
 $functions = [
-    'mod_millionaire_get_game' => [
-        'classname' => 'mod_millionaire\external\game',
-        'methodname' => 'get_game',
-        'description' => 'Get options of the game and logged in user',
-        'type' => 'read',
-        'ajax' => true,
-    ],
     'mod_millionaire_get_levels' => [
         'classname' => 'mod_millionaire\external\levels',
         'methodname' => 'get_levels',
         'description' => 'Get levels for the game overview.',
+        'type' => 'read',
+        'ajax' => true,
+    ],
+    'mod_millionaire_set_level_position' => [
+        'classname' => 'mod_millionaire\external\levels',
+        'methodname' => 'set_level_position',
+        'description' => 'Modify the level position by 1 (up or down).',
+        'type' => 'write',
+        'ajax' => true,
+    ],
+    'mod_millionaire_delete_level' => [
+        'classname' => 'mod_millionaire\external\levels',
+        'methodname' => 'delete_level',
+        'description' => 'Delete a certain level',
+        'type' => 'write',
+        'ajax' => true,
+    ],
+    'mod_millionaire_get_game' => [
+        'classname' => 'mod_millionaire\external\game',
+        'methodname' => 'get_game',
+        'description' => 'Get options of the game and logged in user',
         'type' => 'read',
         'ajax' => true,
     ],

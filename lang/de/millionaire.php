@@ -82,10 +82,14 @@ $string['admin_levels_title'] = 'Levels bearbeiten';
 $string['admin_levels_none'] = 'Sie haben noch keine Levels angelegt.';
 $string['admin_levels_intro'] = 'Sie haben die folgenden Levels für dieses Spiel angelegt. Sie können hier die Daten und Reihenfolge der Levels verändern, oder Levels löschen. Bitte beachten Sie, dass für ein bereits begonnenes Spiel Levels nur eingeschränkt bearbeitet werden können.';
 $string['admin_btn_add'] = 'Hinzufügen';
+$string['admin_btn_confirm_delete'] = 'Wirklich Löschen';
+$string['admin_level_delete_confirm'] = 'Möchten Sie das Level »{$a}« wirklich löschen?';
 $string['admin_level_title_add'] = 'Level erstellen';
 $string['admin_level_title_edit'] = 'Level bearbeiten';
 $string['admin_level_lbl_name'] = 'Name';
 $string['admin_level_lbl_score'] = 'Gewinnstufe';
+$string['admin_level_lbl_safe_spot'] = 'Sicherheitsstufe';
+$string['admin_level_lbl_safe_spot_help'] = 'Gewinnstufe, auf die der Teilnehmer bei falscher Beantwortung einer Frage zurückfällt. Nur relevant, wenn die Spieloption &quot;Weiterspielen&quot; inaktiv ist.';
 
 /* game screen in vue app */
 $string['game_screen_title'] = 'Spiele »Wer wird Millionär«';

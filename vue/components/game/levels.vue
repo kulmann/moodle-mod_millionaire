@@ -10,9 +10,7 @@
                     span {{ level.position + 1 }}
                 td.uk-table-shrink.uk-preserve-width.uk-text-center
                     v-icon(v-if="hasIcon(level)", :name="getIconName(level)", :scale="getIconScale(level)")
-                td.uk-table-auto.uk-text-right
-                    span(v-if="level.name") {{ level.name }}
-                    span(v-else) {{ level.score | formatCurrency(level.currency) }}
+                td.uk-table-auto.uk-text-right {{ level.title }}
                 td.uk-table-shrink.uk-preserve-width.uk-text-center(v-if="usedJokers.length > 0")
                     v-icon(v-for="jokerIcon in getUsedJokerIcons(level)", :key="jokerIcon", :name="jokerIcon", :scale="0.7").joker-icon
 </template>
@@ -34,7 +32,7 @@
                 'usedJokers',
             ]),
             sortedLevels() {
-                return _.reverse(this.levels);
+                return _.reverse(_.sortBy(this.levels, ['position']));
             }
         },
         methods: {

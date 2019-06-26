@@ -11,24 +11,33 @@
                 levelBtnAdd(@createLevel="createLevel")
                 table.uk-table.uk-table-small.uk-table-striped
                     tbody
-                        tr.uk-text-nowrap(v-for="level in sortedLevels", :key="level.position")
-                            td.uk-table-shrink.uk-text-center.uk-text-middle
-                                b {{ level.position + 1 }}
-                            td.uk-table-shrink.uk-preserve-width.uk-text-center.uk-text-middle
-                                v-icon(v-if="isSafeSpot(level)", name="regular/star")
-                            td.uk-table-auto.uk-text-right.uk-text-middle
-                                span(v-if="level.name") {{ level.name }}
-                                span(v-else) {{ level.score | formatCurrency(level.currency) }}
-                            td.uk-table-shrink.uk-text-middle TODO: #questions
-                            td.actions.uk-table-shrink.uk-preserve-width
-                                button.uk-button.uk-button-small.uk-button-default(@click="editLevel(level)")
-                                    v-icon(name="regular/edit")
-                                button.uk-button.uk-button-small.uk-button-default(@click="moveLevelDown(level)")
-                                    v-icon(name="arrow-down")
-                                button.uk-button.uk-button-small.uk-button-default(@click="moveLevelUp(level)")
-                                    v-icon(name="arrow-up")
-                                button.uk-button.uk-button-small.uk-button-default()
-                                    v-icon(name="trash")
+                        template(v-for="level in sortedLevels")
+                            tr.uk-text-nowrap(:key="level.position")
+                                td.uk-table-shrink.uk-text-center.uk-text-middle
+                                    b {{ level.position + 1 }}
+                                td.uk-table-shrink.uk-preserve-width.uk-text-center.uk-text-middle
+                                    v-icon(v-if="isSafeSpot(level)", name="regular/star")
+                                td.uk-table-auto.uk-text-right.uk-text-middle {{ level.title }}
+                                td.uk-table-shrink.uk-text-middle TODO: #questions
+                                td.actions.uk-table-shrink.uk-preserve-width
+                                    button.uk-button.uk-button-small.uk-button-default(@click="editLevel(level)")
+                                        v-icon(name="regular/edit")
+                                    button.uk-button.uk-button-small.uk-button-default(@click="moveLevel(level, -1)")
+                                        v-icon(name="arrow-down")
+                                    button.uk-button.uk-button-small.uk-button-default(@click="moveLevel(level, 1)")
+                                        v-icon(name="arrow-up")
+                                    button.uk-button.uk-button-small.uk-button-default(@click="deleteLevelAsk(level)")
+                                        v-icon(name="trash")
+                            tr(v-if="deleteConfirmationLevelId === level.id")
+                                td(colspan="5")
+                                    .uk-alert.uk-alert-danger(uk-alert)
+                                        vk-grid
+                                            .uk-width-expand
+                                                v-icon(name="exclamation-circle").uk-margin-small-right
+                                                span {{ strings.admin_level_delete_confirm | stringParams(level.title) }}
+                                            .uk-width-auto
+                                                button.uk-button.uk-button-danger.uk-button-small.uk-margin-small-left(@click="deleteLevelConfirm(level)")
+                                                    span {{ strings.admin_btn_confirm_delete }}
                 levelBtnAdd(@createLevel="createLevel")
 </template>
 
@@ -39,6 +48,8 @@
     import {MFormModal} from '../../mform';
     import infoAlert from '../helper/info-alert';
     import levelBtnAdd from './level-btn-add';
+    import failureAlert from "../helper/failure-alert";
+    import VkGrid from "vuikit/src/library/grid/components/grid";
 
     export default {
         mixins: [mixins],
@@ -46,6 +57,7 @@
             return {
                 activeLevelId: null,
                 modal: null,
+                deleteConfirmationLevelId: null,
             }
         },
         computed: {
@@ -55,12 +67,14 @@
                 'levels',
             ]),
             sortedLevels() {
-                return _.reverse(this.levels);
+                return _.reverse(_.sortBy(this.levels, ['position']));
             }
         },
         methods: {
             ...mapActions([
-                'fetchLevels'
+                'fetchLevels',
+                'changeLevelPosition',
+                'deleteLevel'
             ]),
             isSafeSpot(level) {
                 return level.safe_spot;
@@ -90,14 +104,25 @@
                     this.modal = null;
                 }
             },
-            moveLevelUp(level) {
-
+            moveLevel(level, delta) {
+                this.changeLevelPosition({
+                    levelid: level.id,
+                    delta: delta,
+                });
             },
-            moveLevelDown(level) {
-
+            deleteLevelAsk(level) {
+                this.deleteConfirmationLevelId = level.id;
             },
+            deleteLevelConfirm(level) {
+                this.deleteConfirmationLevelId = null;
+                this.deleteLevel({
+                    levelid: level.id
+                });
+            }
         },
         components: {
+            VkGrid,
+            failureAlert,
             infoAlert,
             levelBtnAdd,
         }

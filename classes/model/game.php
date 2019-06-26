@@ -16,6 +16,9 @@
 
 namespace mod_millionaire\model;
 
+use function assert;
+use function usort;
+
 defined('MOODLE_INTERNAL') || die();
 
 /**
@@ -130,6 +133,77 @@ class game extends abstract_model {
         ";
         $count = $DB->get_field_sql($sql, ['game' => $this->get_id(), 'state' => level::STATE_ACTIVE]);
         return $count === false ? 0 : $count;
+    }
+
+    /**
+     * Gets an active level which belongs to this game and has the given $position value. Will return null
+     * if no such level exists.
+     *
+     * @param int $position
+     *
+     * @return level|null
+     * @throws \dml_exception
+     */
+    public function get_active_level_by_position($position) {
+        global $DB;
+        $sql = "
+            SELECT *
+              FROM {millionaire_levels}
+             WHERE game = :game AND state = :state AND position = :position
+        ";
+        $record = $DB->get_record_sql($sql, ['game' => $this->get_id(), 'state' => level::STATE_ACTIVE, 'position' => $position]);
+        if ($record === false) {
+            return null;
+        } else {
+            $level = new level();
+            $level->apply($record);
+            return $level;
+        }
+    }
+
+    /**
+     * Gets all active levels for this game from the DB.
+     *
+     * @return array
+     * @throws \dml_exception
+     */
+    public function get_active_levels() {
+        global $DB;
+        $sql_params = ['game' => $this->get_id(), 'state' => level::STATE_ACTIVE];
+        $records = $DB->get_records('millionaire_levels', $sql_params);
+        $result = [];
+        foreach ($records as $level_data) {
+            $level = new level();
+            $level->apply($level_data);
+            $result[] = $level;
+        }
+        return $result;
+    }
+
+    /**
+     * Goes through all active levels, fixing their individual position.
+     *
+     * @return void
+     * @throws \dml_exception
+     */
+    public function fix_level_positions() {
+        $levels = $this->get_active_levels();
+        // sort levels ascending
+        usort($levels, function(level $level1, level $level2) {
+            $pos1 = $level1->get_position();
+            $pos2 = $level2->get_position();
+            if ($pos1 === $pos2) {
+                return 0;
+            }
+            return ($pos1 < $pos2) ? -1 : 1;
+        });
+        // walk through sorted list and set new positions
+        $pos = 0;
+        foreach($levels as $level) {
+            assert($level instanceof level);
+            $level->set_position($pos++);
+            $level->save();
+        }
     }
 
     /**
