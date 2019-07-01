@@ -16,6 +16,9 @@
 
 namespace mod_millionaire\external;
 
+global $CFG;
+require_once($CFG->libdir . '/questionlib.php');
+
 use coding_exception;
 use external_api;
 use external_function_parameters;
@@ -24,11 +27,14 @@ use external_single_structure;
 use external_value;
 use invalid_parameter_exception;
 use mod_millionaire\external\exporter\mdl_answer_dto;
+use mod_millionaire\external\exporter\mdl_category_dto;
 use mod_millionaire\external\exporter\mdl_question_dto;
 use mod_millionaire\util;
 use moodle_exception;
+use question_edit_contexts;
 use restricted_context_exception;
 use stdClass;
+use function question_category_options;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -148,6 +154,73 @@ class questionbank extends external_api {
         if (property_exists($mdl_question, 'answers')) {
             foreach ($mdl_question->answers as $answer) {
                 $exporter = new mdl_answer_dto($answer, $question, $ctx);
+                $result[] = $exporter->export($renderer);
+            }
+        }
+        return $result;
+    }
+
+    /**
+     * Defines parameters for {@see get_mdl_categories}.
+     *
+     * @return external_function_parameters
+     */
+    public static function get_mdl_categories_parameters() {
+        return new external_function_parameters([
+            'coursemoduleid' => new external_value(PARAM_INT, 'course module id')
+        ]);
+    }
+
+    /**
+     * Defines return type for {@see get_mdl_categories}.
+     *
+     * @return external_multiple_structure
+     */
+    public static function get_mdl_categories_returns() {
+        return new external_multiple_structure(
+            mdl_category_dto::get_read_structure()
+        );
+    }
+
+    /**
+     * Gets all moodle question categories which are applicable for this game.
+     *
+     * @param int $coursemoduleid
+     *
+     * @return array
+     * @throws coding_exception
+     * @throws invalid_parameter_exception
+     * @throws moodle_exception
+     * @throws restricted_context_exception
+     */
+    public static function get_mdl_categories($coursemoduleid) {
+        $params = ['coursemoduleid' => $coursemoduleid];
+        self::validate_parameters(self::get_mdl_categories_parameters(), $params);
+
+        list($course, $coursemodule) = get_course_and_cm_from_cmid($coursemoduleid, 'millionaire');
+        self::validate_context($coursemodule->context);
+
+        global $PAGE;
+        $renderer = $PAGE->get_renderer('core');
+        $ctx = $coursemodule->context;
+
+        // load categories
+        $question_contexts = new question_edit_contexts($ctx);
+        $usable_question_contexts = $question_contexts->having_cap('moodle/question:useall');
+        $question_categories = question_category_options($usable_question_contexts);
+        /**
+         * structure of categories result:
+         * two-dimensional array with
+         * - first level (contexts): key = context name, value = array of categories in that context.
+         *   Contexts normally are 1: course, 2: course area, 3: core system.
+         * - second level (i.e. categories per context): key = "categoryId,contextId], value = name of the
+         *   category with proper indentation (visualizes hierarchy)
+         */
+        // transform categories
+        $result = [];
+        foreach ($question_categories as $contextname => $categories) {
+            foreach($categories as $ids => $categoryname) {
+                $exporter = new mdl_category_dto($ids, $contextname, $categoryname, $ctx);
                 $result[] = $exporter->export($renderer);
             }
         }

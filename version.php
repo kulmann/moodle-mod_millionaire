@@ -30,5 +30,5 @@ defined('MOODLE_INTERNAL') || die();
 $plugin->component = 'mod_millionaire';
 $plugin->requires = 2017111302;
 $plugin->maturity = MATURITY_BETA;
-$plugin->version = 2019062402;
-$plugin->release = '0.3.2';
+$plugin->version = 2019070101;
+$plugin->release = '0.3.5';

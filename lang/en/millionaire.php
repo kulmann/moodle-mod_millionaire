@@ -38,6 +38,7 @@ $string['millionaire:view'] = 'View Millionaire quiz';
 $string['millionairename'] = 'Name';
 $string['millionairename_help'] = 'Please provide a name for your millionaire quiz.';
 $string['introduction'] = 'Description';
+$string['route_not_found'] = 'The page you tried to open doesn\'t exist.';
 
 /* main admin form: game options */
 $string['game_options_fieldset'] = 'Game options';
@@ -81,15 +82,22 @@ $string['admin_not_allowed'] = 'You have insufficient permissions to view this p
 $string['admin_levels_title'] = 'Edit levels';
 $string['admin_levels_none'] = 'You didn\'t add any levels, yet.';
 $string['admin_levels_intro'] = 'You have already created the following levels for this game. You may edit their data and order, or even delete them. Please note, that editing levels for an already started game is limited.';
+$string['admin_btn_save'] = 'Save';
+$string['admin_btn_cancel'] = 'Cancel';
 $string['admin_btn_add'] = 'Add';
 $string['admin_btn_confirm_delete'] = 'Confirm Delete';
 $string['admin_level_delete_confirm'] = 'Do you really want to delete the level »{$a}«?';
-$string['admin_level_title_add'] = 'Create level';
-$string['admin_level_title_edit'] = 'Edit level';
+$string['admin_level_title_add'] = 'Create level {$a}';
+$string['admin_level_title_edit'] = 'Edit level {$a}';
+$string['admin_level_loading'] = 'Loading level data';
 $string['admin_level_lbl_name'] = 'Name';
 $string['admin_level_lbl_score'] = 'Score';
 $string['admin_level_lbl_safe_spot'] = 'Safe level';
-$string['admin_level_lbl_safe_spot_help'] = 'When the game option &quot;Continue Game?&quot; is inactive, the player falls back to the nearest safe level when giving an incorrect answer.';
+$string['admin_level_lbl_safe_spot_help'] = 'If checked, the player falls back to this level when giving an incorrect answer.';
+$string['admin_level_lbl_categories'] = 'Question assignments';
+$string['admin_level_lbl_category'] = 'Category {$a}';
+$string['admin_level_lbl_category_please_select'] = 'Select category';
+$string['admin_level_msg_saving'] = 'Saving the level, please wait';
 
 /* game gui */
 $string['game_screen_title'] = 'Play »Who wants to be a millionaire«';

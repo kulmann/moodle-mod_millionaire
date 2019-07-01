@@ -106,6 +106,17 @@ abstract class abstract_model extends \stdClass {
     }
 
     /**
+     * Deletes this record from the db.
+     *
+     * @return void
+     * @throws \dml_exception
+     */
+    public function delete(): void {
+        global $DB;
+        $DB->delete_records($this->table_name, ['id' => $this->get_id()]);
+    }
+
+    /**
      * Transforms this object into an array.
      *
      * @return array

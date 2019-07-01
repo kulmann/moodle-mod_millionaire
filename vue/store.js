@@ -19,13 +19,15 @@ export const store = new Vuex.Store({
         strings: {},
         game: null,
         levels: null,
+        levelCategories: null,
         gameSession: null,
         question: null,
-        mdl_question: null,
-        mdl_answers: [],
         usedJokers: [],
         gameMode: MODE_INTRO,
         scores: [],
+        mdl_question: null,
+        mdl_answers: [],
+        mdl_categories: null,
     },
     //strict: process.env.NODE_ENV !== 'production',
     mutations: {
@@ -50,6 +52,9 @@ export const store = new Vuex.Store({
         setLevels(state, levels) {
             state.levels = levels;
         },
+        setLevelCategories(state, levelCategories) {
+            state.levelCategories = levelCategories;
+        },
         setUsedJokers(state, usedJokers) {
             state.usedJokers = usedJokers;
         },
@@ -64,6 +69,9 @@ export const store = new Vuex.Store({
         },
         setMdlAnswers(state, mdl_answers) {
             state.mdl_answers = mdl_answers;
+        },
+        setMdlCategories(state, mdl_categories) {
+            state.mdl_categories = mdl_categories;
         },
         setGameMode(state, gameMode) {
             if (_.includes(VALID_MODES, gameMode)) {
@@ -173,6 +181,18 @@ export const store = new Vuex.Store({
         async fetchGame(context) {
             const game = await ajax('mod_millionaire_get_game');
             context.commit('setGame', game);
+        },
+        /**
+         * Fetches all assigned categories for a certain level.
+         *
+         * @param context
+         * @param payload
+         *
+         * @returns {Promise<void>}
+         */
+        async fetchLevelCategories(context, payload) {
+            const categories = await ajax('mod_millionaire_get_level_categories', payload);
+            context.commit('setLevelCategories', categories);
         },
         /**
          * Fetches the current game session from the server. If none exists, a new one will be created, so this
@@ -304,6 +324,19 @@ export const store = new Vuex.Store({
                 context.dispatch('fetchLevels');
             }
         },
+        /**
+         * Updates the data of this level, including its categories.
+         *
+         * @param context
+         * @param payload
+         *
+         * @returns {Promise<void>}
+         */
+        async saveLevel(context, payload) {
+            const result = await ajax('mod_millionaire_save_level', payload);
+            context.dispatch('fetchLevels');
+            return result.result;
+        },
 
         // INTERNAL FUNCTIONS. these shouldn't be called from outside the store.
         // TODO: would be nice to be able to actually prevent these actions from being called from outside the store.
@@ -401,6 +434,17 @@ export const store = new Vuex.Store({
                 context.commit('setMdlAnswers', []);
             }
         },
+        /**
+         * Fetches all moodle question categories which are applicable for this game.
+         *
+         * @param context
+         *
+         * @returns {Promise<void>}
+         */
+        async fetchMdlCategories(context) {
+            const categories = await ajax('mod_millionaire_get_mdl_categories');
+            context.commit('setMdlCategories', categories);
+        }
     }
 });
 

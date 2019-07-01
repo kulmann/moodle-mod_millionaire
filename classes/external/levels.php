@@ -25,7 +25,9 @@ use external_single_structure;
 use external_value;
 use invalid_parameter_exception;
 use mod_millionaire\external\exporter\bool_dto;
+use mod_millionaire\external\exporter\category_dto;
 use mod_millionaire\external\exporter\level_dto;
+use mod_millionaire\model\category;
 use mod_millionaire\model\level;
 use mod_millionaire\util;
 use moodle_exception;
@@ -109,6 +111,70 @@ class levels extends external_api {
                 $question = $gamesession->get_question_by_level($level->get_id());
             }
             $exporter = new level_dto($level, $question, $game, $ctx);
+            $result[] = $exporter->export($renderer);
+        }
+        return $result;
+    }
+
+    /**
+     * Definition of parameters for {@see get_level_categories}.
+     *
+     * @return external_function_parameters
+     */
+    public static function get_level_categories_parameters() {
+        return new external_function_parameters([
+            'coursemoduleid' => new external_value(PARAM_INT, 'course module id'),
+            'levelid' => new external_value(PARAM_INT, 'the id of the level to get categories for')
+        ]);
+    }
+
+    /**
+     * Definition of return type for {@see get_level_categories}.
+     *
+     * @return external_multiple_structure
+     */
+    public static function get_level_categories_returns() {
+        return new external_multiple_structure(
+            category_dto::get_read_structure()
+        );
+    }
+
+    /**
+     * Gets all categories for a specific level.
+     *
+     * @param int $coursemoduleid
+     * @param int $levelid
+     *
+     * @return array
+     * @throws \required_capability_exception
+     * @throws coding_exception
+     * @throws dml_exception
+     * @throws invalid_parameter_exception
+     * @throws moodle_exception
+     * @throws restricted_context_exception
+     */
+    public static function get_level_categories($coursemoduleid, $levelid) {
+        $params = ['coursemoduleid' => $coursemoduleid, 'levelid' => $levelid];
+        self::validate_parameters(self::get_level_categories_parameters(), $params);
+
+        list($course, $coursemodule) = get_course_and_cm_from_cmid($coursemoduleid, 'millionaire');
+        self::validate_context($coursemodule->context);
+
+        global $PAGE;
+        $renderer = $PAGE->get_renderer('core');
+        $ctx = $coursemodule->context;
+        $game = util::get_game($coursemodule);
+        util::require_user_has_capability('mod/millionaire:manage', $ctx);
+
+        // get the level and it's categories
+        $level = util::get_level($levelid);
+        util::validate_level($game, $level);
+        $categories = $level->get_categories();
+
+        // construct the result
+        $result = [];
+        foreach ($categories as $category) {
+            $exporter = new category_dto($category, $ctx);
             $result[] = $exporter->export($renderer);
         }
         return $result;
@@ -249,6 +315,123 @@ class levels extends external_api {
 
         // fix positions of higher levels
         $game->fix_level_positions();
+
+        // return success status
+        $exporter = new bool_dto(true, $ctx);
+        return $exporter->export($renderer);
+    }
+
+    /**
+     * Definition of parameters for {@see save_level}.
+     *
+     * @return external_function_parameters
+     */
+    public static function save_level_parameters() {
+        return new external_function_parameters([
+            'coursemoduleid' => new external_value(PARAM_INT, 'course module id'),
+            'levelid' => new external_value(PARAM_INT, 'the id of the level'),
+            'name' => new external_value(PARAM_TEXT, 'name of the level'),
+            'score' => new external_value(PARAM_INT, 'score of the level'),
+            'safespot' => new external_value(PARAM_BOOL, 'whether or not the level is a safe spot'),
+            'categories' => new external_multiple_structure(new external_single_structure([
+                'categoryid' => new external_value(PARAM_INT, 'the id in our category db table'),
+                'mdlcategory' => new external_value(PARAM_INT, 'the moodle category id'),
+                'subcategories' => new external_value(PARAM_BOOL, 'whether or not subcategories should be included'),
+            ])),
+        ]);
+    }
+
+    /**
+     * Definition of return type for {@see save_level}.
+     *
+     * @return external_single_structure
+     */
+    public static function save_level_returns() {
+        return bool_dto::get_read_structure();
+    }
+
+    /**
+     * Updates or inserts the given data as a level and saves the associated categories.
+     *
+     * @param int $coursemoduleid
+     * @param int $levelid
+     * @param string $name
+     * @param int $score
+     * @param bool $safespot
+     * @param array $categories
+     *
+     * @return stdClass
+     * @throws \required_capability_exception
+     * @throws coding_exception
+     * @throws dml_exception
+     * @throws invalid_parameter_exception
+     * @throws moodle_exception
+     * @throws restricted_context_exception
+     */
+    public static function save_level($coursemoduleid, $levelid, $name, $score, $safespot, $categories) {
+        $params = [
+            'coursemoduleid' => $coursemoduleid,
+            'levelid' => $levelid,
+            'name' => $name,
+            'score' => $score,
+            'safespot' => $safespot,
+            'categories' => $categories,
+        ];
+        self::validate_parameters(self::save_level_parameters(), $params);
+
+        list($course, $coursemodule) = get_course_and_cm_from_cmid($coursemoduleid, 'millionaire');
+        self::validate_context($coursemodule->context);
+
+        global $PAGE;
+        $renderer = $PAGE->get_renderer('core');
+        $ctx = $coursemodule->context;
+        $game = util::get_game($coursemodule);
+        util::require_user_has_capability('mod/millionaire:manage', $ctx);
+
+        // get the level or create one
+        if ($levelid) {
+            $level = util::get_level($levelid);
+            util::validate_level($game, $level);
+        } else {
+            $level = new level();
+            $level->set_game($game->get_id());
+        }
+
+        // set the data for the level
+        if ($levelid === 0) {
+            $level->set_position($game->count_active_levels());
+        }
+        $level->set_name($name);
+        $level->set_score($score);
+        $level->set_safe_spot($safespot);
+        $level->save();
+
+        // transform provided $categories into category model instances.
+        $categories = \array_map(function ($category) use ($level) {
+            $item = new category();
+            $item->set_id(\intval($category['categoryid']));
+            $item->set_level($level->get_id());
+            $item->set_mdl_category(\intval($category['mdlcategory']));
+            $item->set_includes_subcategories(\boolval($category['subcategories']));
+            return $item;
+        }, $categories);
+
+        // save the categories
+        $existing_categories = $level->get_categories();
+        $deleted_categories = \array_filter($existing_categories, function (category $existing_category) use ($categories) {
+            $found = \array_filter($categories, function (category $cat) use ($existing_category) {
+                return $cat->get_id() === $existing_category->get_id();
+            });
+            return empty($found);
+        });
+        foreach($deleted_categories as $category) {
+            \assert($category instanceof category);
+            $category->delete();
+        }
+        foreach($categories as $category) {
+            \assert($category instanceof category);
+            $category->save();
+        }
 
         // return success status
         $exporter = new bool_dto(true, $ctx);

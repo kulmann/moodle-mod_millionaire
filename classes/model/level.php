@@ -90,6 +90,23 @@ class level extends abstract_model {
     }
 
     /**
+     * Fetches all categories from the DB which belong to this level.
+     *
+     * @return category[]
+     * @throws \dml_exception
+     */
+    public function get_categories(): array {
+        global $DB;
+        $sql_params = ['level' => $this->get_id()];
+        $records = $DB->get_records('millionaire_categories', $sql_params);
+        return \array_map(function($record) {
+            $category = new category();
+            $category->apply($record);
+            return $category;
+        }, $records);
+    }
+
+    /**
      * Returns one random question out of the categories that are assigned to this level.
      *
      * @return \question_definition

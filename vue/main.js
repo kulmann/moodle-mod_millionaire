@@ -26,10 +26,33 @@ function init(coursemoduleid, contextid) {
     // You have to use child routes if you use the same component. Otherwise the component's beforeRouteUpdate
     // will not be called.
     const routes = [
-        {path: '/', redirect: {name: 'game-screen'}},
-        {path: '/game/play', component: gameScreen, name: 'game-screen', meta: {title: 'game_screen_title'}},
-        {path: '/admin', component: adminScreen, name: 'admin-screen', meta: {title: 'admin_screen_title'}},
-        {path: '*', component: notFound, meta: {title: 'route_not_found'}},
+        {
+            path: '/',
+            redirect: {name: 'game-screen'}
+        }, {
+            path: '/game/play',
+            component: gameScreen,
+            name: 'game-screen',
+            meta: {title: 'game_screen_title'}
+        }, {
+            path: '/admin/level/:levelId?',
+            component: adminScreen,
+            name: 'admin-level-edit',
+            meta: {title: 'admin_screen_title'}
+        }, {
+            path: '/admin/levels',
+            component: adminScreen,
+            name: 'admin-level-list',
+            meta: {title: 'admin_screen_title'}
+        }, {
+            path: '/admin',
+            name: 'admin-screen',
+            redirect: {name: 'admin-level-list'}
+        }, {
+            path: '*',
+            component: notFound,
+            meta: {title: 'route_not_found'}
+        },
     ];
 
     // base URL is /mod/millionaire/view.php/[course module id]/
