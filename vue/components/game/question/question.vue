@@ -52,7 +52,7 @@
                 return this.findHighestSeenLevel(this.levels);
             },
             isCurrentQuestion() {
-                return this.highestSeenLevel.position === this.question.index;
+                return this.highestSeenLevel !== null && this.highestSeenLevel.position === this.question.index;
             },
             isGameOver() {
                 return this.gameSession.state !== GAME_PROGRESS;

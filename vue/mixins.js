@@ -16,6 +16,9 @@ export default {
     },
     methods: {
         findHighestSeenLevel(levels) {
+            if (levels.length === 0) {
+                return null;
+            }
             let sortedLevels = _.sortBy(levels, ['position']);
             let seenLevels = _.filter(sortedLevels, function (level) {
                 return level.seen;

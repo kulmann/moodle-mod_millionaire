@@ -5,8 +5,8 @@
         template(v-else)
             .uk-card-body
                 form.uk-form-stacked
-                    h3(v-if="editing") {{ strings.admin_level_title_edit | stringParams(level.position + 1) }}
-                    h3(v-else) {{ strings.admin_level_title_add | stringParams(level.position + 1) }}
+                    h3(v-if="editing") {{ strings.admin_level_title_edit | stringParams(data.position + 1) }}
+                    h3(v-else) {{ strings.admin_level_title_add | stringParams(data.position + 1) }}
                     .uk-margin-small
                         label.uk-form-label {{ strings.admin_level_lbl_name }}
                         .uk-form-controls
@@ -74,6 +74,7 @@
             ...mapState([
                 'strings',
                 'game',
+                'levels',
                 'levelCategories',
                 'mdl_categories'
             ]),
@@ -96,6 +97,7 @@
                 if (level === null) {
                     this.data = {
                         id: null,
+                        position: this.levels.length,
                         game: this.game.id,
                         name: '',
                         score: 0,

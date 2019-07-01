@@ -84,7 +84,9 @@ export const store = new Vuex.Store({
             let level = _.find(state.levels, function (level) {
                 return level.position === levelIndex;
             });
-            level.seen = true;
+            if(level) {
+                level.seen = true;
+            }
         },
         setScores(state, scores) {
             state.scores = scores;
@@ -115,7 +117,7 @@ export const store = new Vuex.Store({
                     context.dispatch('fetchGame'),
                     context.dispatch('fetchGameSession').then(() => {
                         let highestSeenLevel = mixins.methods.findHighestSeenLevel(context.state.levels);
-                        if (highestSeenLevel.seen) {
+                        if (highestSeenLevel !== null && highestSeenLevel.seen) {
                             // the game was obviously already started. So fetch the last seen question.
                             context.dispatch('showQuestionForLevel', highestSeenLevel.position).then(() => {
                                 if (context.state.question.finished) {

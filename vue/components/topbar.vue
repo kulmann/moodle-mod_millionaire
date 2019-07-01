@@ -47,6 +47,9 @@
                 return this.gameMode !== MODE_STATS || !this.isGameScreen;
             },
             gameButtonVisible() {
+                if (this.gameSession === null || this.question === null) {
+                    return false;
+                }
                 let modes = [MODE_STATS, MODE_HELP];
                 return _.includes(modes, this.gameMode) || !this.isGameScreen;
             },
