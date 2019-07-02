@@ -1,7 +1,7 @@
 {
   "name": "moodle-mod_millionaire",
-  "description": "A »Who wants to be a millionaire« game for moodle with Vue.js",
-  "version": "0.3.0",
+  "description": "A »millionaire quiz« game for moodle with Vue.js",
+  "version": "0.3.5",
   "author": "b@kulmann.biz",
   "license": "GPL",
   "private": true,

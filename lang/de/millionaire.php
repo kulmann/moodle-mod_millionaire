@@ -25,18 +25,18 @@
 defined('MOODLE_INTERNAL') || die();
 
 /* system */
-$string['modulename'] = 'Wer wird Millionär';
-$string['modulenameplural'] = '»Wer wird Millionär« Spiele';
-$string['modulename_help'] = 'Ein an "Wer wird Millionär" angelehntes Quiz-Spiel. Die Kursteilnehmer können mit Hilfe ihrer erreichten Gewinnstufe in eine Bestenliste sortiert werden.';
-$string['pluginadministration'] = '»Wer wird Millionär« Administration';
-$string['pluginname'] = 'Millionaire';
-$string['millionaire'] = 'Millionaire';
-$string['millionaire:addinstance'] = '»Wer wird Millionär« Spiel hinzufügen';
-$string['millionaire:submit'] = '»Wer wird Millionär« Spiel speichern';
-$string['millionaire:manage'] = '»Wer wird Millionär« Spiel verwalten';
-$string['millionaire:view'] = '»Wer wird Millionär« Spiel anzeigen';
+$string['modulename'] = 'Millionärs-Quiz';
+$string['modulenameplural'] = '»Millionärs-Quiz« Instanzen';
+$string['modulename_help'] = 'Ein Quiz-Spiel, das in aufsteigenden Gewinnstufen gespielt wird. Die Kursteilnehmer können mit Hilfe ihrer erreichten Gewinnstufe in eine Bestenliste sortiert werden.';
+$string['pluginadministration'] = 'Millionärs-Quiz« Administration';
+$string['pluginname'] = 'Millionärs-Quiz';
+$string['millionaire'] = 'Millionärs-Quiz';
+$string['millionaire:addinstance'] = '»Millionärs-Quiz« hinzufügen';
+$string['millionaire:submit'] = '»Millionärs-Quiz« speichern';
+$string['millionaire:manage'] = '»Millionärs-Quiz« verwalten';
+$string['millionaire:view'] = '»Millionärs-Quiz« anzeigen';
 $string['millionairename'] = 'Name';
-$string['millionairename_help'] = 'Bitte vergeben Sie einen Namen für dieses »Wer wird Millionär« Spiel.';
+$string['millionairename_help'] = 'Bitte vergeben Sie einen Namen für dieses »Millionärs-Quiz«.';
 $string['introduction'] = 'Beschreibung';
 $string['route_not_found'] = 'Die aufgerufene Seite gibt es nicht.';
 
@@ -100,7 +100,7 @@ $string['admin_level_lbl_category_please_select'] = 'Kategorie auswählen';
 $string['admin_level_msg_saving'] = 'Das Level wird gespeichert, bitte warten';
 
 /* game screen in vue app */
-$string['game_screen_title'] = 'Spiele »Wer wird Millionär«';
+$string['game_screen_title'] = 'Spiele »Millionärs-Quiz«';
 $string['game_qtype_not_supported'] = 'Der Fragentyp »{$a}« wird nicht unterstützt.';
 $string['game_loading_question'] = 'Frage wird geladen';
 $string['game_loading_stats'] = 'Bestenliste wird geladen';

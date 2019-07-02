@@ -4,13 +4,13 @@
             .uk-card-header(style="padding-top: 5px; padding-bottom: 5px;")
                 i.uk-h5 {{ strings.game_question_headline | stringParams({number: levelNumber, level: levelTitle}) }}
             .uk-card-body
-                p._question {{ mdl_question.questiontext }}
+                p._question(v-html="mdl_question.questiontext")
         vk-grid.uk-margin-top(matched)
             div(v-for="answer in mdl_answers", :key="answer.id", class="uk-width-1-1@s uk-width-1-2@m")
                 .uk-alert.uk-alert-default._answer(uk-alert, @click="selectAnswer(answer)", :class="getAnswerClasses(answer)")
                     vk-grid.uk-grid-small
                         span.uk-width-auto.uk-text-bold {{ answer.label }}
-                        span.uk-width-expand.uk-text-center {{ answer.answer }}
+                        span.uk-width-expand.uk-text-center(v-html="answer.answer")
 </template>
 
 <script>

@@ -27,16 +27,16 @@ defined('MOODLE_INTERNAL') || die();
 /* system */
 $string['modulename'] = 'Millionaire Quiz';
 $string['modulenameplural'] = 'Millionaire Quizzes';
-$string['modulename_help'] = 'This is a "who wants to be a millionaire" style quiz game. Course participants get ranked in a leader board by their high scores.';
-$string['pluginadministration'] = 'Millionaire Administration';
-$string['pluginname'] = 'Millionaire';
-$string['millionaire'] = 'Millionaire';
-$string['millionaire:addinstance'] = 'Add a new Millionaire quiz';
-$string['millionaire:submit'] = 'Submit Millionaire quiz';
-$string['millionaire:manage'] = 'Manage Millionaire quiz';
-$string['millionaire:view'] = 'View Millionaire quiz';
+$string['modulename_help'] = 'This is a quiz game with consecutive levels. Course participants get ranked in a leader board by their high scores.';
+$string['pluginadministration'] = '»Millionaire Quiz« Administration';
+$string['pluginname'] = 'Millionaire Quiz';
+$string['millionaire'] = 'Millionaire Quiz';
+$string['millionaire:addinstance'] = 'Add a new »Millionaire Quiz«';
+$string['millionaire:submit'] = 'Submit »Millionaire Quiz«';
+$string['millionaire:manage'] = 'Manage »Millionaire Quiz«';
+$string['millionaire:view'] = 'View »Millionaire Quiz«';
 $string['millionairename'] = 'Name';
-$string['millionairename_help'] = 'Please provide a name for your millionaire quiz.';
+$string['millionairename_help'] = 'Please provide a name for this »Millionaire Quiz«.';
 $string['introduction'] = 'Description';
 $string['route_not_found'] = 'The page you tried to open doesn\'t exist.';
 
@@ -100,7 +100,7 @@ $string['admin_level_lbl_category_please_select'] = 'Select category';
 $string['admin_level_msg_saving'] = 'Saving the level, please wait';
 
 /* game gui */
-$string['game_screen_title'] = 'Play »Who wants to be a millionaire«';
+$string['game_screen_title'] = 'Play »Millionaire Quiz«';
 $string['game_qtype_not_supported'] = 'The question type »{$a}« is not supported.';
 $string['game_loading_question'] = 'Loading question details';
 $string['game_loading_stats'] = 'Loading leader board';
