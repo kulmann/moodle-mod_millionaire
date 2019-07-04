@@ -1,17 +1,26 @@
 # »Millionaire Quiz« game made with vue.js for moodle
-This is a game plugin for Moodle. It can be added to any Moodle course. After that you will have to define levels 
-and assign categories to each level. The game frontend is written with [Vue.js](https://vuejs.org/) so that playing
-the game doesn't require any page reloads.
+This is a quiz game plugin for Moodle. It can be added to any Moodle course as an activity. You will 
+have to define levels and assign categories of your moodle question bank to each level. The game frontend 
+is written with [Vue.js](https://vuejs.org/) so that playing the game doesn't require any page reloads.
 
-# Game Settings
-A new instance of this game can be added to any Moodle course through the "add activity" functionality. You will be 
-able to set some game options for this instance. Configuring the different levels is a screen within the app, i.e. you 
-will have to go to the activity and will see a settings icon in the top right corner of the game screen. You can add as
-many levels as you want. You need to assign at least one moodle question category to every game level. The game will 
-then pick a random single choice question from those categories. You can decide to configure a level as "safe spot". A
-player giving a wrong answer will fall back to the nearest safe spot level and receive that score. If you don't set
-a name for a level, the score of the level and the currency sign from the game options will be shown as fallback. 
-However, if you decide to set a name for a certain level, it will be shown instead.      
+![game view](images/README-Screenshot-GameView.png)
+
+# Setup
+1. Install Plugin: Just download the repository as zip file and install it. You can remove the vue folder to reduce the size.
+2. Go to a course and add the quiz as an activity.
+3. Choose a name and, if necessary, change game options. NOTE: the game option "continue game?" doesn't work, yet.
+4. Go to the activity and configure levels through the admin screen (top right corner, gears icon).
+
+# Game Settings and Level configuration
+A new instance of this game can be added to any Moodle course through the "add activity" link in your course. You 
+will be  able to set some game options (like the currency for the scores, whether or not teachers should be included
+in the leader board, etc). Configuring the different levels is a screen within the app, i.e. you  will have to go 
+to the activity and will see a settings icon in the top right corner of the game screen. You can add as many levels 
+as you want. You need to assign at least one moodle question category to every game level. The game will 
+then pick a random **single choice question** from those categories. You can decide to configure a level as "safe 
+spot". A player giving a wrong answer will fall back to the nearest safe spot level and receive that score for his 
+leader board rank. If you don't set a name for a level, the score of the level and the currency symbol from the game 
+options will be shown instead.
 
 # Special thanks
 The initial effort of integrating Vue.js into a moodle plugin was done by Martin Gauk from TU Berlin. Cudos for your 
