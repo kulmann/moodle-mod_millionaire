@@ -3,11 +3,11 @@
         .uk-heading-divider.uk-margin-small-bottom
         .uk-grid.uk-grid-small(uk-grid)
             .uk-width-expand
-                button.uk-button.uk-button-default.uk-button-small(v-if="isQuitGameVisible", @click="quitGame", :disabled="isQuitGameDisabled")
+                button.uk-button.uk-button-default.uk-button-small(@click="quitGame", :disabled="isQuitGameDisabled")
                     v-icon(name="hand-holding-usd").uk-margin-small-right
                     span {{ strings.game_btn_quit }}
             .uk-width-auto
-                button.uk-button.uk-button-default.uk-button-small(v-if="isNextLevelVisible", @click="showNextLevel", :disabled="isNextLevelDisabled")
+                button.uk-button.uk-button-default.uk-button-small(@click="showNextLevel", :disabled="isNextLevelDisabled")
                     v-icon(name="arrow-circle-right").uk-margin-small-right
                     span {{ strings.game_btn_continue }}
 </template>
@@ -26,19 +26,15 @@
                 'gameMode',
                 'levels'
             ]),
-            isQuitGameVisible() {
-                let allowedModes = [MODE_QUESTION_SHOWN, MODE_QUESTION_ANSWERED];
-                return _.includes(allowedModes, this.gameMode);
-            },
             isQuitGameDisabled() {
                 if (this.gameMode === MODE_QUESTION_SHOWN && this.question.index > 0) {
                     return false;
                 }
+                if (this.gameSession.continue_on_failure) {
+                    // always allowed to submit your final score if continue_on_failure===true.
+                    return false;
+                }
                 return !(this.gameMode === MODE_QUESTION_ANSWERED && this.question.correct);
-            },
-            isNextLevelVisible() {
-                let allowedModes = [MODE_QUESTION_SHOWN, MODE_QUESTION_ANSWERED];
-                return _.includes(allowedModes, this.gameMode);
             },
             isNextLevelDisabled() {
                 return this.gameMode !== MODE_QUESTION_ANSWERED;

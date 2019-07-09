@@ -164,13 +164,13 @@ class game extends abstract_model {
     /**
      * Gets all active levels for this game from the DB.
      *
-     * @return array
+     * @return level[]
      * @throws \dml_exception
      */
     public function get_active_levels() {
         global $DB;
         $sql_params = ['game' => $this->get_id(), 'state' => level::STATE_ACTIVE];
-        $records = $DB->get_records('millionaire_levels', $sql_params);
+        $records = $DB->get_records('millionaire_levels', $sql_params, 'position ASC');
         $result = [];
         foreach ($records as $level_data) {
             $level = new level();

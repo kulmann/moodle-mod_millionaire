@@ -58,7 +58,7 @@
                 return this.isDone(level) && !level.correct;
             },
             isSafeSpot(level) {
-                return level.safe_spot;
+                return level.safe_spot && !this.gameSession.continue_on_failure;
             },
             isSelected(level) {
                 if (this.question) {

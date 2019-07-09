@@ -18,6 +18,7 @@ namespace mod_millionaire\external\exporter;
 
 use context;
 use core\external\exporter;
+use mod_millionaire\model\game;
 use mod_millionaire\model\gamesession;
 use renderer_base;
 
@@ -36,6 +37,10 @@ class gamesession_dto extends exporter {
      * @var gamesession
      */
     protected $gamesession;
+    /**
+     * @var game
+     */
+    protected $game;
 
     /**
      * gamesession_dto constructor.
@@ -45,8 +50,9 @@ class gamesession_dto extends exporter {
      *
      * @throws \coding_exception
      */
-    public function __construct(gamesession $gamesession, context $context) {
+    public function __construct(gamesession $gamesession, game $game, context $context) {
         $this->gamesession = $gamesession;
+        $this->game = $game;
         parent::__construct([], ['context' => $context]);
     }
 
@@ -58,11 +64,11 @@ class gamesession_dto extends exporter {
             ],
             'timecreated' => [
                 'type' => PARAM_INT,
-                'description' => 'timestamp of the creation of the gamesession'
+                'description' => 'timestamp of the creation of the gamesession',
             ],
             'timemodified' => [
                 'type' => PARAM_INT,
-                'description' => 'timestamp of the last modification of the gamesession'
+                'description' => 'timestamp of the last modification of the gamesession',
             ],
             'game' => [
                 'type' => PARAM_INT,
@@ -78,15 +84,19 @@ class gamesession_dto extends exporter {
             ],
             'score' => [
                 'type' => PARAM_INT,
-                'description' => 'the current score of the user in this gamesession'
+                'description' => 'the current score of the user in this gamesession',
+            ],
+            'score_name' => [
+                'type' => PARAM_TEXT,
+                'description' => 'the label of the level the player has reached',
             ],
             'answers_total' => [
                 'type' => PARAM_INT,
-                'description' => 'the total number of answers the user has already given in this gamesession'
+                'description' => 'the total number of answers the user has already given in this gamesession',
             ],
             'answers_correct' => [
                 'type' => PARAM_INT,
-                'description' => 'the number of correct answers the user has already given in this gamesession'
+                'description' => 'the number of correct answers the user has already given in this gamesession',
             ],
             'state' => [
                 'type' => PARAM_TEXT,
@@ -94,11 +104,11 @@ class gamesession_dto extends exporter {
             ],
             'won' => [
                 'type' => PARAM_BOOL,
-                'description' => 'whether or not the game session is won'
+                'description' => 'whether or not the game session is won',
             ],
             'current_level' => [
                 'type' => PARAM_INT,
-                'description' => 'the index of the current level'
+                'description' => 'the index of the current level',
             ]
         ];
     }
@@ -110,15 +120,26 @@ class gamesession_dto extends exporter {
     }
 
     protected function get_other_values(renderer_base $output) {
+        if ($this->gamesession->get_answers_correct() === 0) {
+            $level_for_score_name = '0 ' . $this->game->get_currency_for_levels();
+        } else {
+            $level = $this->game->get_active_level_by_position($this->gamesession->get_answers_correct() - 1);
+            if (empty($level->get_name())) {
+                $level_for_score_name = $level->get_score() . ' ' . $this->game->get_currency_for_levels();
+            } else {
+                $level_for_score_name = $level->get_name();
+            }
+        }
         // collect data
         $result = \array_merge(
             $this->gamesession->to_array(),
             [
-                'current_level' => $this->gamesession->get_answers_total()
+                'current_level' => $this->gamesession->get_answers_total(),
+                'score_name' => $level_for_score_name,
             ]
         );
         // make sure that only finished game sessions can be shown as won.
-        $result['won'] &= $result['state'] === gamesession::STATE_FINISHED;
+        $result['won'] &= ($result['state'] === gamesession::STATE_FINISHED);
         // return
         return $result;
     }

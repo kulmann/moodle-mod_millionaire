@@ -18,6 +18,7 @@ namespace mod_millionaire\external;
 
 use coding_exception;
 use dml_exception;
+use function end;
 use external_api;
 use external_function_parameters;
 use external_multiple_structure;
@@ -29,6 +30,7 @@ use mod_millionaire\external\exporter\category_dto;
 use mod_millionaire\external\exporter\level_dto;
 use mod_millionaire\model\category;
 use mod_millionaire\model\level;
+use mod_millionaire\model\question;
 use mod_millionaire\util;
 use moodle_exception;
 use restricted_context_exception;
@@ -101,16 +103,72 @@ class levels extends external_api {
             $gamesession = null;
         }
 
-        $result = [];
+        // get active levels from DB
         $levels = $game->get_active_levels();
+
+        // collect all already answered questions (if there is a gamesession)
+        $questions_by_position = [];
+        if ($gamesession !== null) {
+            foreach ($levels as $level) {
+                \assert($level instanceof level);
+                $question = $gamesession->get_question_by_level($level->get_id());
+                if ($question !== null) {
+                    $questions_by_position[$level->get_position()] = $question;
+                }
+            }
+        }
+
+        // collect all level names
+        if ($gamesession === null) {
+            $level_names = \array_map(function (level $level) {
+                return $level->get_name();
+            }, $levels);
+        } elseif (!$game->is_continue_on_failure()) {
+            $level_names = \array_map(function (level $level) use($game) {
+                if (empty($level->get_name())) {
+                    return $level->get_score() . ' ' . $game->get_currency_for_levels();
+                } else {
+                    return $level->get_name();
+                }
+            }, $levels);
+        } else {
+            $level_names = [];
+            $level_position = -1;
+            foreach($levels as $level) {
+                // determine the virtual position of this level (reduce by incorrect answers)
+                if (isset($questions_by_position[$level->get_position()])) {
+                    $question = $questions_by_position[$level->get_position()];
+                    \assert($question instanceof question);
+                    if ($question->is_finished()) {
+                        $level_position += ($question->is_correct() ? 1 : 0);
+                    } else {
+                        $level_position++;
+                    }
+                } else {
+                    $level_position++;
+                }
+                // get the level name for the (possibly reduced) current index
+                if ($level_position === -1) {
+                    $level_names[] = '0 ' . $game->get_currency_for_levels();
+                } else {
+                    $level_tmp = $levels[$level_position];
+                    if (empty($level_tmp->get_name())) {
+                        $level_names[] = $level_tmp->get_score() . ' ' . $game->get_currency_for_levels();
+                    } else {
+                        $level_names[] = $level_tmp->get_name();
+                    }
+                }
+            }
+        }
+
+        // collect export data from levels
+        $result = [];
         foreach ($levels as $level_data) {
             $level = new level();
             $level->apply($level_data);
-            $question = null;
-            if ($gamesession !== null) {
-                $question = $gamesession->get_question_by_level($level->get_id());
-            }
-            $exporter = new level_dto($level, $question, $game, $ctx);
+            $level_name = $level_names[$level->get_position()];
+            $question = isset($questions_by_position[$level->get_position()]) ? $questions_by_position[$level->get_position()] : null;
+            $exporter = new level_dto($level, $level_name, $question, $game, $ctx);
             $result[] = $exporter->export($renderer);
         }
         return $result;
@@ -424,11 +482,11 @@ class levels extends external_api {
             });
             return empty($found);
         });
-        foreach($deleted_categories as $category) {
+        foreach ($deleted_categories as $category) {
             \assert($category instanceof category);
             $category->delete();
         }
-        foreach($categories as $category) {
+        foreach ($categories as $category) {
             \assert($category instanceof category);
             $category->save();
         }

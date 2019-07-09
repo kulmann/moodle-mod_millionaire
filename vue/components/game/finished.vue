@@ -3,7 +3,7 @@
         .uk-alert(uk-alert, :class="{'uk-alert-success': isOver && isWon, 'uk-alert-danger': isOver && !isWon}")
             p.uk-h3.uk-text-bold.uk-text-center
                 v-icon(:name="headlineIcon", :scale="2").uk-margin-small-right
-                span {{ headlineText }}
+                span {{ strings.game_over_score | stringParams(gameSession.score_name) }}
 </template>
 
 <script>
@@ -23,16 +23,6 @@
             },
             isWon() {
                 return this.gameSession.won;
-            },
-            headlineText() {
-                if (!this.isOver) {
-                    return 'Game is not over. You should not see this screen.'
-                }
-                if (this.isWon) {
-                    return this.strings.game_won_headline;
-                } else {
-                    return this.strings.game_lost_headline;
-                }
             },
             headlineIcon() {
                 if (!this.isOver) {

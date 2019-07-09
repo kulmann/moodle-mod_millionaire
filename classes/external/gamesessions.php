@@ -104,7 +104,7 @@ class gamesessions extends external_api {
         $gamesession = util::insert_gamesession($game);
 
         // return it
-        $exporter = new gamesession_dto($gamesession, $ctx);
+        $exporter = new gamesession_dto($gamesession, $game, $ctx);
         return $exporter->export($renderer);
     }
 
@@ -161,7 +161,7 @@ class gamesessions extends external_api {
         // close the gamesession
         if ($gamesession->is_in_progress()) {
             $question = $gamesession->get_most_recent_question();
-            if (!$question->is_finished() || $question->is_correct()) {
+            if (!$question->is_finished() || $question->is_correct() || $game->is_continue_on_failure()) {
                 $gamesession->set_state(gamesession::STATE_FINISHED);
                 $gamesession->set_won(true);
                 $gamesession->save();
@@ -169,7 +169,7 @@ class gamesessions extends external_api {
         }
 
         // return the changed game session
-        $exporter = new gamesession_dto($gamesession, $ctx);
+        $exporter = new gamesession_dto($gamesession, $game, $ctx);
         return $exporter->export($renderer);
     }
 
@@ -219,7 +219,7 @@ class gamesessions extends external_api {
 
         // try to find existing in-progress gamesession or create a new one
         $gamesession = util::get_or_create_gamesession($game);
-        $exporter = new gamesession_dto($gamesession, $ctx);
+        $exporter = new gamesession_dto($gamesession, $game, $ctx);
         return $exporter->export($renderer);
     }
 
@@ -405,8 +405,8 @@ class gamesessions extends external_api {
                 if ($gamesession->get_answers_correct() === 0) {
                     $question->set_score(0);
                 } else {
-                    $level = $gamesession->get_level_by_index($gamesession->get_answers_correct());
-                    $question->set_score($level->get_score());
+                    $tmp_level = $gamesession->get_level_by_index($gamesession->get_answers_correct() - 1);
+                    $question->set_score($tmp_level->get_score());
                 }
             } else {
                 // game over! find last reached safe spot and set those points

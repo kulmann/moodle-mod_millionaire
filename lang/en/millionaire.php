@@ -114,6 +114,7 @@ $string['game_btn_game'] = 'Show Game';
 $string['game_question_headline'] = 'Question {$a->number}: {$a->level}';
 $string['game_won_headline'] = 'You won!';
 $string['game_lost_headline'] = 'Sorry, you lost.';
+$string['game_over_score'] = 'You reached a score of {$a}';
 $string['game_intro_message'] = 'We need to place a logo, text, etc, here.';
 $string['game_help_headline'] = 'Game introduction';
 $string['game_help_message'] = '<ul><li>You can start a new game at any time by clicking »New Game«.</li><li>You can switch between the Leader Board and the actual Game at any time.</li><li>You can end the game with your current score by clicking »Quit« (button below the question).</li><li>Each game provides you with three jokers (top right). 1: Get a hint. 2: Ask the audience. 3: Eliminate two wrong answers.</li></ul>';

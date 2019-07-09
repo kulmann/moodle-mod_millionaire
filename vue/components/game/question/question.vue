@@ -6,8 +6,8 @@
                 finished(v-if="isGameFinished")
                 jokerAudience(v-if="usedJokerAudience", :joker="usedJokerAudience")
                 jokerFeedback(v-if="usedJokerFeedback", :joker="usedJokerFeedback")
-                div(:is="componentByType", :levels="levels", :question="question", :mdl_question="mdl_question", :mdl_answers="mdl_answers", :usedJokers="usedJokers")
-                actions(v-if="isCurrentQuestion && !isGameOver").uk-margin-small-top
+                div(:is="componentByType", :levels="levels", :gameSession="gameSession", :question="question", :mdl_question="mdl_question", :mdl_answers="mdl_answers", :usedJokers="usedJokers")
+                actions(v-if="areActionsAllowed").uk-margin-small-top
         .uk-alert.uk-alert-primary(uk-alert, v-else)
             p Show info about level selection if not dead. If dead, show stats?!
 </template>
@@ -21,8 +21,16 @@
     import questionActions from './question-actions';
     import questionError from './question-error';
     import questionSingleChoice from './question-singlechoice';
-    import {GAME_FINISHED, GAME_PROGRESS, JOKER_AUDIENCE, JOKER_FEEDBACK} from "../../../constants";
+    import {
+        GAME_FINISHED,
+        GAME_PROGRESS,
+        JOKER_AUDIENCE,
+        JOKER_FEEDBACK,
+        MODE_QUESTION_ANSWERED,
+        MODE_QUESTION_SHOWN
+    } from "../../../constants";
     import loadingAlert from '../../helper/loading-alert';
+    import _ from 'lodash';
 
     export default {
         mixins: [mixins],
@@ -30,6 +38,7 @@
             ...mapState([
                 'strings',
                 'gameSession',
+                'gameMode',
                 'levels',
                 'usedJokers',
                 'question',
@@ -59,6 +68,13 @@
             },
             isGameFinished() {
                 return this.gameSession.state === GAME_FINISHED;
+            },
+            areActionsAllowed() {
+                if (!this.isCurrentQuestion || this.isGameOver) {
+                    return false;
+                }
+                let allowedModes = [MODE_QUESTION_SHOWN, MODE_QUESTION_ANSWERED];
+                return _.includes(allowedModes, this.gameMode);
             }
         },
         components: {

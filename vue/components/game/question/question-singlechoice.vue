@@ -18,12 +18,13 @@
     import mixins from '../../../mixins';
     import VkGrid from "vuikit/src/library/grid/components/grid";
     import _ from 'lodash';
-    import {JOKER_CHANCE} from "../../../constants";
+    import {GAME_PROGRESS, JOKER_CHANCE} from "../../../constants";
 
     export default {
         mixins: [mixins],
         props: {
             levels: Array,
+            gameSession: Object,
             question: Object,
             mdl_question: Object,
             mdl_answers: Array,
@@ -74,6 +75,9 @@
                 } else {
                     return '';
                 }
+            },
+            isGameOver() {
+                return this.gameSession.state !== GAME_PROGRESS;
             }
         },
         methods: {
@@ -81,8 +85,12 @@
                 'submitAnswer'
             ]),
             selectAnswer(answer) {
+                if (this.isGameOver) {
+                    // don't allow another submission if game is over
+                    return;
+                }
                 if (this.isAnyAnswerGiven) {
-                    // don't allow another submission
+                    // don't allow another submission if already answered
                     return;
                 }
                 if (this.isAnswerDisabled(answer)) {
@@ -112,7 +120,7 @@
                             result.push('uk-alert-danger');
                         }
                     }
-                } else if (!this.isAnswerDisabled(answer)) {
+                } else if (!this.isAnswerDisabled(answer) && !this.isGameOver) {
                     result.push('_pointer');
                 }
                 return result.join(' ');

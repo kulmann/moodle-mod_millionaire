@@ -8,7 +8,7 @@ is written with [Vue.js](https://vuejs.org/) so that playing the game doesn't re
 # Setup
 1. Install Plugin: Just download the repository as zip file and install it. You can remove the vue folder to reduce the size.
 2. Go to a course and add the quiz as an activity.
-3. Choose a name and, if necessary, change game options. NOTE: the game option "continue game?" doesn't work, yet.
+3. Choose a name and, if necessary, change game options.
 4. Go to the activity and configure levels through the admin screen (top right corner, gears icon).
 
 # Game Settings and Level configuration

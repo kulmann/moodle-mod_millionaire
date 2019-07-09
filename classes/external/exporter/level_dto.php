@@ -39,6 +39,10 @@ class level_dto extends exporter {
      */
     protected $level;
     /**
+     * @var string
+     */
+    protected $forced_name;
+    /**
      * @var question
      */
     protected $question;
@@ -51,14 +55,16 @@ class level_dto extends exporter {
      * level_dto constructor.
      *
      * @param level $level
+     * @param string $forced_name
      * @param question|null $question
      * @param game $game
      * @param context $context
      *
      * @throws \coding_exception
      */
-    public function __construct(level $level, $question, game $game, context $context) {
+    public function __construct(level $level, $forced_name, $question, game $game, context $context) {
         $this->level = $level;
+        $this->forced_name = $forced_name;
         $this->question = $question;
         $this->game = $game;
         parent::__construct([], ['context' => $context]);
@@ -138,11 +144,7 @@ class level_dto extends exporter {
                 'seen' => $this->question !== null,
             ]
         );
-        if (empty($result['name'])) {
-            $result['title'] = $result['score'] . ' ' . $result['currency'];
-        } else {
-            $result['title'] = $result['name'];
-        }
+        $result['title'] = $this->forced_name;
         return $result;
     }
 }
