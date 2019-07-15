@@ -397,17 +397,22 @@ class gamesessions extends external_api {
         $question->set_mdl_answer($mdlanswerid);
         $question->set_finished(true);
         $question->set_correct($correct_mdl_answer->id == $mdlanswerid);
-        if ($question->is_correct()) {
-            $question->set_score($level->get_score());
+        if ($gamesession->is_continue_on_failure()) {
+            // correct answer count gets updated later, so we have to manually increment if answer was correct.
+            $correct_answers = $gamesession->get_answers_correct();
+            if ($question->is_correct()) {
+                $correct_answers++;
+            }
+            // find the level that represents the reached score and set those points
+            if ($correct_answers === 0) {
+                $question->set_score(0);
+            } else {
+                $tmp_level = $gamesession->get_level_by_index($correct_answers - 1);
+                $question->set_score($tmp_level->get_score());
+            }
         } else {
-            if ($gamesession->is_continue_on_failure()) {
-                // find the level that represents the reached score and set those points
-                if ($gamesession->get_answers_correct() === 0) {
-                    $question->set_score(0);
-                } else {
-                    $tmp_level = $gamesession->get_level_by_index($gamesession->get_answers_correct() - 1);
-                    $question->set_score($tmp_level->get_score());
-                }
+            if ($question->is_correct()) {
+                $question->set_score($level->get_score());
             } else {
                 // game over! find last reached safe spot and set those points
                 $safe_spot_level = $gamesession->find_reached_safe_spot_level();
