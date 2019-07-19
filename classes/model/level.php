@@ -76,7 +76,7 @@ class level extends abstract_model {
      *
      * @return void
      */
-    public function apply($data): void {
+    public function apply($data) {
         if (\is_object($data)) {
             $data = get_object_vars($data);
         }
@@ -154,7 +154,7 @@ class level extends abstract_model {
     /**
      * @param int $game
      */
-    public function set_game(int $game): void {
+    public function set_game(int $game) {
         $this->game = $game;
     }
 
@@ -168,7 +168,7 @@ class level extends abstract_model {
     /**
      * @param string $state
      */
-    public function set_state(string $state): void {
+    public function set_state(string $state) {
         $this->state = $state;
     }
 
@@ -182,7 +182,7 @@ class level extends abstract_model {
     /**
      * @param string $name
      */
-    public function set_name(string $name): void {
+    public function set_name(string $name) {
         $this->name = $name;
     }
 
@@ -196,7 +196,7 @@ class level extends abstract_model {
     /**
      * @param int $position
      */
-    public function set_position(int $position): void {
+    public function set_position(int $position) {
         $this->position = $position;
     }
 
@@ -210,7 +210,7 @@ class level extends abstract_model {
     /**
      * @param int $score
      */
-    public function set_score(int $score): void {
+    public function set_score(int $score) {
         $this->score = $score;
     }
 
@@ -224,7 +224,7 @@ class level extends abstract_model {
     /**
      * @param bool $safe_spot
      */
-    public function set_safe_spot(bool $safe_spot): void {
+    public function set_safe_spot(bool $safe_spot) {
         $this->safe_spot = $safe_spot;
     }
 }

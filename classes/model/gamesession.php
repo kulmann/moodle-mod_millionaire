@@ -98,7 +98,7 @@ class gamesession extends abstract_model {
      *
      * @return void
      */
-    public function apply($data): void {
+    public function apply($data) {
         if (\is_object($data)) {
             $data = get_object_vars($data);
         }
@@ -271,7 +271,7 @@ class gamesession extends abstract_model {
     /**
      * @param int $timecreated
      */
-    public function set_timecreated(int $timecreated): void {
+    public function set_timecreated(int $timecreated) {
         $this->timecreated = $timecreated;
     }
 
@@ -285,7 +285,7 @@ class gamesession extends abstract_model {
     /**
      * @param int $timemodified
      */
-    public function set_timemodified(int $timemodified): void {
+    public function set_timemodified(int $timemodified) {
         $this->timemodified = $timemodified;
     }
 
@@ -299,7 +299,7 @@ class gamesession extends abstract_model {
     /**
      * @param int $game
      */
-    public function set_game(int $game): void {
+    public function set_game(int $game) {
         $this->game = $game;
     }
 
@@ -313,7 +313,7 @@ class gamesession extends abstract_model {
     /**
      * @param int $mdl_user
      */
-    public function set_mdl_user(int $mdl_user): void {
+    public function set_mdl_user(int $mdl_user) {
         $this->mdl_user = $mdl_user;
     }
 
@@ -327,7 +327,7 @@ class gamesession extends abstract_model {
     /**
      * @param bool $continue_on_failure
      */
-    public function set_continue_on_failure(bool $continue_on_failure): void {
+    public function set_continue_on_failure(bool $continue_on_failure) {
         $this->continue_on_failure = $continue_on_failure;
     }
 
@@ -341,7 +341,7 @@ class gamesession extends abstract_model {
     /**
      * @param int $score
      */
-    public function set_score(int $score): void {
+    public function set_score(int $score) {
         $this->score = $score;
     }
 
@@ -355,14 +355,14 @@ class gamesession extends abstract_model {
     /**
      * @param int $answers_total
      */
-    public function set_answers_total(int $answers_total): void {
+    public function set_answers_total(int $answers_total) {
         $this->answers_total = $answers_total;
     }
 
     /**
      * @return void
      */
-    public function increment_answers_total(): void {
+    public function increment_answers_total() {
         $this->answers_total++;
     }
 
@@ -376,14 +376,14 @@ class gamesession extends abstract_model {
     /**
      * @param int $answers_correct
      */
-    public function set_answers_correct(int $answers_correct): void {
+    public function set_answers_correct(int $answers_correct) {
         $this->answers_correct = $answers_correct;
     }
 
     /**
      * @return void
      */
-    public function increment_answers_correct(): void {
+    public function increment_answers_correct() {
         $this->answers_correct++;
     }
 
@@ -418,7 +418,7 @@ class gamesession extends abstract_model {
     /**
      * @param string $state
      */
-    public function set_state(string $state): void {
+    public function set_state(string $state) {
         $this->state = $state;
     }
 
@@ -432,7 +432,7 @@ class gamesession extends abstract_model {
     /**
      * @param bool $won
      */
-    public function set_won(bool $won): void {
+    public function set_won(bool $won) {
         $this->won = $won;
     }
 }

@@ -81,7 +81,7 @@ class joker extends abstract_model {
      *
      * @return void
      */
-    public function apply($data): void {
+    public function apply($data) {
         if (\is_object($data)) {
             $data = get_object_vars($data);
         }
@@ -177,7 +177,7 @@ class joker extends abstract_model {
     /**
      * @param int $timecreated
      */
-    public function set_timecreated(int $timecreated): void {
+    public function set_timecreated(int $timecreated) {
         $this->timecreated = $timecreated;
     }
 
@@ -191,7 +191,7 @@ class joker extends abstract_model {
     /**
      * @param int $timemodified
      */
-    public function set_timemodified(int $timemodified): void {
+    public function set_timemodified(int $timemodified) {
         $this->timemodified = $timemodified;
     }
 
@@ -205,7 +205,7 @@ class joker extends abstract_model {
     /**
      * @param int $gamesession
      */
-    public function set_gamesession(int $gamesession): void {
+    public function set_gamesession(int $gamesession) {
         $this->gamesession = $gamesession;
     }
 
@@ -219,7 +219,7 @@ class joker extends abstract_model {
     /**
      * @param int $question
      */
-    public function set_question(int $question): void {
+    public function set_question(int $question) {
         $this->question = $question;
     }
 
@@ -233,7 +233,7 @@ class joker extends abstract_model {
     /**
      * @param string $joker_type
      */
-    public function set_joker_type(string $joker_type): void {
+    public function set_joker_type(string $joker_type) {
         $this->joker_type = $joker_type;
     }
 
@@ -247,7 +247,7 @@ class joker extends abstract_model {
     /**
      * @param string $joker_data
      */
-    public function set_joker_data(string $joker_data): void {
+    public function set_joker_data(string $joker_data) {
         $this->joker_data = $joker_data;
     }
 }

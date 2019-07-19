@@ -51,7 +51,7 @@ class util {
      * @return void
      * @throws \required_capability_exception
      */
-    public static function require_user_has_capability(string $capability, \context $context, $userid = null): void {
+    public static function require_user_has_capability(string $capability, \context $context, $userid = null) {
         \require_capability($capability, $context, $userid);
     }
 
@@ -64,7 +64,7 @@ class util {
      * @return void
      * @throws invalid_parameter_exception
      */
-    public static function validate_gamesession(game $game, gamesession $gamesession): void {
+    public static function validate_gamesession(game $game, gamesession $gamesession) {
         if ($game->get_id() !== $gamesession->get_game()) {
             throw new invalid_parameter_exception("gamesession " . $gamesession->get_id() . " doesn't belong to game " . $game->get_id());
         }
@@ -83,7 +83,7 @@ class util {
      * @return void
      * @throws invalid_parameter_exception
      */
-    public static function validate_question(gamesession $gamesession, question $question): void {
+    public static function validate_question(gamesession $gamesession, question $question) {
         if ($gamesession->get_id() !== $question->get_gamesession()) {
             throw new invalid_parameter_exception("question " . $question->get_id() . " doesn't belong to given gamesession");
         }
@@ -98,7 +98,7 @@ class util {
      * @return void
      * @throws invalid_parameter_exception
      */
-    public static function validate_level(game $game, level $level): void {
+    public static function validate_level(game $game, level $level) {
         if ($game->get_id() !== $level->get_game()) {
             throw new invalid_parameter_exception("level " . $level->get_id() . " doesn't belong to given game");
         }
@@ -219,7 +219,7 @@ class util {
      * @return void
      * @throws dml_exception
      */
-    public static function dump_running_gamesessions(game $game): void {
+    public static function dump_running_gamesessions(game $game) {
         global $DB, $USER;
         $conditions = [
             'game' => $game->get_id(),

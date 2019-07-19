@@ -103,7 +103,7 @@ class question extends abstract_model {
      *
      * @return void
      */
-    public function apply($data): void {
+    public function apply($data) {
         if (\is_object($data)) {
             $data = get_object_vars($data);
         }
@@ -156,7 +156,7 @@ class question extends abstract_model {
     /**
      * @param int $timecreated
      */
-    public function set_timecreated(int $timecreated): void {
+    public function set_timecreated(int $timecreated) {
         $this->timecreated = $timecreated;
     }
 
@@ -170,7 +170,7 @@ class question extends abstract_model {
     /**
      * @param int $timemodified
      */
-    public function set_timemodified(int $timemodified): void {
+    public function set_timemodified(int $timemodified) {
         $this->timemodified = $timemodified;
     }
 
@@ -184,7 +184,7 @@ class question extends abstract_model {
     /**
      * @param int $gamesession
      */
-    public function set_gamesession(int $gamesession): void {
+    public function set_gamesession(int $gamesession) {
         $this->gamesession = $gamesession;
     }
 
@@ -198,7 +198,7 @@ class question extends abstract_model {
     /**
      * @param int $level
      */
-    public function set_level(int $level): void {
+    public function set_level(int $level) {
         $this->level = $level;
     }
 
@@ -212,7 +212,7 @@ class question extends abstract_model {
     /**
      * @param int $mdl_question
      */
-    public function set_mdl_question(int $mdl_question): void {
+    public function set_mdl_question(int $mdl_question) {
         $this->mdl_question = $mdl_question;
     }
 
@@ -226,7 +226,7 @@ class question extends abstract_model {
     /**
      * @param string $mdl_answers_order
      */
-    public function set_mdl_answers_order(string $mdl_answers_order): void {
+    public function set_mdl_answers_order(string $mdl_answers_order) {
         $this->mdl_answers_order = $mdl_answers_order;
     }
 
@@ -240,7 +240,7 @@ class question extends abstract_model {
     /**
      * @param int $mdl_answer
      */
-    public function set_mdl_answer(int $mdl_answer): void {
+    public function set_mdl_answer(int $mdl_answer) {
         $this->mdl_answer = $mdl_answer;
     }
 
@@ -254,7 +254,7 @@ class question extends abstract_model {
     /**
      * @param int $score
      */
-    public function set_score(int $score): void {
+    public function set_score(int $score) {
         $this->score = $score;
     }
 
@@ -268,7 +268,7 @@ class question extends abstract_model {
     /**
      * @param bool $correct
      */
-    public function set_correct(bool $correct): void {
+    public function set_correct(bool $correct) {
         $this->correct = $correct;
     }
 
@@ -282,7 +282,7 @@ class question extends abstract_model {
     /**
      * @param bool $finished
      */
-    public function set_finished(bool $finished): void {
+    public function set_finished(bool $finished) {
         $this->finished = $finished;
     }
 }

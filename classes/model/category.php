@@ -61,7 +61,7 @@ class category extends abstract_model {
      *
      * @return void
      */
-    public function apply($data): void {
+    public function apply($data) {
         if (\is_object($data)) {
             $data = get_object_vars($data);
         }
@@ -113,7 +113,7 @@ class category extends abstract_model {
     /**
      * @param int $level
      */
-    public function set_level(int $level): void {
+    public function set_level(int $level) {
         $this->level = $level;
     }
 
@@ -127,7 +127,7 @@ class category extends abstract_model {
     /**
      * @param int $mdl_category
      */
-    public function set_mdl_category(int $mdl_category): void {
+    public function set_mdl_category(int $mdl_category) {
         $this->mdl_category = $mdl_category;
     }
 
@@ -141,7 +141,7 @@ class category extends abstract_model {
     /**
      * @param bool $subcategories
      */
-    public function set_includes_subcategories(bool $subcategories): void {
+    public function set_includes_subcategories(bool $subcategories) {
         $this->subcategories = $subcategories;
     }
 }

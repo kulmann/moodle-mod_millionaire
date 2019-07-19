@@ -73,7 +73,7 @@ abstract class abstract_model extends \stdClass {
      * @return void The loaded data will be set inside this object.
      * @throws \dml_exception
      */
-    public function load_data_by_id(int $id): void {
+    public function load_data_by_id(int $id) {
         global $DB;
         $record = $DB->get_record(
             $this->table_name,
@@ -92,7 +92,7 @@ abstract class abstract_model extends \stdClass {
      * @return void
      * @throws \dml_exception
      */
-    public function save(): void {
+    public function save() {
         global $DB;
         if (property_exists($this, 'timemodified')) {
             $this->timemodified = \time();
@@ -111,7 +111,7 @@ abstract class abstract_model extends \stdClass {
      * @return void
      * @throws \dml_exception
      */
-    public function delete(): void {
+    public function delete() {
         global $DB;
         $DB->delete_records($this->table_name, ['id' => $this->get_id()]);
     }
@@ -146,7 +146,7 @@ abstract class abstract_model extends \stdClass {
      *
      * @return void
      */
-    public abstract function apply($data): void;
+    public abstract function apply($data);
 
     /**
      * Returns the name of the sql table this model object is built on.

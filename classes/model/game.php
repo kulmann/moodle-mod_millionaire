@@ -100,7 +100,7 @@ class game extends abstract_model {
      *
      * @return void
      */
-    public function apply($data): void {
+    public function apply($data) {
         if (\is_object($data)) {
             $data = get_object_vars($data);
         }
@@ -216,7 +216,7 @@ class game extends abstract_model {
     /**
      * @param int $timecreated
      */
-    public function set_timecreated(int $timecreated): void {
+    public function set_timecreated(int $timecreated) {
         $this->timecreated = $timecreated;
     }
 
@@ -230,7 +230,7 @@ class game extends abstract_model {
     /**
      * @param int $timemodified
      */
-    public function set_timemodified(int $timemodified): void {
+    public function set_timemodified(int $timemodified) {
         $this->timemodified = $timemodified;
     }
 
@@ -244,7 +244,7 @@ class game extends abstract_model {
     /**
      * @param int $course
      */
-    public function set_course(int $course): void {
+    public function set_course(int $course) {
         $this->course = $course;
     }
 
@@ -258,7 +258,7 @@ class game extends abstract_model {
     /**
      * @param string $name
      */
-    public function set_name(string $name): void {
+    public function set_name(string $name) {
         $this->name = $name;
     }
 
@@ -272,7 +272,7 @@ class game extends abstract_model {
     /**
      * @param string $currency_for_levels
      */
-    public function set_currency_for_levels(string $currency_for_levels): void {
+    public function set_currency_for_levels(string $currency_for_levels) {
         $this->currency_for_levels = $currency_for_levels;
     }
 
@@ -286,7 +286,7 @@ class game extends abstract_model {
     /**
      * @param bool $continue_on_failure
      */
-    public function set_continue_on_failure(bool $continue_on_failure): void {
+    public function set_continue_on_failure(bool $continue_on_failure) {
         $this->continue_on_failure = $continue_on_failure;
     }
 
@@ -300,7 +300,7 @@ class game extends abstract_model {
     /**
      * @param bool $question_repeatable
      */
-    public function set_question_repeatable(bool $question_repeatable): void {
+    public function set_question_repeatable(bool $question_repeatable) {
         $this->question_repeatable = $question_repeatable;
     }
 
@@ -314,7 +314,7 @@ class game extends abstract_model {
     /**
      * @param bool $question_shuffle_answers
      */
-    public function set_question_shuffle_answers(bool $question_shuffle_answers): void {
+    public function set_question_shuffle_answers(bool $question_shuffle_answers) {
         $this->question_shuffle_answers = $question_shuffle_answers;
     }
 
@@ -328,7 +328,7 @@ class game extends abstract_model {
     /**
      * @param int $highscore_count
      */
-    public function set_highscore_count(int $highscore_count): void {
+    public function set_highscore_count(int $highscore_count) {
         $this->highscore_count = $highscore_count;
     }
 
@@ -342,7 +342,7 @@ class game extends abstract_model {
     /**
      * @param string $highscore_mode
      */
-    public function set_highscore_mode(string $highscore_mode): void {
+    public function set_highscore_mode(string $highscore_mode) {
         $this->highscore_mode = $highscore_mode;
     }
 
@@ -356,7 +356,7 @@ class game extends abstract_model {
     /**
      * @param bool $highscore_teachers
      */
-    public function set_highscore_teachers(bool $highscore_teachers): void {
+    public function set_highscore_teachers(bool $highscore_teachers) {
         $this->highscore_teachers = $highscore_teachers;
     }
 }
