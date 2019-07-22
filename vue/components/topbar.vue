@@ -1,19 +1,19 @@
 <template lang="pug">
     .uk-grid.uk-grid-collapse.top-bar(uk-grid).uk-flex-middle
         .uk-width-expand
-            button.uk-button.uk-button-default.uk-button-small.uk-margin-small-left(@click="restartGame", :class="{'uk-button-primary': isGameOver}")
+            button.btn.uk-margin-small-left(@click="restartGame", :class="{'btn-primary': isGameOver, 'btn-default': !isGameOver}")
                 v-icon(name="redo").uk-margin-small-right
                 span {{ strings.game_btn_restart }}
-            button.uk-button.uk-button-default.uk-button-small.uk-margin-small-left(@click="showStats", v-if="statsButtonVisible")
+            button.btn.btn-default.uk-margin-small-left(@click="showStats", v-if="statsButtonVisible")
                 v-icon(name="chart-line").uk-margin-small-right
                 span {{ strings.game_btn_stats }}
-            button.uk-button.uk-button-default.uk-button-small.uk-margin-small-left(@click="showGame", v-if="gameButtonVisible")
+            button.btn.btn-default.uk-margin-small-left(@click="showGame", v-if="gameButtonVisible")
                 v-icon(name="gamepad").uk-margin-small-right
                 span {{ strings.game_btn_game }}
         .uk-width-auto
-            button.uk-button.uk-button-default.uk-button-small.uk-margin-small-right(@click="showAdmin", v-if="adminButtonVisible")
+            button.btn.btn-default.uk-margin-small-right(@click="showAdmin", v-if="adminButtonVisible")
                 v-icon(name="cogs")
-            button.uk-button.uk-button-default.uk-button-small.uk-margin-small-right(@click="showHelp")
+            button.btn.btn-default.uk-margin-small-right(@click="showHelp")
                 v-icon(name="regular/question-circle")
 </template>
 

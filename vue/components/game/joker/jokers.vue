@@ -1,6 +1,6 @@
 <template lang="pug">
     .joker-container.uk-flex.uk-flex-center.uk-flex-middle
-        button.uk-button.uk-button-primary.uk-button-small(v-for="(type,index) in jokerTypes", :key="type", @click="selectJoker(type)", :disabled="isJokerDisabled(type)", :class="getButtonClasses(index)")
+        button.btn.btn-primary(v-for="(type,index) in jokerTypes", :key="type", @click="selectJoker(type)", :disabled="isJokerDisabled(type)", :class="getButtonClasses(index)")
             v-icon(:name="getJokerIcon(type)")
 </template>
 

@@ -3,7 +3,7 @@
         template(v-if="game")
             h1.uk-text-center {{ game.name }}
         p.uk-text-center
-            button.uk-button.uk-button-primary(@click="startGame")
+            button.btn.btn-primary(@click="startGame")
                 span {{ strings.game_btn_start }}
 </template>
 

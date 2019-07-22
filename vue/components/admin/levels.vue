@@ -19,13 +19,13 @@
                                     v-icon(v-if="isSafeSpot(level)", name="regular/star")
                                 td.uk-table-auto.uk-text-right.uk-text-middle {{ level.title }}
                                 td.actions.uk-table-shrink.uk-preserve-width
-                                    button.uk-button.uk-button-small.uk-button-default(@click="editLevel(level)")
+                                    button.btn.btn-default(@click="editLevel(level)")
                                         v-icon(name="regular/edit")
-                                    button.uk-button.uk-button-small.uk-button-default(@click="moveLevel(level, -1)", :disabled="level.position === 0")
+                                    button.btn.btn-default(@click="moveLevel(level, -1)", :disabled="level.position === 0")
                                         v-icon(name="arrow-down")
-                                    button.uk-button.uk-button-small.uk-button-default(@click="moveLevel(level, 1)", :disabled="level.position === (levels.length - 1)")
+                                    button.btn.btn-default(@click="moveLevel(level, 1)", :disabled="level.position === (levels.length - 1)")
                                         v-icon(name="arrow-up")
-                                    button.uk-button.uk-button-small.uk-button-default(@click="deleteLevelAsk(level)")
+                                    button.btn.btn-default(@click="deleteLevelAsk(level)")
                                         v-icon(name="trash")
                             tr(v-if="deleteConfirmationLevelId === level.id")
                                 td(colspan="4")
@@ -35,7 +35,7 @@
                                                 v-icon(name="exclamation-circle").uk-margin-small-right
                                                 span {{ strings.admin_level_delete_confirm | stringParams(level.title) }}
                                             .uk-width-auto
-                                                button.uk-button.uk-button-danger.uk-button-small.uk-margin-small-left(@click="deleteLevelConfirm(level)")
+                                                button.btn.btn-danger.uk-margin-small-left(@click="deleteLevelConfirm(level)")
                                                     span {{ strings.admin_btn_confirm_delete }}
                 btnAdd(@click="createLevel")
 </template>

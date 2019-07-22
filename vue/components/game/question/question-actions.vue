@@ -3,11 +3,11 @@
         .uk-heading-divider.uk-margin-small-bottom
         .uk-grid.uk-grid-small(uk-grid)
             .uk-width-expand
-                button.uk-button.uk-button-default.uk-button-small(@click="quitGame", :disabled="isQuitGameDisabled")
+                button.btn.btn-default(@click="quitGame", :disabled="isQuitGameDisabled")
                     v-icon(name="hand-holding-usd").uk-margin-small-right
                     span {{ strings.game_btn_quit }}
             .uk-width-auto
-                button.uk-button.uk-button-default.uk-button-small(@click="showNextLevel", :disabled="isNextLevelDisabled")
+                button.btn.btn-default(@click="showNextLevel", :disabled="isNextLevelDisabled")
                     v-icon(name="arrow-circle-right").uk-margin-small-right
                     span {{ strings.game_btn_continue }}
 </template>
