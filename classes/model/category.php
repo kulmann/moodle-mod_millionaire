@@ -95,12 +95,20 @@ class category extends abstract_model {
             SELECT id
               FROM {question}
              WHERE category $cat_sql AND qtype $qtype_sql 
-          ORDER BY RAND()
-             LIMIT 0,1
         ";
+
         $params = \array_merge($cat_params, $qtype_params);
-        $id = $DB->get_field_sql($sql, $params);
-        return \question_bank::load_question($id, false);
+        // Get all available questions.
+        $availableids = $DB->get_records_sql($sql, $params);
+        if ($availableids) {
+            // Shuffle here because SQL RAND() can't be used.
+            shuffle($availableids);
+            // Take the first one in the array.
+            $id = $availableids[0]->id;
+            return \question_bank::load_question($id, false);
+        } else {
+            throw new \dml_exception('not found');
+        }
     }
 
     /**

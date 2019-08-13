@@ -131,13 +131,14 @@ class level extends abstract_model {
             SELECT *
               FROM {millionaire_categories}
              WHERE level = :level 
-          ORDER BY RAND()
-             LIMIT 0,1
         ";
-        $result = $DB->get_record_sql($sql, ['level' => $this->get_id()]);
-        if ($result) {
+        $available = $DB->get_records_sql($sql, ['level' => $this->get_id()]);
+        if ($available) {
+            // Shuffle here because SQL RAND() can't be used.
+            shuffle($available);
             $category = new category();
-            $category->apply($result);
+            // Take the first one in the array.
+            $category->apply($available[0]);
             return $category;
         } else {
             throw new \dml_exception('not found');
