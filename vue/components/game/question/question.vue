@@ -8,13 +8,11 @@
                 jokerFeedback(v-if="usedJokerFeedback", :joker="usedJokerFeedback")
                 div(:is="componentByType", :levels="levels", :gameSession="gameSession", :question="question", :mdl_question="mdl_question", :mdl_answers="mdl_answers", :usedJokers="usedJokers")
                 actions(v-if="areActionsAllowed").uk-margin-small-top
-        .uk-alert.uk-alert-primary(uk-alert, v-else)
-            p Show info about level selection if not dead. If dead, show stats?!
 </template>
 
 <script>
     import {mapState} from 'vuex';
-    import finished from '../finished';
+    import finished from './finished';
     import mixins from '../../../mixins';
     import jokerAudience from '../joker/joker-audience';
     import jokerFeedback from '../joker/joker-feedback';

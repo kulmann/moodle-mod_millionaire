@@ -8,8 +8,8 @@
 
 <script>
     import {mapState} from 'vuex';
-    import mixins from '../../mixins';
-    import {GAME_PROGRESS} from "../../constants";
+    import mixins from '../../../mixins';
+    import {GAME_PROGRESS} from "../../../constants";
 
     export default {
         mixins: [mixins],

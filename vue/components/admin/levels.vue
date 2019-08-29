@@ -17,7 +17,7 @@
                                     b {{ level.position + 1 }}
                                 td.uk-table-shrink.uk-preserve-width.uk-text-center.uk-text-middle
                                     v-icon(v-if="isSafeSpot(level)", name="regular/star")
-                                td.uk-table-auto.uk-text-right.uk-text-middle {{ level.title }}
+                                td.uk-table-auto.uk-text-left.uk-text-middle {{ level.title }}
                                 td.actions.uk-table-shrink.uk-preserve-width
                                     button.btn.btn-default(@click="editLevel(level)")
                                         v-icon(name="regular/edit")

@@ -11,7 +11,7 @@ import gameScreen from './components/game/game-screen';
 
 function init(coursemoduleid, contextid) {
     // We need to overwrite the variable for lazy loading.
-    __webpack_public_path__ = M.cfg.wwwroot + '/mod/vuejsdemo/amd/build/';
+    __webpack_public_path__ = M.cfg.wwwroot + '/mod/millionaire/amd/build/';
 
     Vue.use(Vuikit);
     Vue.use(VueRouter);
@@ -71,6 +71,10 @@ function init(coursemoduleid, contextid) {
             if (store.state.strings.hasOwnProperty(to.meta.title)) {
                 document.title = store.state.strings[to.meta.title];
             }
+        }
+        // If this goes to an admin page, we need to cancel the current gamesession
+        if (to.path.startsWith('/admin')) {
+            store.dispatch('cancelGameSession');
         }
         next()
     });

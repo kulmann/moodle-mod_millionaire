@@ -119,11 +119,7 @@ class levels extends external_api {
         }
 
         // collect all level names
-        if ($gamesession === null) {
-            $level_names = \array_map(function (level $level) {
-                return $level->get_name();
-            }, $levels);
-        } elseif (!$game->is_continue_on_failure()) {
+        if ($gamesession === null || !$game->is_continue_on_failure()) {
             $level_names = \array_map(function (level $level) use($game) {
                 if (empty($level->get_name())) {
                     return $level->get_score() . ' ' . $game->get_currency_for_levels();

@@ -32,7 +32,7 @@
                                         v-html="mdl_category.category_name")
                                 button.btn.btn-default(type="button", @click="removeCategory(index)")
                                     v-icon(name="trash")
-                    btnAdd(@click="createCategory")
+                    btnAdd(@click="createCategory", align="left")
             .uk-card-footer.uk-text-right
                 button.btn.btn-primary(@click="save()", :disabled="saving")
                     v-icon(name="save").uk-margin-small-right

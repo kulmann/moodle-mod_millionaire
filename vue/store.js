@@ -246,6 +246,24 @@ export const store = new Vuex.Store({
             return context.dispatch('fetchLevels');
         },
         /**
+         * Closes the current game session (i.e. sets state to DUMPED). This is needed when the user goes to the admin
+         * page, to reload the levels without gamesession association.
+         *
+         * @param context
+         *
+         * @returns {Promise<void>}
+         */
+        async cancelGameSession(context) {
+            if (this.state.gameSession) {
+                let args = {
+                    'gamesessionid': this.state.gameSession.id
+                };
+                const gameSession = await ajax('mod_millionaire_cancel_gamesession', args);
+                context.commit('setGameSession', null);
+                return context.dispatch('fetchLevels');
+            }
+        },
+        /**
          * Loads the question for the given level index. Doesn't matter if it's already answered.
          *
          * @param context

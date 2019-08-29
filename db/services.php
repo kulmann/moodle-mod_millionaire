@@ -79,6 +79,13 @@ $functions = [
         'type' => 'write',
         'ajax' => true,
     ],
+    'mod_millionaire_cancel_gamesession' => [
+        'classname' => 'mod_millionaire\external\gamesessions',
+        'methodname' => 'cancel_gamesession',
+        'description' => 'Sets the state of the given game session to DUMPED.',
+        'type' => 'write',
+        'ajax' => true,
+    ],
     'mod_millionaire_get_current_gamesession' => [
         'classname' => 'mod_millionaire\external\gamesessions',
         'methodname' => 'get_current_gamesession',

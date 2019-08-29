@@ -21,7 +21,6 @@ use function array_map;
 use function array_pop;
 use function assert;
 use coding_exception;
-use core\plugininfo\qtype;
 use dml_exception;
 use external_api;
 use external_function_parameters;
@@ -166,6 +165,67 @@ class gamesessions extends external_api {
                 $gamesession->set_won(true);
                 $gamesession->save();
             }
+        }
+
+        // return the changed game session
+        $exporter = new gamesession_dto($gamesession, $game, $ctx);
+        return $exporter->export($renderer);
+    }
+
+    /**
+     * Definition of parameters for {@see cancel_gamesession}.
+     *
+     * @return external_function_parameters
+     */
+    public static function cancel_gamesession_parameters() {
+        return new external_function_parameters([
+            'coursemoduleid' => new external_value(PARAM_INT, 'course module id'),
+            'gamesessionid' => new external_value(PARAM_INT, 'game session id'),
+        ]);
+    }
+
+    /**
+     * Definition of return type for {@see cancel_gamesession}.
+     *
+     * @return external_single_structure
+     */
+    public static function cancel_gamesession_returns() {
+        return gamesession_dto::get_read_structure();
+    }
+
+    /**
+     * Sets the state of the given game session to DUMPED.
+     *
+     * @param int $coursemoduleid
+     * @param int $gamesessionid
+     *
+     * @return stdClass
+     * @throws coding_exception
+     * @throws dml_exception
+     * @throws invalid_parameter_exception
+     * @throws moodle_exception
+     * @throws restricted_context_exception
+     */
+    public static function cancel_gamesession($coursemoduleid, $gamesessionid) {
+        $params = ['coursemoduleid' => $coursemoduleid, 'gamesessionid' => $gamesessionid];
+        self::validate_parameters(self::cancel_gamesession_parameters(), $params);
+
+        list($course, $coursemodule) = get_course_and_cm_from_cmid($coursemoduleid, 'millionaire');
+        self::validate_context($coursemodule->context);
+
+        global $PAGE;
+        $renderer = $PAGE->get_renderer('core');
+        $ctx = $coursemodule->context;
+        $game = util::get_game($coursemodule);
+
+        // get gamesession by the provided id
+        $gamesession = util::get_gamesession($gamesessionid);
+        util::validate_gamesession($game, $gamesession);
+
+        // cancel the gamesession
+        if ($gamesession->is_in_progress()) {
+            $gamesession->set_state(gamesession::STATE_DUMPED);
+            $gamesession->save();
         }
 
         // return the changed game session

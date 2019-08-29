@@ -34,6 +34,15 @@ function xmldb_millionaire_upgrade($oldversion = 0) {
     global $CFG, $DB;
 
     $dbman = $DB->get_manager();
+    if ($oldversion < 2019072801) {
+        // we added a service. need to add it to the db as well.
+        $servicerecord = new \stdClass();
+        $servicerecord->name = 'mod_millionaire_cancel_gamesession';
+        $servicerecord->classname = 'mod_millionaire\\external\\gamesessions';
+        $servicerecord->methodname = 'cancel_gamesession';
+        $servicerecord->component = 'mod_millionaire';
+        $DB->insert_record('external_functions', $servicerecord);
+    }
 
     return true;
 }
