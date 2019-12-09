@@ -8,7 +8,7 @@
                 div.uk-flex-left.uk-width-expand
                     intro(v-if="introVisible")
                     question(v-if="questionVisible")
-                    stats(v-if="statsVisible")
+                    stats(v-if="highscoreVisible")
                     help(v-if="helpVisible")
                 div.uk-flex-right
                     jokers.uk-margin-small-bottom

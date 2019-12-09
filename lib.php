@@ -71,13 +71,10 @@ define('MOD_MILLIONAIRE_VALID_QTYPES_DB', [
  */
 function millionaire_supports($feature) {
     switch ($feature) {
-        case FEATURE_MOD_INTRO:
-            return true;
         case FEATURE_SHOW_DESCRIPTION:
-            return true;
         case FEATURE_BACKUP_MOODLE2:
-            return true;
         case FEATURE_COMPLETION_HAS_RULES:
+        case FEATURE_MOD_INTRO:
             return true;
         default:
             return null;
@@ -237,48 +234,5 @@ function millionaire_perform_completion($course, $cm, $millionaire) {
     $completion = new completion_info($course);
     if ($completion->is_enabled($cm) == COMPLETION_TRACKING_AUTOMATIC && ($millionaire->completionrounds || $millionaire->completionpoints)) {
         $completion->update_state($cm, COMPLETION_COMPLETE, $USER->id);
-    }
-}
-
-/**
- * View or submit an mform.
- *
- * Returns the HTML to view an mform.
- * If form data is delivered and the data is valid, this returns 'ok'.
- *
- * @param array $args
- * @return string
- * @throws moodle_exception
- */
-function millionaire_output_fragment_mform($args) {
-    $context = $args['context'];
-    if ($context->contextlevel != CONTEXT_MODULE) {
-        throw new \moodle_exception('fragment_mform_wrong_context', 'millionaire');
-    }
-
-    list($course, $coursemodule) = \get_course_and_cm_from_cmid($context->instanceid, 'millionaire');
-    $game = util::get_game($coursemodule);
-
-    $formdata = [];
-    if (!empty($args['jsonformdata'])) {
-        $serializeddata = \json_decode($args['jsonformdata']);
-        if (\is_string($serializeddata)) {
-            \parse_str($serializeddata, $formdata);
-        }
-    }
-
-    $moreargs = (isset($args['moreargs'])) ? \json_decode($args['moreargs']) : new stdClass();
-    $formname = $args['form'] ?? '';
-
-    $controller = form_controller::get_controller($formname, $game, $context, $formdata, $moreargs);
-
-    if ($controller->success()) {
-        $ret = 'ok';
-        if ($msg = $controller->get_message()) {
-            $ret .= ' ' . $msg;
-        }
-        return $ret;
-    } else {
-        return $controller->render();
     }
 }
