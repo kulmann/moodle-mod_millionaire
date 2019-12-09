@@ -4,7 +4,7 @@
             button.btn.uk-margin-small-left(@click="restartGame", :class="{'btn-primary': isGameOver, 'btn-default': !isGameOver}")
                 v-icon(name="redo").uk-margin-small-right
                 span {{ strings.game_btn_restart }}
-            button.btn.btn-default.uk-margin-small-left(@click="showStats", v-if="statsButtonVisible")
+            button.btn.btn-default.uk-margin-small-left(@click="showHighscore", v-if="statsButtonVisible")
                 v-icon(name="chart-line").uk-margin-small-right
                 span {{ strings.game_btn_stats }}
             button.btn.btn-default.uk-margin-small-left(@click="showGame", v-if="gameButtonVisible")
