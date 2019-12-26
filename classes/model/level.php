@@ -114,34 +114,34 @@ class level extends abstract_model {
      * @throws \coding_exception
      */
     public function get_random_question(): \question_definition {
-        $category = $this->get_random_category();
-        return $category->get_random_question();
-    }
-
-    /**
-     * Returns one random of those categories that are assigned to this level. Throws an exception
-     * if this level has no categories.
-     *
-     * @return category
-     * @throws \dml_exception
-     */
-    private function get_random_category(): category {
         global $DB;
+
+        // collect all moodle question categories
+        $mdl_category_ids = [];
+        foreach($this->get_categories() as $category) {
+            $mdl_category_ids = \array_merge($mdl_category_ids, $category->get_mdl_category_ids());
+        }
+        list($cat_sql, $cat_params) = $DB->get_in_or_equal($mdl_category_ids);
+
+        // build query for moodle question selection
         $sql = "
-            SELECT *
-              FROM {millionaire_categories}
-             WHERE level = :level 
+            SELECT q.id
+              FROM {question} q 
+        INNER JOIN {qtype_multichoice_options} qmo ON q.id=qmo.questionid
+             WHERE q.qtype = ? AND qmo.single = ? AND q.category $cat_sql 
         ";
-        $available = $DB->get_records_sql($sql, ['level' => $this->get_id()]);
-        if ($available) {
+        $params = \array_merge(["multichoice", 1], $cat_params);
+
+        // Get all available questions.
+        $available_ids = $DB->get_records_sql($sql, $params);
+        if (!empty($available_ids)) {
             // Shuffle here because SQL RAND() can't be used.
-            shuffle($available);
-            $category = new category();
+            shuffle($available_ids);
             // Take the first one in the array.
-            $category->apply($available[0]);
-            return $category;
+            $id = \reset($available_ids)->id;
+            return \question_bank::load_question($id, false);
         } else {
-            throw new \dml_exception('not found');
+            throw new \dml_exception('no question available');
         }
     }
 

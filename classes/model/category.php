@@ -16,6 +16,8 @@
 
 namespace mod_millionaire\model;
 
+use coding_exception;
+
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
@@ -72,42 +74,16 @@ class category extends abstract_model {
     }
 
     /**
-     * Finds a random question id from this category (and its subcategories if allowed) and
-     * returns the moodle question definition for it.
+     * Collects all category ids as array.
      *
-     * @return \question_definition
-     * @throws \coding_exception
-     * @throws \dml_exception
+     * @return int[]
+     * @throws coding_exception
      */
-    public function get_random_question(): \question_definition {
-        global $DB;
-        // build sql for category id(s)
+    public function get_mdl_category_ids() {
         if ($this->includes_subcategories()) {
-            $category_ids = \question_categorylist($this->get_mdl_category());
+            return \question_categorylist($this->get_mdl_category());
         } else {
-            $category_ids = [$this->get_mdl_category()];
-        }
-        list($cat_sql, $cat_params) = $DB->get_in_or_equal($category_ids);
-        // build sql for question type(s)
-        list($qtype_sql, $qtype_params) = $DB->get_in_or_equal(MOD_MILLIONAIRE_VALID_QTYPES_DB);
-        // actual query
-        $sql = "
-            SELECT id
-              FROM {question}
-             WHERE category $cat_sql AND qtype $qtype_sql 
-        ";
-
-        $params = \array_merge($cat_params, $qtype_params);
-        // Get all available questions.
-        $availableids = $DB->get_records_sql($sql, $params);
-        if ($availableids) {
-            // Shuffle here because SQL RAND() can't be used.
-            shuffle($availableids);
-            // Take the first one in the array.
-            $id = $availableids[0]->id;
-            return \question_bank::load_question($id, false);
-        } else {
-            throw new \dml_exception('not found');
+            return [$this->get_mdl_category()];
         }
     }
 
