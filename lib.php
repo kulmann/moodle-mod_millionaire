@@ -29,9 +29,8 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-use mod_millionaire\form\form_controller;
+use core_completion\api;
 use mod_millionaire\model\gamesession;
-use mod_millionaire\util;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -69,6 +68,7 @@ function millionaire_supports($feature) {
         case FEATURE_BACKUP_MOODLE2:
         case FEATURE_COMPLETION_HAS_RULES:
         case FEATURE_MOD_INTRO:
+        case FEATURE_USES_QUESTIONS:
             return true;
         default:
             return null;
@@ -163,11 +163,30 @@ function millionaire_after_add_or_update(stdClass $millionaire) {
  *
  * @return boolean Success/Failure
  * @throws dml_exception
+ * @throws coding_exception
  */
 function millionaire_delete_instance($id) {
     global $DB;
+    if (!$millionaire = $DB->get_record('millionaire', ['id' => $id])) {
+        return false;
+    }
+    if (!$cm = get_coursemodule_from_instance('millionaire', $millionaire->id)) {
+        return false;
+    }
+    if (!$course = $DB->get_record('course', array('id'=>$cm->course))) {
+        return false;
+    }
+    $context = context_module::instance($cm->id);
+
+    // get rid of all files
+    $fs = get_file_storage();
+    $fs->delete_area_files($context->id);
+
+    // delete completion data
+    api::update_completion_date_event($cm->id, 'millionaire', $millionaire->id, null);
+
+    // now delete actual game data
     $result = true;
-    $millionaire = $DB->get_record('millionaire', ['id' => $id], '*', MUST_EXIST);
     // game sessions, including chosen questions and jokers
     $gamesession_ids = $DB->get_fieldset_select('millionaire_gamesessions', 'id', 'game = :game', ['game' => $millionaire->id]);
     if ($gamesession_ids) {

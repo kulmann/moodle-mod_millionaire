@@ -18,6 +18,9 @@ namespace mod_millionaire\model;
 
 defined('MOODLE_INTERNAL') || die();
 
+global $CFG;
+require_once($CFG->dirroot . '/question/engine/bank.php');
+
 /**
  * Class level
  *
