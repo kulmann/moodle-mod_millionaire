@@ -22,7 +22,6 @@ defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
 require_once($CFG->dirroot . '/lib/questionlib.php');
-require_once($CFG->dirroot . '/question/engine/bank.php');
 
 /**
  * Class category
