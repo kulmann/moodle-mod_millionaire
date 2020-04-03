@@ -16,7 +16,8 @@
                     tbody
                         tr(v-for="score in mainScores", :key="score.mdl_user", :class="getScoreClasses(score)")
                             td {{ score.rank }}
-                            td {{ score.mdl_user_name }}
+                            td
+                                a(:href="getProfileUrl(score.mdl_user)", target="_blank") {{ score.mdl_user_name }}
                             td.uk-text-right(v-html="formatScore(score.score)")
                             td.uk-text-right {{ score.sessions }}
                         tr(v-if="loserScores.length > 0")
@@ -24,7 +25,8 @@
                                 v-icon(name="ellipsis-v")
                         tr(v-for="score in loserScores", :key="score.mdl_user", :class="getScoreClasses(score)")
                             td {{ score.rank }}
-                            td {{ score.mdl_user_name }}
+                            td
+                                a(:href="getProfileUrl(score.mdl_user)", target="_blank") {{ score.mdl_user_name }}
                             td.uk-text-right(v-html="formatScore(score.score)")
                             td.uk-text-right {{ score.sessions }}
                 infoAlert(v-else, :message="strings.game_stats_empty")
@@ -117,6 +119,10 @@
                 }
                 return result.join(' ');
             },
+            getProfileUrl(userId) {
+                const baseUrl = window.location.origin;
+                return `${baseUrl}/user/profile.php?id=${userId}`;
+            }
         },
         mounted() {
             this.fetchScores().then(() => {
