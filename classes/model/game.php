@@ -74,6 +74,14 @@ class game extends abstract_model {
      * @var bool Whether or not teachers will be shown in the highscore list.
      */
     protected $highscore_teachers;
+    /**
+     * @var int Number of rounds a user has to finish for successful completion.
+     */
+    protected $completionrounds;
+    /**
+     * @var int Total score a user has to reach for successful completion.
+     */
+    protected $completionpoints;
 
     /**
      * game constructor.
@@ -91,6 +99,8 @@ class game extends abstract_model {
         $this->highscore_count = 5;
         $this->highscore_mode = MOD_MILLIONAIRE_HIGHSCORE_MODE_BEST;
         $this->highscore_teachers = false;
+        $this->completionrounds = 0;
+        $this->completionpoints = 0;
     }
 
     /**
@@ -116,6 +126,62 @@ class game extends abstract_model {
         $this->highscore_count = isset($data['highscore_count']) ? $data['highscore_count'] : 5;
         $this->highscore_mode = isset($data['highscore_mode']) ? $data['highscore_mode'] : MOD_MILLIONAIRE_HIGHSCORE_MODE_BEST;
         $this->highscore_teachers = isset($data['highscore_teachers']) ? ($data['highscore_teachers'] == 1) : false;
+        $this->completionrounds = isset($data['completionrounds']) ? $data['completionrounds'] : 0;
+        $this->completionpoints = isset($data['completionpoints']) ? $data['completionpoints'] : 0;
+    }
+
+    /**
+     * Calculates the total score of the given user.
+     *
+     * @param int $userid
+     * @return int
+     * @throws \dml_exception
+     * @throws \coding_exception
+     */
+    public function calculate_total_score($userid) {
+        global $DB;
+
+        $highscore_mode = $this->get_highscore_mode();
+        $params = ['game' => $this->get_id(), 'state' => gamesession::STATE_FINISHED, 'user' => $userid];
+        switch ($highscore_mode) {
+            case MOD_MILLIONAIRE_HIGHSCORE_MODE_BEST:
+                $sql = "SELECT MAX(score) AS score
+                          FROM {millionaire_gamesessions}
+                         WHERE game = :game AND state = :state AND mdl_user = :user";
+                break;
+            case MOD_MILLIONAIRE_HIGHSCORE_MODE_LAST:
+                $sql = "SELECT score
+                          FROM {millionaire_gamesessions} 
+                         WHERE game = :game AND state = :state AND mdl_user = :user
+                      ORDER BY timecreated DESC";
+                break;
+            case MOD_MILLIONAIRE_HIGHSCORE_MODE_AVERAGE:
+                $sql = "SELECT (SUM(score)/COUNT(score)) AS score
+                          FROM {millionaire_gamesessions}
+                         WHERE game = :game AND state = :state AND mdl_user = :user";
+                break;
+            default:
+                throw new \coding_exception("highscore mode $highscore_mode is not supported.");
+        }
+        $record = $DB->get_record_sql($sql, $params);
+        if ($record === false) {
+            return 0;
+        } else {
+            return $record->score;
+        }
+    }
+
+    /**
+     * Counts the number of finished gamesessions of the given user.
+     *
+     * @param int $userid
+     * @return int
+     * @throws \dml_exception
+     */
+    public function count_finished_gamesessions($userid) {
+        global $DB;
+        $sqlParams = ['game' => $this->get_id(), 'mdl_user' => $userid, 'state' => gamesession::STATE_FINISHED];
+        return $DB->count_records('millionaire_gamesessions', $sqlParams);
     }
 
     /**
@@ -214,13 +280,6 @@ class game extends abstract_model {
     }
 
     /**
-     * @param int $timecreated
-     */
-    public function set_timecreated(int $timecreated) {
-        $this->timecreated = $timecreated;
-    }
-
-    /**
      * @return int
      */
     public function get_timemodified(): int {
@@ -270,24 +329,10 @@ class game extends abstract_model {
     }
 
     /**
-     * @param string $currency_for_levels
-     */
-    public function set_currency_for_levels(string $currency_for_levels) {
-        $this->currency_for_levels = $currency_for_levels;
-    }
-
-    /**
      * @return bool
      */
     public function is_continue_on_failure(): bool {
         return $this->continue_on_failure;
-    }
-
-    /**
-     * @param bool $continue_on_failure
-     */
-    public function set_continue_on_failure(bool $continue_on_failure) {
-        $this->continue_on_failure = $continue_on_failure;
     }
 
     /**
@@ -298,24 +343,10 @@ class game extends abstract_model {
     }
 
     /**
-     * @param bool $question_repeatable
-     */
-    public function set_question_repeatable(bool $question_repeatable) {
-        $this->question_repeatable = $question_repeatable;
-    }
-
-    /**
      * @return bool
      */
     public function is_question_shuffle_answers(): bool {
         return $this->question_shuffle_answers;
-    }
-
-    /**
-     * @param bool $question_shuffle_answers
-     */
-    public function set_question_shuffle_answers(bool $question_shuffle_answers) {
-        $this->question_shuffle_answers = $question_shuffle_answers;
     }
 
     /**
@@ -326,24 +357,10 @@ class game extends abstract_model {
     }
 
     /**
-     * @param int $highscore_count
-     */
-    public function set_highscore_count(int $highscore_count) {
-        $this->highscore_count = $highscore_count;
-    }
-
-    /**
      * @return string
      */
     public function get_highscore_mode(): string {
         return $this->highscore_mode;
-    }
-
-    /**
-     * @param string $highscore_mode
-     */
-    public function set_highscore_mode(string $highscore_mode) {
-        $this->highscore_mode = $highscore_mode;
     }
 
     /**
@@ -354,9 +371,16 @@ class game extends abstract_model {
     }
 
     /**
-     * @param bool $highscore_teachers
+     * @return int
      */
-    public function set_highscore_teachers(bool $highscore_teachers) {
-        $this->highscore_teachers = $highscore_teachers;
+    public function get_completionrounds(): int {
+        return $this->completionrounds;
+    }
+
+    /**
+     * @return int
+     */
+    public function get_completionpoints(): int {
+        return $this->completionpoints;
     }
 }
