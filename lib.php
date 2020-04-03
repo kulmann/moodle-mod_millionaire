@@ -31,6 +31,7 @@
 
 use core_completion\api;
 use mod_millionaire\model\gamesession;
+use mod_millionaire\util;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -214,25 +215,25 @@ function millionaire_delete_instance($id) {
  * @param bool $type Type of comparison (or/and; can be used as return value if no conditions)
  * @return bool True if completed, false if not, $type if conditions not set.
  * @throws dml_exception
+ * @throws moodle_exception
  */
 function millionaire_get_completion_state($course, $cm, $userid, $type) {
-    global $DB;
-
-    if (!($millionaire = $DB->get_record('millionaire', ['id' => $cm->instance]))) {
-        throw new Exception("Can't find millionaire {$cm->instance}");
+    list($course, $coursemodule) = get_course_and_cm_from_cmid($cm->id, 'millionaire');
+    if (!($millionaire = util::get_game($coursemodule))) {
+        throw new Exception("Can't find activity instance {$cm->instance}");
     }
+
     $result = $type;
-    if ($millionaire->completionrounds) {
-        $sqlParams = ['game' => $millionaire->id, 'mdl_user' => $userid, 'state' => gamesession::STATE_FINISHED];
-        $value = $millionaire->completionrounds <= $DB->count_records('millionaire_gamesessions', $sqlParams);
+    if ($millionaire->get_completionrounds()) {
+        $value = $millionaire->get_completionrounds() <= $millionaire->count_finished_gamesessions($userid);
         if ($type == COMPLETION_AND) {
             $result &= $value;
         } else {
             $result |= $value;
         }
     }
-    if ($millionaire->completionpoints) {
-        $value = $millionaire->completionpoints <= highscore_utils::calculate_score($millionaire, $userid);
+    if ($millionaire->get_completionpoints()) {
+        $value = $millionaire->get_completionrounds() <= $millionaire->calculate_total_score($userid);
         if ($type == COMPLETION_AND) {
             $result &= $value;
         } else {

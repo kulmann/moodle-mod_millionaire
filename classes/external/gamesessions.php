@@ -496,6 +496,12 @@ class gamesessions extends external_api {
         }
         $gamesession->save();
 
+        // notify completion system about possible completion
+        $completion = new \completion_info($course);
+        if($gamesession->is_finished() && $completion->is_enabled($coursemodule)) {
+            $completion->update_state($coursemodule,COMPLETION_COMPLETE);
+        }
+
         // return result object
         $exporter = new question_dto($question, $level, $ctx);
         return $exporter->export($renderer);
