@@ -34,7 +34,7 @@
     "file-loader": "^3.0.1",
     "fstream": ">=1.0.12",
     "node-sass": "^4.12.0",
-    "pug": "^2.0.3",
+    "pug": "^3.0.1",
     "pug-plain-loader": "^1.0.0",
     "sass-loader": "^7.1.0",
     "tar": ">=2.2.2",
